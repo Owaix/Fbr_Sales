@@ -1,0 +1,204 @@
+﻿@{
+    ViewData["Title"] = "Company Profile";
+}
+<meta charset="utf-8" />
+<title>@ViewData["Title"] - My ASP.NET Application</title>
+
+<style>
+    .form-control {
+        width: 100%;
+    }
+
+    .table-container {
+        max-height: 250px;
+        overflow-y: auto;
+    }
+
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .btn {
+        cursor: pointer;
+    }
+
+    thead {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .card-add {
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="container mt-5">
+    <h2 class="mb-4">Company Profile</h2>
+
+    <!-- Form -->
+    <div class="card card-add">
+        <div class="card-body">
+            <form>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="CompanyName">Company Name:</label>
+                        <input type="text" id="CompanyName" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="Address">Address:</label>
+                        <input type="text" id="Address" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="CellNo">Cell No:</label>
+                        <input type="text" id="CellNo" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="UserRole">User Role:</label>
+                        <select id="UserRole" class="form-select">
+                            <option value="">Select Role</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Staff">Staff</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="UserName">User Name:</label>
+                        <input type="text" id="UserName" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="Password">Password:</label>
+                        <input type="password" id="Password" class="form-control" />
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end gap-2">
+                        <button type="button" id="addButton" class="btn btn-primary w-50">Add</button>
+                        <button type="button" id="resetButton" class="btn btn-secondary w-50">Reset</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+        <table id="companyTable" class="table table-bordered">
+            <thead class="table-primary">
+                <tr>
+                    <th>ID</th>
+                    <th>Company Name</th>
+                    <th>Address</th>
+                    <th>Cell No</th>
+                    <th>User Role</th>
+                    <th>User Name</th>
+                    <th>Password</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- rows inserted via JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var editingRow = null;
+        var companyId = 1; // auto increment ID
+
+        function clearForm() {
+            $("#CompanyName, #Address, #CellNo, #UserRole, #UserName, #Password").val('');
+            $("#addButton").text("Add").removeClass("btn-warning").addClass("btn-primary");
+            editingRow = null;
+        }
+
+        $("#addButton").click(function () {
+            var companyData = {
+                id: editingRow ? $(editingRow).find("td:eq(0)").text() : companyId,
+                companyName: $("#CompanyName").val(),
+                address: $("#Address").val(),
+                cellNo: $("#CellNo").val(),
+                userRole: $("#UserRole").val(),
+                userName: $("#UserName").val(),
+                password: $("#Password").val()
+            };
+
+            if (!companyData.companyName || !companyData.address || !companyData.cellNo ||
+                !companyData.userRole || !companyData.userName || !companyData.password) {
+                Swal.fire("Error!", "Please fill all fields.", "error");
+                return;
+            }
+
+            if (editingRow) {
+                // update row
+                $(editingRow).find("td:eq(1)").text(companyData.companyName);
+                $(editingRow).find("td:eq(2)").text(companyData.address);
+                $(editingRow).find("td:eq(3)").text(companyData.cellNo);
+                $(editingRow).find("td:eq(4)").text(companyData.userRole);
+                $(editingRow).find("td:eq(5)").text(companyData.userName);
+                $(editingRow).find("td:eq(6)").text(companyData.password);
+
+                Swal.fire("Updated!", "Company updated successfully.", "success");
+                clearForm();
+            } else {
+                // add row
+                var row = `<tr>
+                            <td>${companyData.id}</td>
+                            <td>${companyData.companyName}</td>
+                            <td>${companyData.address}</td>
+                            <td>${companyData.cellNo}</td>
+                            <td>${companyData.userRole}</td>
+                            <td>${companyData.userName}</td>
+                            <td>${companyData.password}</td>
+                            <td>
+                                <button type="button" class="btn btn-info editRow">Edit</button>
+                                <button type="button" class="btn btn-danger deleteRow">Delete</button>
+                            </td>
+                        </tr>`;
+                $("#companyTable tbody").append(row);
+                companyId++;
+                Swal.fire("Added!", "Company added successfully.", "success");
+                clearForm();
+            }
+        });
+
+        // reset button
+        $("#resetButton").click(function () {
+            clearForm();
+            Swal.fire("Reset!", "Form cleared successfully.", "info");
+        });
+
+        // edit row
+        $("#companyTable").on("click", ".editRow", function () {
+            editingRow = $(this).closest("tr");
+
+            $("#CompanyName").val($(editingRow).find("td:eq(1)").text());
+            $("#Address").val($(editingRow).find("td:eq(2)").text());
+            $("#CellNo").val($(editingRow).find("td:eq(3)").text());
+            $("#UserRole").val($(editingRow).find("td:eq(4)").text());
+            $("#UserName").val($(editingRow).find("td:eq(5)").text());
+            $("#Password").val($(editingRow).find("td:eq(6)").text());
+
+            $("#addButton").text("Update").removeClass("btn-primary").addClass("btn-warning");
+        });
+
+        // delete row
+        $("#companyTable").on("click", ".deleteRow", function () {
+            var row = $(this).closest("tr");
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This company will be deleted!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    row.remove();
+                    Swal.fire("Deleted!", "Company removed successfully.", "success");
+                    clearForm();
+                }
+            });
+        });
+    </script>
+}

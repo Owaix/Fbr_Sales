@@ -1,0 +1,213 @@
+﻿@{
+    ViewData["Title"] = "Item Profile";
+}
+<meta charset="utf-8" />
+<title>@ViewData["Title"] - My ASP.NET Application</title>
+
+<style>
+    .form-control {
+        width: 100%;
+    }
+
+    .table-container {
+        max-height: 250px;
+        overflow-y: auto;
+    }
+
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .btn {
+        cursor: pointer;
+    }
+
+    thead {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .card-add {
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="container mt-5">
+    <h2 class="mb-4">Item Profile</h2>
+
+    <!-- Form -->
+    <div class="card card-add">
+        <div class="card-body">
+            <form>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="HSCode">HS-Code:</label>
+                        <input type="text" id="HSCode" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ItemCode">Item Code:</label>
+                        <input type="text" id="ItemCode" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ItemName">Item Name:</label>
+                        <input type="text" id="ItemName" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="Category">Category:</label>
+                        <select id="Category" class="form-select">
+                            <option value="">Select Category</option>
+                            <option value="Raw Material">Raw Material</option>
+                            <option value="Finished Goods">Finished Goods</option>
+                            <option value="Consumables">Consumables</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="Description">Item Description:</label>
+                        <input type="text" id="Description" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="UOM">UOM:</label>
+                        <input type="text" id="UOM" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="Rate">Rate:</label>
+                        <input type="text" id="Rate" class="form-control" />
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end gap-2">
+                        <button type="button" id="addButton" class="btn btn-primary w-50">Add</button>
+                        <button type="button" id="resetButton" class="btn btn-secondary w-50">Reset</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container">
+        <table id="itemTable" class="table table-bordered">
+            <thead class="table-primary">
+                <tr>
+                    <th>ID</th>
+                    <th>HS-Code</th>
+                    <th>Item Code</th>
+                    <th>Item Name</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>UOM</th>
+                    <th>Rate</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- rows inserted via JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var editingRow = null;
+        var itemId = 1; // auto increment ID
+
+        function clearForm() {
+            $("#HSCode, #ItemCode, #ItemName, #Category, #Description, #UOM, #Rate").val('');
+            $("#addButton").text("Add").removeClass("btn-warning").addClass("btn-primary");
+            editingRow = null;
+        }
+
+        $("#addButton").click(function () {
+            var itemData = {
+                id: editingRow ? $(editingRow).find("td:eq(0)").text() : itemId,
+                hscode: $("#HSCode").val(),
+                itemcode: $("#ItemCode").val(),
+                name: $("#ItemName").val(),
+                category: $("#Category").val(),
+                description: $("#Description").val(),
+                uom: $("#UOM").val(),
+                rate: $("#Rate").val()
+            };
+
+            if (!itemData.hscode || !itemData.itemcode || !itemData.name ||
+                !itemData.category || !itemData.description || !itemData.uom || !itemData.rate) {
+                Swal.fire("Error!", "Please fill all fields.", "error");
+                return;
+            }
+
+            if (editingRow) {
+                // update existing row
+                $(editingRow).find("td:eq(1)").text(itemData.hscode);
+                $(editingRow).find("td:eq(2)").text(itemData.itemcode);
+                $(editingRow).find("td:eq(3)").text(itemData.name);
+                $(editingRow).find("td:eq(4)").text(itemData.category);
+                $(editingRow).find("td:eq(5)").text(itemData.description);
+                $(editingRow).find("td:eq(6)").text(itemData.uom);
+                $(editingRow).find("td:eq(7)").text(itemData.rate);
+
+                Swal.fire("Updated!", "Item updated successfully.", "success");
+                clearForm();
+            } else {
+                // add new row
+                var row = `<tr>
+                            <td>${itemData.id}</td>
+                            <td>${itemData.hscode}</td>
+                            <td>${itemData.itemcode}</td>
+                            <td>${itemData.name}</td>
+                            <td>${itemData.category}</td>
+                            <td>${itemData.description}</td>
+                            <td>${itemData.uom}</td>
+                            <td>${itemData.rate}</td>
+                            <td>
+                                <button type="button" class="btn btn-info editRow">Edit</button>
+                                <button type="button" class="btn btn-danger deleteRow">Delete</button>
+                            </td>
+                        </tr>`;
+                $("#itemTable tbody").append(row);
+                itemId++;
+                Swal.fire("Added!", "Item added successfully.", "success");
+                clearForm();
+            }
+        });
+
+        // reset button
+        $("#resetButton").click(function () {
+            clearForm();
+            Swal.fire("Reset!", "Form cleared successfully.", "info");
+        });
+
+        // edit row
+        $("#itemTable").on("click", ".editRow", function () {
+            editingRow = $(this).closest("tr");
+
+            $("#HSCode").val($(editingRow).find("td:eq(1)").text());
+            $("#ItemCode").val($(editingRow).find("td:eq(2)").text());
+            $("#ItemName").val($(editingRow).find("td:eq(3)").text());
+            $("#Category").val($(editingRow).find("td:eq(4)").text());
+            $("#Description").val($(editingRow).find("td:eq(5)").text());
+            $("#UOM").val($(editingRow).find("td:eq(6)").text());
+            $("#Rate").val($(editingRow).find("td:eq(7)").text());
+
+            $("#addButton").text("Update").removeClass("btn-primary").addClass("btn-warning");
+        });
+
+        // delete row
+        $("#itemTable").on("click", ".deleteRow", function () {
+            var row = $(this).closest("tr");
+            Swal.fire({
+                title: "Are you sure?",
+                text: "This item will be deleted!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    row.remove();
+                    Swal.fire("Deleted!", "Item removed successfully.", "success");
+                    clearForm();
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,151 @@
+﻿@model IEnumerable<EfPractice.Models.Imh>
+<meta charset="utf-8" />
+<title>@ViewData["Title"] - My ASP.NET Application</title>
+
+
+<style>
+    .form-control {
+        width: 100%;
+    }
+
+    .table-container {
+        max-height: 200px; /* Adjust this value to fit 5 rows */
+        overflow-y: auto;
+    }
+
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .btn {
+        cursor: pointer;
+    }
+
+    .totals-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+        .totals-container .card {
+            flex: 1;
+            margin: 0 10px;
+        }
+
+            .totals-container .card h5 {
+                margin: 0;
+            }
+
+    .card-add {
+        margin-bottom: 20px;
+    }
+
+    .total-info {
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+        .total-info .card {
+            flex: 1;
+            margin: 0 10px;
+        }
+
+    .save-button-container {
+        text-align: right;
+        margin-top: 20px;
+    }
+
+    .save-button {
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+    }
+
+        .save-button:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
+
+    thead {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .cardValue {
+        background-color: #E9ECEF;
+        color: white;
+    }
+</style>
+
+<div class="container mt-5">
+    <h2 class="mb-4">Item Header Registration</h2>
+    <div class="card card-add">
+        <div class="card-body">
+            <form>
+                <div class="row align-items-end">
+                  
+                  
+                    <div class="col-md-6">
+                        <label for="price">Item Header:</label>
+                        <input type="text" id="ItemHeader" class="form-control" />
+                    </div>
+                   
+                 
+                    <div class="col-md-6">
+                        <button type="button" id="addButton" class="btn btn-primary">Add</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="table-container">
+        <table id="myTable" class="table table-bordered">
+            <thead class="table-primary">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                 @*    <tr>
+                        <td>@item.mn</td>
+                        <td>@item.Price</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        </td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                        </td>
+                        <td>
+                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        </td>
+                    </tr> *@
+
+
+                    <tr>
+                        <td>@item.Mid</td>
+                        <td>@item.Mname</td>
+                                    <td>
+                                        <button type="button" class="btn btn-info editRow">Edit</button>
+                                        <button type="button" class="btn btn-danger deleteRow">Delete</button>
+                                    </td>
+                                   </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <br>
+
+</div>
+
+@section Scripts {
+    <script src="~/js/ItemHeader.js"></script>
+
+
+}

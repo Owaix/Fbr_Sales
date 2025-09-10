@@ -1,0 +1,178 @@
+﻿@model EfPractice.Models.CustomerModel.ItemRegistrarion
+<meta charset="utf-8" />
+<title>@ViewData["Title"] - My ASP.NET Application</title>
+
+
+<style>
+    .form-control {
+        width: 100%;
+    }
+
+    .table-container {
+        max-height: 200px; /* Adjust this value to fit 5 rows */
+        overflow-y: auto;
+    }
+
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .btn {
+        cursor: pointer;
+    }
+
+    .totals-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+        .totals-container .card {
+            flex: 1;
+            margin: 0 10px;
+        }
+
+            .totals-container .card h5 {
+                margin: 0;
+            }
+
+    .card-add {
+        margin-bottom: 20px;
+    }
+
+    .total-info {
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+        .total-info .card {
+            flex: 1;
+            margin: 0 10px;
+        }
+
+    .save-button-container {
+        text-align: right;
+        margin-top: 20px;
+    }
+
+    .save-button {
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+    }
+
+        .save-button:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
+
+    thead {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .cardValue {
+        background-color: #E9ECEF;
+        color: white;
+    }
+</style>
+
+<div class="container mt-5">
+    <h2 class="mb-4">Item Catergory Registration</h2>
+    <div class="card card-add">
+        <div class="card-body">
+            <form>
+                <div class="row align-items-end">
+                    <div class="col-md-4">
+                        <label asp-for="Itcode">Select Item Catory:</label>
+                        <select asp-for="Itcode" asp-items="@(new SelectList(Model.CatergoryList, "Cid", "Name", Model.Itcode))" class="form-control" id="ItemCatergory">
+               
+                            <option disabled>Choose the catergory</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label >Item Name:</label>
+                        <input type="text" id="ItemName" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label >Item Description:</label>
+                        <input type="text" id="ItemDesc" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label >Purchase Rate:</label>
+                        <input type="text" id="ItemPurchase" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label >Sale Rate:</label>
+                        <input type="text" id="ItemSale" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ItemUnit">Measurment Unit:</label>
+                        <select id="ItemUnit" class="form-control">
+                            <option value="">Select Unit</option>
+                            <option value="1">Pcs</option>
+                            <option value="2">KG</option>
+                          
+                            <!-- Add more options as needed -->
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label >Opening Quantity:</label>
+                        <input type="text" id="ItemOpeningQuantity" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label >Opening Amt:</label>
+                        <input type="text" id="ItemOpeningAmt" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label >Inventory Head:</label>
+                        <input type="text" id="ItemHead" class="form-control" />
+                    </div>
+
+
+                  <br />
+                    <div class="col-md-4">
+                        <button type="button" id="addButton" class="btn btn-primary">Add</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="table-container">
+        <table id="myTable" class="table table-bordered">
+            <thead class="table-primary">
+                <tr>
+                    <th>CatergoryID</th>
+                    <th>Catergory</th>
+                    <th>Item ID</th>
+                    <th>Item Name</th>
+                    <th>Item Description</th>
+                    <th>Purchase Rate</th>
+                    <th>Sale Rate</th>
+                    <th>Unit IT</th>
+                    <th>Unit Name</th>
+                    <th>Opening Balance</th>
+                    <th>Opening Amt</th>
+                    <th>Inventory Head</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <br>
+
+</div>
+
+@section Scripts {
+
+    <script src="~/js/ItemRegistration.js"></script>
+}
