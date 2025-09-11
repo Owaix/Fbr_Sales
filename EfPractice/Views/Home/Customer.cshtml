@@ -82,11 +82,14 @@
                     <div class="col-md-4">
                         <label asp-for="Customer.Cell"></label>
                         <input asp-for="Customer.Cell" class="form-control" />
+                        <span asp-validation-for="Customer.Cell" class="text-danger"></span>
+
                     </div>
 
                     <div class="col-md-4">
                         <label asp-for="Customer.MrNO">Contract No:</label>
                         <input asp-for="Customer.MrNO" class="form-control" />
+                        <span asp-validation-for="Customer.MrNO" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-4 d-flex align-items-end gap-2">
@@ -122,7 +125,7 @@
                         <td>@c.CusName</td>
                         <td>@c.NTN_No</td>
                         <td>@c.Add</td>
-                        <td>@c.City</td>
+                        <td>@c.Prn</td>
                         <td>@(c.InActive == true ? "Inactive" : "Active")</td>
                         <td>@c.Cell</td>
                         <td>@c.MrNO</td>

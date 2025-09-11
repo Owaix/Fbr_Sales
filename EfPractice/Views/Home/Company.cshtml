@@ -1,4 +1,6 @@
-﻿@{
+﻿@model EfPractice.Models.CompanyViewModel
+
+@{
     ViewData["Title"] = "Company Profile";
 }
 <meta charset="utf-8" />
@@ -38,40 +40,53 @@
     <!-- Form -->
     <div class="card card-add">
         <div class="card-body">
-            <form>
+
+            <form asp-action="Company" asp-controller="Home" method="post">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label for="CompanyName">Company Name:</label>
-                        <input type="text" id="CompanyName" class="form-control" />
+                        <label asp-for="Company.CompanyName"></label>
+                        <input asp-for="Company.CompanyName" class="form-control" />
+                        <span asp-validation-for="Company.CompanyName" class="text-danger"></span>
                     </div>
+
                     <div class="col-md-4">
-                        <label for="Address">Address:</label>
-                        <input type="text" id="Address" class="form-control" />
+                        <label asp-for="Company.Address"></label>
+                        <input asp-for="Company.Address" class="form-control" />
+                        <span asp-validation-for="Company.Address" class="text-danger"></span>
                     </div>
+
                     <div class="col-md-4">
-                        <label for="CellNo">Cell No:</label>
-                        <input type="text" id="CellNo" class="form-control" />
+                        <label asp-for="Company.CellNo"></label>
+                        <input asp-for="Company.CellNo" class="form-control" />
+                        <span asp-validation-for="Company.CellNo" class="text-danger"></span>
                     </div>
+
                     <div class="col-md-4">
-                        <label for="UserRole">User Role:</label>
-                        <select id="UserRole" class="form-select">
+                        <label asp-for="Company.UserRole"></label>
+                        <select asp-for="Company.UserRole" class="form-select">
                             <option value="">Select Role</option>
                             <option value="Admin">Admin</option>
                             <option value="Manager">Manager</option>
                             <option value="Staff">Staff</option>
                         </select>
+                        <span asp-validation-for="Company.UserRole" class="text-danger"></span>
                     </div>
+
                     <div class="col-md-4">
-                        <label for="UserName">User Name:</label>
-                        <input type="text" id="UserName" class="form-control" />
+                        <label asp-for="Company.UserName"></label>
+                        <input asp-for="Company.UserName" class="form-control" />
+                        <span asp-validation-for="Company.UserName" class="text-danger"></span>
                     </div>
+
                     <div class="col-md-4">
-                        <label for="Password">Password:</label>
-                        <input type="password" id="Password" class="form-control" />
+                        <label asp-for="Company.Password"></label>
+                        <input asp-for="Company.Password" type="password" class="form-control" />
+                        <span asp-validation-for="Company.Password" class="text-danger"></span>
                     </div>
+
                     <div class="col-md-4 d-flex align-items-end gap-2">
-                        <button type="button" id="addButton" class="btn btn-primary w-50">Add</button>
-                        <button type="button" id="resetButton" class="btn btn-secondary w-50">Reset</button>
+                        <button type="submit" class="btn btn-primary w-50">Add</button>
+                        <button type="reset" class="btn btn-secondary w-50">Reset</button>
                     </div>
                 </div>
             </form>
@@ -94,7 +109,22 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- rows inserted via JS -->
+                @foreach (var company in Model.Companies)
+                {
+                    <tr>
+                        <td>@company.Id</td>
+                        <td>@company.CompanyName</td>
+                        <td>@company.Address</td>
+                        <td>@company.CellNo</td>
+                        <td>@company.UserRole</td>
+                        <td>@company.UserName</td>
+                        <td>@company.Password</td>
+                        <td>
+                            <a asp-action="Company" asp-route-id="@company.Id" class="btn btn-sm btn-warning">Edit</a>
+                            <a asp-action="CompanyDelete" asp-route-id="@company.Id" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>

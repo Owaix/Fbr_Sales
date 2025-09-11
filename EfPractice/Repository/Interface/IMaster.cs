@@ -37,7 +37,7 @@ namespace EfPractice.Repository.Interface
         Task<List<Supplier>> GetSupplierAsync();
         Task<bool> UpdateSupplierAsync(Supplier model);
         Task<bool> AddSupplierAsync(Supplier model);
-      //  Task<Supplier> GetSupplierListAsync();
+        //  Task<Supplier> GetSupplierListAsync();
 
         #endregion
 
@@ -53,7 +53,7 @@ namespace EfPractice.Repository.Interface
         Task<bool> AddHeadAsync(Head model);
         Task<bool> UpdateHeadAsync(Head model);
 
-        Task <List<Head>> GetHeadListAsync();
+        Task<List<Head>> GetHeadListAsync();
 
         #endregion
 
@@ -63,13 +63,30 @@ namespace EfPractice.Repository.Interface
         Task<List<City>> GetCityListAsync();
         #endregion
         #region Customer
-
-        Task<List<Customer>> GetAllAsync();
-        Task<Customer?> GetByIdAsync(int id);
-        Task<int> AddAsync(Customer customer);
-        Task<int> UpdateAsync(Customer customer);
-        Task<int> DeleteAsync(int id);
+        Task<List<Customer>> GetAllCustomersAsync();
+        Task<Customer?> GetCustomerByIdAsync(int id);
+        Task<int> AddCustomerAsync(Customer customer);
+        Task<int> UpdateCustomerAsync(Customer customer);
+        Task<int> DeleteCustomerAsync(int id);
         #endregion
+
+        Task<List<Item>> GetAllItemsAsync();
+        Task<Item?> GetItemByIdAsync(int id);
+        Task<int> AddItemAsync(Item item);
+        Task<int> UpdateItemAsync(Item item);
+        Task<int> DeleteItemAsync(int id);
+
+        Task<List<Cate>> GetAllCatesAsync();
+        Task<Cate?> GetCateByIdAsync(int id);
+        Task<int> AddCateAsync(Cate cate);
+        Task<int> UpdateCateAsync(Cate cate);
+        Task<int> DeleteCateAsync(int id);
+
+        Task<List<Company>> GetAllCompaniesAsync();
+        Task<Company?> GetCompanyByIdAsync(int id);
+        Task<int> AddCompanyAsync(Company company);
+        Task<int> UpdateCompanyAsync(Company company);
+        Task<int> DeleteCompanyAsync(int id);
 
     }
 }

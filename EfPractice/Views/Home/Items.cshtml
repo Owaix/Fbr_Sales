@@ -1,4 +1,6 @@
-﻿@{
+﻿@model EfPractice.Models.ItemsViewModel
+
+@{
     ViewData["Title"] = "Item Profile";
 }
 <meta charset="utf-8" />
@@ -38,45 +40,61 @@
     <!-- Form -->
     <div class="card card-add">
         <div class="card-body">
-            <form>
+            <form asp-action="Items" asp-controller="Home" method="post">
                 <div class="row g-3">
+
                     <div class="col-md-4">
-                        <label for="HSCode">HS-Code:</label>
-                        <input type="text" id="HSCode" class="form-control" />
+                        <label asp-for="Item.HSCode"></label>
+                        <input asp-for="Item.HSCode" class="form-control" />
+                        <span asp-validation-for="Item.HSCode" class="text-danger"></span>
                     </div>
+
                     <div class="col-md-4">
-                        <label for="ItemCode">Item Code:</label>
-                        <input type="text" id="ItemCode" class="form-control" />
+                        <label asp-for="Item.ItemCode"></label>
+                        <input asp-for="Item.ItemCode" class="form-control" />
+                        <span asp-validation-for="Item.ItemCode" class="text-danger"></span>
                     </div>
+
                     <div class="col-md-4">
-                        <label for="ItemName">Item Name:</label>
-                        <input type="text" id="ItemName" class="form-control" />
+                        <label asp-for="Item.ItemName"></label>
+                        <input asp-for="Item.ItemName" class="form-control" />
+                        <span asp-validation-for="Item.ItemName" class="text-danger"></span>
                     </div>
+
                     <div class="col-md-4">
-                        <label for="Category">Category:</label>
-                        <select id="Category" class="form-select">
+                        <label asp-for="Item.Category"></label>
+                        <select asp-for="Item.Category" class="form-select">
                             <option value="">Select Category</option>
                             <option value="Raw Material">Raw Material</option>
                             <option value="Finished Goods">Finished Goods</option>
                             <option value="Consumables">Consumables</option>
                         </select>
+                        <span asp-validation-for="Item.Category" class="text-danger"></span>
                     </div>
+
                     <div class="col-md-4">
-                        <label for="Description">Item Description:</label>
-                        <input type="text" id="Description" class="form-control" />
+                        <label asp-for="Item.Description"></label>
+                        <input asp-for="Item.Description" class="form-control" />
+                        <span asp-validation-for="Item.Description" class="text-danger"></span>
                     </div>
+
                     <div class="col-md-4">
-                        <label for="UOM">UOM:</label>
-                        <input type="text" id="UOM" class="form-control" />
+                        <label asp-for="Item.UOM"></label>
+                        <input asp-for="Item.UOM" class="form-control" />
+                        <span asp-validation-for="Item.UOM" class="text-danger"></span>
                     </div>
+
                     <div class="col-md-4">
-                        <label for="Rate">Rate:</label>
-                        <input type="text" id="Rate" class="form-control" />
+                        <label asp-for="Item.Rate"></label>
+                        <input asp-for="Item.Rate" class="form-control" />
+                        <span asp-validation-for="Item.Rate" class="text-danger"></span>
                     </div>
+
                     <div class="col-md-4 d-flex align-items-end gap-2">
-                        <button type="button" id="addButton" class="btn btn-primary w-50">Add</button>
-                        <button type="button" id="resetButton" class="btn btn-secondary w-50">Reset</button>
+                        <button type="submit" class="btn btn-primary w-50">Save</button>
+                        <button type="reset" class="btn btn-secondary w-50">Reset</button>
                     </div>
+
                 </div>
             </form>
         </div>
@@ -99,7 +117,23 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- rows inserted via JS -->
+                @foreach (var i in Model.Items)
+                {
+                    <tr>
+                        <td>@i.Id</td>
+                        <td>@i.HSCode</td>
+                        <td>@i.ItemCode</td>
+                        <td>@i.ItemName</td>
+                        <td>@i.Category</td>
+                        <td>@i.Description</td>
+                        <td>@i.UOM</td>
+                        <td>@i.Rate</td>
+                        <td>
+                            <a asp-action="ItemEdit" asp-route-id="@i.Id" class="btn btn-sm btn-warning">Edit</a>
+                            <a asp-action="ItemDelete" asp-route-id="@i.Id" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>

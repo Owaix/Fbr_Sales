@@ -7,16 +7,20 @@ namespace EfPractice.Models
         public Customer Customer { get; set; } = new Customer();
         public List<Customer> Customers { get; set; } = new List<Customer>();
     }
-    public class Company
+
+    public class ItemsViewModel
     {
-        public string Id { get; set; }
-        public string Email { get; set; }
-        public string UserName { get; set; }
-        public string PasswordHash { get; set; }
-        public string PhoneNumber { get; set; }
-        public string CompanyName { get; set; }
-        public string UserRole { get; set; }
+        public Item Item { get; set; } = new Item();
+        public List<Item> Items { get; set; } = new List<Item>();
     }
+
+    public class CompanyViewModel
+    {
+        public Company Company { get; set; } = new Company();
+        public List<Company> Companies { get; set; } = new List<Company>();
+    }
+
+
     public class Items
     {
         public int IID { get; set; }
@@ -36,12 +40,15 @@ namespace EfPractice.Models
         [Key]   // ✅ Explicit primary key
         public int CID { get; set; }
 
+        [Required(ErrorMessage = "Customer name is required")]
+        [MaxLength(100, ErrorMessage = "Customer name cannot exceed 100 characters")]
         public string? CusName { get; set; }
         public int? PType_ID { get; set; }
         public string? Add { get; set; }
         public string? NTN_No { get; set; }
         public string? ContactPerson { get; set; }
         public string? Owner_Name { get; set; }
+        [RegularExpression(@"^[0-9\-]+$", ErrorMessage = "Only numbers and '-' are allowed")]
         public string? Cell { get; set; }
         public string? Eml { get; set; }
         public string? Tel { get; set; }
@@ -60,6 +67,8 @@ namespace EfPractice.Models
         public int? Village { get; set; }
         public int? CompanyID { get; set; }
         public decimal? CollectPerMonth { get; set; }
+
+        [RegularExpression(@"^[0-9\-]+$", ErrorMessage = "Only numbers and '-' are allowed")]
         public string? MrNO { get; set; }
     }
     public class SalesMaster

@@ -63,82 +63,6 @@ namespace EfPractice.Models
                     .HasColumnName("MNAME");
             });
 
-            builder.Entity<Item>(entity =>
-            {
-                entity.HasKey(e => e.Itcode)
-                    .HasName("PK__ITEM__4E0BC64FCEF43557");
-
-                entity.ToTable("ITEM");
-
-                entity.Property(e => e.Itcode)
-                    .ValueGeneratedNever()
-                    .HasColumnName("ITCODE");
-
-                entity.Property(e => e.Acid).HasColumnName("ACID");
-
-                entity.Property(e => e.Amt)
-                    .HasColumnType("decimal(18, 2)")
-                    .HasColumnName("AMT");
-
-                entity.Property(e => e.Expac)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("EXPAC");
-
-                entity.Property(e => e.Glca)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("GLCA");
-
-                entity.Property(e => e.Glpa)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("GLPA");
-
-                entity.Property(e => e.Glsa)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("GLSA");
-
-                entity.Property(e => e.Ic)
-                    .HasMaxLength(200)
-                    .IsUnicode(false)
-                    .HasColumnName("IC");
-
-                entity.Property(e => e.Itname)
-                    .HasMaxLength(80)
-                    .IsUnicode(false)
-                    .HasColumnName("ITNAME");
-
-                entity.Property(e => e.Pack)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("PACK");
-
-                entity.Property(e => e.Prate)
-                    .HasColumnType("decimal(18, 2)")
-                    .HasColumnName("PRATE");
-
-                entity.Property(e => e.Srate)
-                    .HasColumnType("decimal(18, 2)")
-                    .HasColumnName("RATE");
-
-                entity.Property(e => e.Type)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("TYPE");
-
-                entity.Property(e => e.Unit)
-                    .HasMaxLength(30)
-                    .IsUnicode(false)
-                    .HasColumnName("UNIT");
-
-                entity.Property(e => e.Weight)
-                    .HasColumnType("decimal(18, 2)")
-                    .HasColumnName("WEIGHT");
-            });
-
-
             builder.Entity<Party>(entity =>
             {
                 entity.HasKey(e => e.Subcode)
@@ -340,5 +264,7 @@ namespace EfPractice.Models
         public virtual DbSet<Customer> customers { get; set; } = null!;
         public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<Head> Heads { get; set; } = null!;
+        public virtual DbSet<Company> Companies { get; set; } = null!;
+
     }
 }

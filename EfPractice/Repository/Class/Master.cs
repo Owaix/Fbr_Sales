@@ -212,12 +212,13 @@ namespace EfPractice.Repository.Class
 
         public async Task<bool> AddItemRegistration(Item model)
         {
-            int Itcode = await _studentDB.Items
-                                .Select(c => (int?)c.Itcode) // Cast to nullable int to handle empty sequence
-                                .MaxAsync() ?? 0;
+            Item item = new Item();
+            //int Itcode = await _studentDB.Items
+            //                    .Select(c => (int?)c.Itcode) 
+            //                    .MaxAsync() ?? 0;
 
-            model.Itcode = Itcode + 1;
-            _studentDB.Items.Add(model);
+            //model.Itcode = Itcode + 1;
+            //_studentDB.Items.Add(model);
             int rowsAffected = await _studentDB.SaveChangesAsync();
 
             // Optional: Use the rowsAffected value if needed
@@ -233,24 +234,22 @@ namespace EfPractice.Repository.Class
         public async Task<bool> UpdateItemRegistration(Item model)
         {
 
-            var existingItem = await _studentDB.Items.FindAsync(model.Itcode);
+            var existingItem = await _studentDB.Items.FindAsync(model.ItemCode);
 
             if (existingItem != null)
             {
-                // Update the properties of the existing item header
-                existingItem.Itcode = model.Itcode;
-                existingItem.Weight = model.Weight;
-                existingItem.Ic = model.Ic;
-                existingItem.Amt = model.Amt;
-                existingItem.Itname = model.Itname;
-                existingItem.Prate = model.Prate;
-                existingItem.Srate = model.Srate;
-                existingItem.Unit = model.Unit;
+                //existingItem.Itcode = model.ItemCode;
+                //existingItem.Weight = model.Weight;
+                //existingItem.Ic = model.Ic;
+                //existingItem.Amt = model.Amt;
+                //existingItem.Itname = model.ItemName;
+                //existingItem.Prate = model.Rate;
+                //existingItem.Srate = model.sa;
+                //existingItem.Unit = model.Unit;
 
 
                 int rowsAffected = await _studentDB.SaveChangesAsync();
 
-                // Optional: Use the rowsAffected value if needed
                 if (rowsAffected > 0)
                 {
                     return true;
@@ -278,28 +277,22 @@ namespace EfPractice.Repository.Class
 
             Item = await (from item in _studentDB.Items
                           join Catergory in _studentDB.Cates
-                          on item.Ic equals Catergory.Cid.ToString()
+                          on item.Id equals Catergory.Cid
                           select new ItemRegistrarion
                           {
-                              Itcode = item.Itcode,
-                              Itname = item.Itname,
+                              //Itcode = item.Itcode,
+                              //Itname = item.Itname,
                               Ic = Catergory.Cid.ToString(),
                               IcName = Catergory.Name,
-                              Unit = item.Unit,
-                              Rate = item.Srate,
-                              Weight = item.Weight,
-                              OpenAmt = item.Amt,
-                              Prate = item.Prate,
-
-
+                              //Unit = item.Unit,
+                              //Rate = item.Srate,
+                              //Weight = item.Weight,
+                              //OpenAmt = item.Amt,
+                              //Prate = item.Prate,
                           }).ToListAsync();
 
             return Item;
         }
-
-
-
-
 
         #endregion
 
@@ -560,29 +553,29 @@ namespace EfPractice.Repository.Class
 
         #region Customer
 
-        public async Task<List<Customer>> GetAllAsync()
+        public async Task<List<Customer>> GetAllCustomersAsync()
         {
             return await _studentDB.customers.ToListAsync();
         }
 
-        public async Task<Customer?> GetByIdAsync(int id)
+        public async Task<Customer?> GetCustomerByIdAsync(int id)
         {
             return await _studentDB.customers.FindAsync(id);
         }
 
-        public async Task<int> AddAsync(Customer customer)
+        public async Task<int> AddCustomerAsync(Customer customer)
         {
             _studentDB.customers.Add(customer);
             return await _studentDB.SaveChangesAsync();
         }
 
-        public async Task<int> UpdateAsync(Customer customer)
+        public async Task<int> UpdateCustomerAsync(Customer customer)
         {
             _studentDB.customers.Update(customer);
             return await _studentDB.SaveChangesAsync();
         }
 
-        public async Task<int> DeleteAsync(int id)
+        public async Task<int> DeleteCustomerAsync(int id)
         {
             var customer = await _studentDB.customers.FindAsync(id);
             if (customer != null)
@@ -592,6 +585,115 @@ namespace EfPractice.Repository.Class
             }
             return 0;
         }
+
         #endregion
+
+        #region Item
+
+        public async Task<List<Item>> GetAllItemsAsync()
+        {
+            return await _studentDB.Items.ToListAsync();
+        }
+
+        public async Task<Item?> GetItemByIdAsync(int id)
+        {
+            return await _studentDB.Items.FindAsync(id);
+        }
+
+        public async Task<int> AddItemAsync(Item item)
+        {
+            _studentDB.Items.Add(item);
+            return await _studentDB.SaveChangesAsync();
+        }
+
+        public async Task<int> UpdateItemAsync(Item item)
+        {
+            _studentDB.Items.Update(item);
+            return await _studentDB.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteItemAsync(int id)
+        {
+            var item = await _studentDB.Items.FindAsync(id);
+            if (item != null)
+            {
+                _studentDB.Items.Remove(item);
+                return await _studentDB.SaveChangesAsync();
+            }
+            return 0;
+        }
+
+        #endregion
+
+        #region Cate (Category)
+
+        public async Task<List<Cate>> GetAllCatesAsync()
+        {
+            return await _studentDB.Cates.ToListAsync();
+        }
+
+        public async Task<Cate?> GetCateByIdAsync(int id)
+        {
+            return await _studentDB.Cates.FindAsync(id);
+        }
+
+        public async Task<int> AddCateAsync(Cate cate)
+        {
+            _studentDB.Cates.Add(cate);
+            return await _studentDB.SaveChangesAsync();
+        }
+
+        public async Task<int> UpdateCateAsync(Cate cate)
+        {
+            _studentDB.Cates.Update(cate);
+            return await _studentDB.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteCateAsync(int id)
+        {
+            var cate = await _studentDB.Cates.FindAsync(id);
+            if (cate != null)
+            {
+                _studentDB.Cates.Remove(cate);
+                return await _studentDB.SaveChangesAsync();
+            }
+            return 0;
+        }
+
+        #endregion
+
+        public async Task<List<Company>> GetAllCompaniesAsync()
+        {
+            return await _studentDB.Companies.ToListAsync();
+        }
+
+        public async Task<Company?> GetCompanyByIdAsync(int id)
+        {
+            return await _studentDB.Companies.FindAsync(id);
+        }
+
+        public async Task<int> AddCompanyAsync(Company company)
+        {
+            _studentDB.Companies.Add(company);
+            return await _studentDB.SaveChangesAsync();
+        }
+
+        public async Task<int> UpdateCompanyAsync(Company company)
+        {
+            _studentDB.Companies.Update(company);
+            return await _studentDB.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteCompanyAsync(int id)
+        {
+            var company = await _studentDB.Companies.FindAsync(id);
+            if (company != null)
+            {
+                _studentDB.Companies.Remove(company);
+                return await _studentDB.SaveChangesAsync();
+            }
+            return 0;
+        }
+
     }
 }

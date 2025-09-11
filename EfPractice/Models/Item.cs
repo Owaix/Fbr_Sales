@@ -1,24 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace EfPractice.Models
 {
-    public partial class Item
+    public class Item
     {
-        public int Itcode { get; set; }
-        public string? Itname { get; set; }
-        public string? Unit { get; set; }
-        public decimal? Srate { get; set; }
-        public decimal? Weight { get; set; }
-        public string? Pack { get; set; }
-        public string? Type { get; set; }
-        public int? Acid { get; set; }
-        public decimal? Amt { get; set; }
-        public decimal? Prate { get; set; }
-        public string? Ic { get; set; }
-        public string? Glsa { get; set; }
-        public string? Glpa { get; set; }
-        public string? Glca { get; set; }
-        public string? Expac { get; set; }
+        [Key]
+        public int Id { get; set; }
+
+        public string? HSCode { get; set; }
+
+        public string? ItemCode { get; set; }
+
+        [Required]
+        public string ItemName { get; set; }
+
+        public string? Category { get; set; }
+
+        public string? Description { get; set; }
+
+        public string? UOM { get; set; }
+
+        public decimal? Rate { get; set; }
     }
 }
