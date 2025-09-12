@@ -105,34 +105,63 @@ namespace EfPractice.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/Home/Index");
-
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
+                // Hardcoded super admin login
+                if (Input.Email == "admin@gmail.com" && Input.Password == "admin")
                 {
-                    returnUrl = Url.Content("~/Home/Index");
-                    _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
+                    var claims = new List<System.Security.Claims.Claim>
+                    {
+                        new System.Security.Claims.Claim("IsSuperAdmin", "true"),
+                        new System.Security.Claims.Claim("CompanyId", "0"),
+                        new System.Security.Claims.Claim("UserRoleId", "0")
+                    };
+
+                    // Create a dummy ApplicationUser for admin
+                    var adminUser = new EfPractice.Areas.Identity.Data.ApplicationUser
+                    {
+                        UserName = "admin",
+                        Email = "admin@gmail.com",
+                        CompanyId = 0,
+                        UserRoleId = 0
+                    };
+
+                    await _signInManager.SignInWithClaimsAsync(adminUser, Input.RememberMe, claims);
+
+                    _logger.LogInformation("Super admin logged in.");
+                    return LocalRedirect("~/Home/Index");
                 }
-                if (result.RequiresTwoFactor)
+
+                // Normal user login
+                var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+                if (user != null)
                 {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                    var result = await _signInManager.CheckPasswordSignInAsync(user, Input.Password, lockoutOnFailure: false);
+                    if (result.Succeeded)
+                    {
+                        var claims = new List<System.Security.Claims.Claim>
+                        {
+                            new System.Security.Claims.Claim("CompanyId", user.CompanyId.ToString()),
+                            new System.Security.Claims.Claim("UserRoleId", user.UserRoleId.ToString()),
+                            new System.Security.Claims.Claim("IsSuperAdmin", "false")
+                        };
+                        await _signInManager.SignInWithClaimsAsync(user, Input.RememberMe, claims);
+
+                        _logger.LogInformation("User logged in with custom claims.");
+                        return LocalRedirect(returnUrl);
+                    }
+                    if (result.RequiresTwoFactor)
+                    {
+                        return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                    }
+                    if (result.IsLockedOut)
+                    {
+                        _logger.LogWarning("User account locked out.");
+                        return RedirectToPage("./Lockout");
+                    }
                 }
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("User account locked out.");
-                    return RedirectToPage("./Lockout");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return Page();
-                }
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             }
 
             // If we got this far, something failed, redisplay form
