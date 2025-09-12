@@ -63,20 +63,19 @@ namespace EfPractice.Repository.Interface
         Task<List<City>> GetCityListAsync();
         #endregion
         #region Customer
-        Task<List<Customer>> GetAllCustomersAsync();
+        Task<List<Customer>> GetAllCustomersAsync(int companyId);
         Task<Customer?> GetCustomerByIdAsync(int id);
         Task<int> AddCustomerAsync(Customer customer);
         Task<int> UpdateCustomerAsync(Customer customer);
         Task<int> DeleteCustomerAsync(int id);
         #endregion
 
-        Task<List<Item>> GetAllItemsAsync();
+        Task<List<Item>> GetAllItemsAsync(int companyId);
         Task<Item?> GetItemByIdAsync(int id);
         Task<int> AddItemAsync(Item item);
         Task<int> UpdateItemAsync(Item item);
         Task<int> DeleteItemAsync(int id);
 
-        Task<List<Cate>> GetAllCatesAsync();
         Task<Cate?> GetCateByIdAsync(int id);
         Task<int> AddCateAsync(Cate cate);
         Task<int> UpdateCateAsync(Cate cate);

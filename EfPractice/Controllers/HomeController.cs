@@ -10,15 +10,17 @@ using System.Diagnostics;
 namespace EfPractice.Controllers
 {
     [Authorize]
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly IMaster _master;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public HomeController(IMaster master, UserManager<ApplicationUser> userManager)
+        public HomeController(IMaster master, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor): base(httpContextAccessor)
         {
             _master = master;
             _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IActionResult Main()
@@ -44,12 +46,9 @@ namespace EfPractice.Controllers
             if (id > 0)
                 model.Customer = await _master.GetCustomerByIdAsync(id);
 
-            var Customers = await _master.GetAllCustomersAsync();
-            Customers.ForEach(c =>
-            {
-                c.Prn = GetProvinceName(c.City ?? 0);
-            });
-            model.Customers = Customers;
+            var customers = await _master.GetAllCustomersAsync(CompanyId ?? 0);
+            customers.ForEach(c => c.Prn = GetProvinceName(c.City ?? 0));
+            model.Customers = customers;
             return View(model);
         }
 
@@ -59,23 +58,14 @@ namespace EfPractice.Controllers
             CustomerViewModel model = new CustomerViewModel();
             if (ModelState.IsValid)
             {
-                // Get CompanyId from claims
-                var companyIdClaim = User.FindFirst("CompanyId")?.Value;
-                if (int.TryParse(companyIdClaim, out int companyId))
-                {
-                    customer.CompanyID = companyId;
-                }
-
+                customer.CompanyID = CompanyId ?? 0;
                 if (customer.CID > 0)
                     await _master.UpdateCustomerAsync(customer);
                 else
                     await _master.AddCustomerAsync(customer);
             }
-            model.Customers = await _master.GetAllCustomersAsync();
-            model.Customers.ForEach(c =>
-            {
-                c.Prn = GetProvinceName(c.City ?? 0);
-            });
+            model.Customers = await _master.GetAllCustomersAsync(CompanyId ?? 0);
+            model.Customers.ForEach(c => c.Prn = GetProvinceName(c.City ?? 0));
             return View(model);
         }
 
@@ -91,12 +81,8 @@ namespace EfPractice.Controllers
             if (id > 0)
                 model.Item = await _master.GetItemByIdAsync(id);
 
-            var Items = await _master.GetAllItemsAsync();
-            //Items.ForEach(c =>
-            //{
-            //    c.Prn = GetCategory(c.City ?? 0);
-            //});
-            model.Items = Items;
+            var items = await _master.GetAllItemsAsync(CompanyId ?? 0);
+            model.Items = items;
             return View(model);
         }
 
@@ -104,16 +90,10 @@ namespace EfPractice.Controllers
         public async Task<IActionResult> Items(Item item)
         {
             ItemsViewModel model = new ItemsViewModel();
-            model.Items = await _master.GetAllItemsAsync();
+            model.Items = await _master.GetAllItemsAsync(CompanyId ?? 0);
             if (ModelState.IsValid)
             {
-                // Get CompanyId from claims
-                var companyIdClaim = User.FindFirst("CompanyId")?.Value;
-                if (int.TryParse(companyIdClaim, out int companyId))
-                {
-                    item.CompanyID = companyId;
-                }
-
+                item.CompanyID = CompanyId ?? 0;
                 if (item.Id > 0)
                     await _master.UpdateItemAsync(item);
                 else
@@ -134,12 +114,8 @@ namespace EfPractice.Controllers
             if (id > 0)
                 model.Company = await _master.GetCompanyByIdAsync(id);
 
-            var Company = await _master.GetAllCompaniesAsync();
-            //Company.ForEach(c =>
-            //{
-            //    c.Prn = GetCategory(c.City ?? 0);
-            //});
-            model.Companies = Company;
+            var companies = await _master.GetAllCompaniesAsync();
+            model.Companies = companies;
             return View(model);
         }
 
@@ -150,6 +126,7 @@ namespace EfPractice.Controllers
 
             if (ModelState.IsValid)
             {
+                company.Id = CompanyId ?? 0; // If you want to restrict update to current company only
                 if (company.Id > 0)
                     await _master.UpdateCompanyAsync(company);
                 else
@@ -159,8 +136,8 @@ namespace EfPractice.Controllers
                 var user = new ApplicationUser
                 {
                     UserName = company.UserName,
-                    Email = company.UserName, // or use a separate email field if available
-                    CompanyId = company.Id, // Make sure company.Id is set after saving
+                    Email = company.UserName,
+                    CompanyId = company.Id,
                     UserRoleId = GetUserRoleId(company.UserRole)
                 };
                 var result = await _userManager.CreateAsync(user, company.Password);

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace EfPractice.Repository.Class
 {
-    public class Master : IMaster
+    public class Master : IMaster       
     {
         private readonly StudentContext _studentDB;
 
@@ -553,11 +553,6 @@ namespace EfPractice.Repository.Class
 
         #region Customer
 
-        public async Task<List<Customer>> GetAllCustomersAsync()
-        {
-            return await _studentDB.Customers.ToListAsync();
-        }
-
         public async Task<Customer?> GetCustomerByIdAsync(int id)
         {
             return await _studentDB.Customers.FindAsync(id);
@@ -586,14 +581,17 @@ namespace EfPractice.Repository.Class
             return 0;
         }
 
+        public async Task<List<Customer>> GetAllCustomersAsync(int companyId)
+        {
+            return await _studentDB.Customers
+                .Where(c => c.CompanyID == companyId)
+                .ToListAsync();
+        }
+
         #endregion
 
         #region Item
 
-        public async Task<List<Item>> GetAllItemsAsync()
-        {
-            return await _studentDB.Items.ToListAsync();
-        }
 
         public async Task<Item?> GetItemByIdAsync(int id)
         {
@@ -623,14 +621,16 @@ namespace EfPractice.Repository.Class
             return 0;
         }
 
+        public async Task<List<Item>> GetAllItemsAsync(int companyId)
+        {
+            return await _studentDB.Items
+                .Where(i => i.CompanyID == companyId)
+                .ToListAsync();
+        }
+
         #endregion
 
         #region Cate (Category)
-
-        public async Task<List<Cate>> GetAllCatesAsync()
-        {
-            return await _studentDB.Cates.ToListAsync();
-        }
 
         public async Task<Cate?> GetCateByIdAsync(int id)
         {
@@ -662,11 +662,6 @@ namespace EfPractice.Repository.Class
 
         #endregion
 
-        public async Task<List<Company>> GetAllCompaniesAsync()
-        {
-            return await _studentDB.Companies.ToListAsync();
-        }
-
         public async Task<Company?> GetCompanyByIdAsync(int id)
         {
             return await _studentDB.Companies.FindAsync(id);
@@ -693,6 +688,12 @@ namespace EfPractice.Repository.Class
                 return await _studentDB.SaveChangesAsync();
             }
             return 0;
+        }
+
+        public async Task<List<Company>> GetAllCompaniesAsync()
+        {
+            return await _studentDB.Companies
+                .ToListAsync();
         }
 
     }
