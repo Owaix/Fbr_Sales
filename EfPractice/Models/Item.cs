@@ -23,5 +23,6 @@ namespace EfPractice.Models
         public string? UOM { get; set; }
 
         public decimal? Rate { get; set; }
+        public int CompanyID { get; set; }
     }
 }

@@ -555,32 +555,32 @@ namespace EfPractice.Repository.Class
 
         public async Task<List<Customer>> GetAllCustomersAsync()
         {
-            return await _studentDB.customers.ToListAsync();
+            return await _studentDB.Customers.ToListAsync();
         }
 
         public async Task<Customer?> GetCustomerByIdAsync(int id)
         {
-            return await _studentDB.customers.FindAsync(id);
+            return await _studentDB.Customers.FindAsync(id);
         }
 
         public async Task<int> AddCustomerAsync(Customer customer)
         {
-            _studentDB.customers.Add(customer);
+            _studentDB.Customers.Add(customer);
             return await _studentDB.SaveChangesAsync();
         }
 
         public async Task<int> UpdateCustomerAsync(Customer customer)
         {
-            _studentDB.customers.Update(customer);
+            _studentDB.Customers.Update(customer);
             return await _studentDB.SaveChangesAsync();
         }
 
         public async Task<int> DeleteCustomerAsync(int id)
         {
-            var customer = await _studentDB.customers.FindAsync(id);
+            var customer = await _studentDB.Customers.FindAsync(id);
             if (customer != null)
             {
-                _studentDB.customers.Remove(customer);
+                _studentDB.Customers.Remove(customer);
                 return await _studentDB.SaveChangesAsync();
             }
             return 0;

@@ -261,7 +261,7 @@ namespace EfPractice.Models
         public virtual DbSet<Party> Parties { get; set; } = null!;
         public virtual DbSet<Supplier> Suppliers { get; set; } = null!;
         public virtual DbSet<Item> Items { get; set; } = null!;
-        public virtual DbSet<Customer> customers { get; set; } = null!;
+        public virtual DbSet<Customer> Customers { get; set; } = null!;
         public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<Head> Heads { get; set; } = null!;
         public virtual DbSet<Company> Companies { get; set; } = null!;

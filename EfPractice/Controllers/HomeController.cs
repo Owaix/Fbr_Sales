@@ -1,6 +1,8 @@
-﻿using EfPractice.Models;
+﻿using EfPractice.Areas.Identity.Data;
+using EfPractice.Models;
 using EfPractice.Repository.Class;
 using EfPractice.Repository.Interface;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -9,9 +11,12 @@ namespace EfPractice.Controllers
     public class HomeController : Controller
     {
         private readonly IMaster _master;
-        public HomeController(IMaster Master)
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public HomeController(IMaster master, UserManager<ApplicationUser> userManager)
         {
-            _master = Master;
+            _master = master;
+            _userManager = userManager;
         }
 
         public IActionResult Main()
@@ -50,18 +55,25 @@ namespace EfPractice.Controllers
         public async Task<IActionResult> Customer(Customer customer)
         {
             CustomerViewModel model = new CustomerViewModel();
-            model.Customers = await _master.GetAllCustomersAsync();
-            model.Customers.ForEach(c =>
-            {
-                c.Prn = GetProvinceName(c.City ?? 0);
-            });
             if (ModelState.IsValid)
             {
+                // Get CompanyId from claims
+                var companyIdClaim = User.FindFirst("CompanyId")?.Value;
+                if (int.TryParse(companyIdClaim, out int companyId))
+                {
+                    customer.CompanyID = companyId;
+                }
+
                 if (customer.CID > 0)
                     await _master.UpdateCustomerAsync(customer);
                 else
                     await _master.AddCustomerAsync(customer);
             }
+            model.Customers = await _master.GetAllCustomersAsync();
+            model.Customers.ForEach(c =>
+            {
+                c.Prn = GetProvinceName(c.City ?? 0);
+            });
             return View(model);
         }
 
@@ -87,20 +99,23 @@ namespace EfPractice.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Items(Item Items)
+        public async Task<IActionResult> Items(Item item)
         {
             ItemsViewModel model = new ItemsViewModel();
             model.Items = await _master.GetAllItemsAsync();
-            //model.Items.ForEach(c =>
-            //{
-            //    c.Prn = GetCategory(c.City ?? 0);
-            //});
             if (ModelState.IsValid)
             {
-                if (Items.Id > 0)
-                    await _master.UpdateItemAsync(Items);
+                // Get CompanyId from claims
+                var companyIdClaim = User.FindFirst("CompanyId")?.Value;
+                if (int.TryParse(companyIdClaim, out int companyId))
+                {
+                    item.CompanyID = companyId;
+                }
+
+                if (item.Id > 0)
+                    await _master.UpdateItemAsync(item);
                 else
-                    await _master.AddItemAsync(Items);
+                    await _master.AddItemAsync(item);
             }
             return View(model);
         }
@@ -127,21 +142,33 @@ namespace EfPractice.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Company(Company Company)
+        public async Task<IActionResult> Company(Company company)
         {
             CompanyViewModel model = new CompanyViewModel();
-            model.Companies = await _master.GetAllCompaniesAsync();
-            //model.Company.ForEach(c =>
-            //{
-            //    c.Prn = GetCategory(c.City ?? 0);
-            //});
+
             if (ModelState.IsValid)
             {
-                if (Company.Id > 0)
-                    await _master.UpdateCompanyAsync(Company);
+                if (company.Id > 0)
+                    await _master.UpdateCompanyAsync(company);
                 else
-                    await _master.AddCompanyAsync(Company);
+                    await _master.AddCompanyAsync(company);
+
+                // Register user in Identity
+                var user = new ApplicationUser
+                {
+                    UserName = company.UserName,
+                    Email = company.UserName, // or use a separate email field if available
+                    CompanyId = company.Id, // Make sure company.Id is set after saving
+                    UserRoleId = GetUserRoleId(company.UserRole)
+                };
+                var result = await _userManager.CreateAsync(user, company.Password);
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                        ModelState.AddModelError(string.Empty, error.Description);
+                }
             }
+            model.Companies = await _master.GetAllCompaniesAsync();
             return View(model);
         }
 
@@ -172,6 +199,16 @@ namespace EfPractice.Controllers
             }
         }
 
+        // Helper to map role string to int
+        private int GetUserRoleId(string userRole)
+        {
+            return userRole switch
+            {
+                "Admin" => 1,
+                "Manager" => 2,
+                "Staff" => 3,
+                _ => 0
+            };
+        }
     }
 }
-
