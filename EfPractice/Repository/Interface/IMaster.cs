@@ -70,11 +70,13 @@ namespace EfPractice.Repository.Interface
         Task<int> DeleteCustomerAsync(int id);
         #endregion
 
+        #region Item (with companyId filter)
         Task<List<Item>> GetAllItemsAsync(int companyId);
         Task<Item?> GetItemByIdAsync(int id);
         Task<int> AddItemAsync(Item item);
         Task<int> UpdateItemAsync(Item item);
         Task<int> DeleteItemAsync(int id);
+        #endregion
 
         Task<Cate?> GetCateByIdAsync(int id);
         Task<int> AddCateAsync(Cate cate);
@@ -87,5 +89,9 @@ namespace EfPractice.Repository.Interface
         Task<int> UpdateCompanyAsync(Company company);
         Task<int> DeleteCompanyAsync(int id);
 
+        Task<SaleInvoice> GetSaleInvoiceByIdAsync(int id);
+        Task<int> AddSaleInvoiceAsync(SaleInvoice invoice);
+        Task<int> UpdateSaleInvoiceAsync(SaleInvoice invoice);
+        Task<HttpResponseMessage> SendInvoiceToFbrAsync(SaleInvoice invoice);
     }
 }

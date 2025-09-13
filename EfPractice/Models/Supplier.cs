@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace EfPractice.Models
 {
     public partial class Supplier
     {
+        [Key]
         public int? Headcode { get; set; }
         public string? Subcode { get; set; }
         public string? Subname { get; set; }

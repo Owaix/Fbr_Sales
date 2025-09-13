@@ -1,0 +1,172 @@
+@model EfPractice.Models.SaleInvoiceViewModel
+
+@{
+	ViewData["Title"] = "Sale Invoice";
+	// Fix: Use SaleInvoice, not SaleInvoiceViewModel, for the invoice and its items
+	// var invoice = new EfPractice.Models.SaleInvoiceViewModel
+	// {
+	// 	Items = new List<SaleInvoiceItem>()
+	// };
+}
+
+<h2>Sale Invoice</h2>
+
+<form asp-action="SInv" method="post" autocomplete="off">
+	<div class="row mb-3">
+		<div class="col-md-3">
+			<label asp-for="Invoice.InvoiceType" class="form-label">Invoice Type</label>
+			<input asp-for="Invoice.InvoiceType" class="form-control" />
+		</div>
+		<div class="col-md-3">
+			<label asp-for="Invoice.InvoiceDate" class="form-label">Invoice Date</label>
+			<input asp-for="Invoice.InvoiceDate" type="date" class="form-control" />
+		</div>
+		<div class="col-md-3">
+			<label asp-for="Invoice.InvoiceRefNo" class="form-label">Invoice Ref No</label>
+			<input asp-for="Invoice.InvoiceRefNo" class="form-control" />
+		</div>
+		<div class="col-md-3">
+			<label asp-for="Invoice.ScenarioId" class="form-label">Scenario ID</label>
+			<input asp-for="Invoice.ScenarioId" class="form-control" />
+		</div>
+	</div>
+
+	<fieldset class="border p-2 mb-3">
+		<legend class="w-auto">Seller Info</legend>
+		<div class="row mb-2">
+			<div class="col-md-3">
+				<label asp-for="Invoice.SellerNTNCNIC" class="form-label">NTN/CNIC</label>
+				<input asp-for="Invoice.SellerNTNCNIC" class="form-control" />
+			</div>
+			<div class="col-md-3">
+				<label asp-for="Invoice.SellerBusinessName" class="form-label">Business Name</label>
+				<input asp-for="Invoice.SellerBusinessName" class="form-control" />
+			</div>
+			<div class="col-md-3">
+				<label asp-for="Invoice.SellerProvince" class="form-label">Province</label>
+				<input asp-for="Invoice.SellerProvince" class="form-control" />
+			</div>
+			<div class="col-md-3">
+				<label asp-for="Invoice.SellerAddress" class="form-label">Address</label>
+				<input asp-for="Invoice.SellerAddress" class="form-control" />
+			</div>
+		</div>
+	</fieldset>
+
+	<fieldset class="border p-2 mb-3">
+		<legend class="w-auto">Buyer Info</legend>
+		<div class="row mb-2">
+			<div class="col-md-3">
+				<label asp-for="Invoice.BuyerNTNCNIC" class="form-label">NTN/CNIC</label>
+				<input asp-for="Invoice.BuyerNTNCNIC" class="form-control" />
+			</div>
+			<div class="col-md-3">
+				<label asp-for="Invoice.BuyerBusinessName" class="form-label">Business Name</label>
+				<input asp-for="Invoice.BuyerBusinessName" class="form-control" />
+			</div>
+			<div class="col-md-3">
+				<label asp-for="Invoice.BuyerProvince" class="form-label">Province</label>
+				<input asp-for="Invoice.BuyerProvince" class="form-control" />
+			</div>
+			<div class="col-md-3">
+				<label asp-for="Invoice.BuyerAddress" class="form-label">Address</label>
+				<input asp-for="Invoice.BuyerAddress" class="form-control" />
+			</div>
+			<div class="col-md-3 mt-2">
+				<label asp-for="Invoice.BuyerRegistrationType" class="form-label">Registration Type</label>
+				<input asp-for="Invoice.BuyerRegistrationType" class="form-control" />
+			</div>
+		</div>
+	</fieldset>
+
+	<h4>Invoice Items</h4>
+	<table class="table table-bordered" id="itemsTable">
+		<thead>
+			<tr>
+				<th>HS Code</th>
+				<th>Description</th>
+				<th>Rate</th>
+				<th>UoM</th>
+				<th>Quantity</th>
+				<th>Value Excl. ST</th>
+				<th>Sales Tax</th>
+				<th>Further Tax</th>
+				<th>Discount</th>
+				<th>Total</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			@for (int i = 0; i < Model.Items.Count; i++)
+			{
+				<tr>
+					<td>
+						<input asp-for="Invoice.Items[@i].HsCode" class="form-control" />
+					</td>
+					<td>
+						<input asp-for="Invoice.Items[@i].ProductDescription" class="form-control" />
+					</td>
+					<td>
+						<input asp-for="Invoice.Items[@i].Rate" class="form-control" />
+					</td>
+					<td>
+						<input asp-for="Invoice.Items[@i].UoM" class="form-control" />
+					</td>
+					<td>
+						<input asp-for="Invoice.Items[@i].Quantity" class="form-control" type="number" step="0.01" />
+					</td>
+					<td>
+						<input asp-for="Invoice.Items[@i].ValueSalesExcludingST" class="form-control" type="number" step="0.01" />
+					</td>
+					<td>
+						<input asp-for="Invoice.Items[@i].SalesTaxApplicable" class="form-control" type="number" step="0.01" />
+					</td>
+					<td>
+						<input asp-for="Invoice.Items[@i].FurtherTax" class="form-control" type="number" step="0.01" />
+					</td>
+					<td>
+						<input asp-for="Invoice.Items[@i].Discount" class="form-control" type="number" step="0.01" />
+					</td>
+					<td>
+						<input asp-for="Invoice.Items[@i].TotalValues" class="form-control" type="number" step="0.01" readonly />
+					</td>
+					<td>
+						<button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<button type="button" class="btn btn-success mb-3" onclick="addRow()">Add Item</button>
+
+	<div>
+		<button type="submit" class="btn btn-primary">Save &amp; Send to FBR</button>
+	</div>
+</form>
+
+@section Scripts {
+	<script>
+		function addRow() {
+			var rowCount = $('#itemsTable tbody tr').length;
+			var row = `<tr>
+				<td><input name="Invoice.Items[${rowCount}].HsCode" class="form-control" /></td>
+				<td><input name="Invoice.Items[${rowCount}].ProductDescription" class="form-control" /></td>
+				<td><input name="Invoice.Items[${rowCount}].Rate" class="form-control" /></td>
+				<td><input name="Invoice.Items[${rowCount}].UoM" class="form-control" /></td>
+				<td><input name="Invoice.Items[${rowCount}].Quantity" class="form-control" type="number" step="0.01" /></td>
+				<td><input name="Invoice.Items[${rowCount}].ValueSalesExcludingST" class="form-control" type="number" step="0.01" /></td>
+				<td><input name="Invoice.Items[${rowCount}].SalesTaxApplicable" class="form-control" type="number" step="0.01" /></td>
+				<td><input name="Invoice.Items[${rowCount}].FurtherTax" class="form-control" type="number" step="0.01" /></td>
+				<td><input name="Invoice.Items[${rowCount}].Discount" class="form-control" type="number" step="0.01" /></td>
+				<td><input name="Invoice.Items[${rowCount}].TotalValues" class="form-control" type="number" step="0.01" readonly /></td>
+				<td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
+			</tr>`;
+			$('#itemsTable tbody').append(row);
+		}
+
+		function removeRow(btn) {
+			$(btn).closest('tr').remove();
+			// Optionally, re-index the input names here if you want to keep the array indices contiguous
+		}
+	</script>
+}

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace EfPractice.Models
 {
     public partial class Party
     {
+        [Key]
         public int? Headcode { get; set; }
         public string Subcode { get; set; } = null!;
         public string? Subname { get; set; }

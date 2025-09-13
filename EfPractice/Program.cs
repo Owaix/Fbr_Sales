@@ -33,6 +33,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     .AddEntityFrameworkStores<StudentContext>();
 
 builder.Services.AddScoped<IMaster, Master>();
+builder.Services.AddHttpClient<FbrApiClient>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

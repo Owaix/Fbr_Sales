@@ -4,18 +4,24 @@ using EfPractice.Repository.Interface;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Text;
 
 namespace EfPractice.Repository.Class
 {
-    public class Master : IMaster       
+    public class Master : IMaster
     {
         private readonly StudentContext _studentDB;
+        private readonly string _fbrBaseUrl;
+        private readonly string _bearerToken;
+        private readonly FbrApiClient _fbrApiClient;
 
-        #region ItemHeader
-        public Master(StudentContext studentDB)
+
+        public Master(StudentContext studentDB, FbrApiClient fbrApiClient)
         {
             _studentDB = studentDB;
+            _fbrApiClient = fbrApiClient;
         }
 
         public async Task<bool> AddItemHeaderAsync(Imh model)
@@ -103,7 +109,6 @@ namespace EfPractice.Repository.Class
 
         }
 
-        #endregion
 
 
         #region ItemCatergory
@@ -695,6 +700,33 @@ namespace EfPractice.Repository.Class
             return await _studentDB.Companies
                 .ToListAsync();
         }
+
+
+        #region SaleInvoice
+        public async Task<SaleInvoice> GetSaleInvoiceByIdAsync(int id)
+        {
+            return await _studentDB.SaleInvoices
+                .Include(x => x.Items)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<int> AddSaleInvoiceAsync(SaleInvoice invoice)
+        {
+            _studentDB.SaleInvoices.Add(invoice);
+            return await _studentDB.SaveChangesAsync();
+        }
+
+        public async Task<int> UpdateSaleInvoiceAsync(SaleInvoice invoice)
+        {
+            _studentDB.SaleInvoices.Update(invoice);
+            return await _studentDB.SaveChangesAsync();
+        }
+        public async Task<HttpResponseMessage> SendInvoiceToFbrAsync(SaleInvoice invoice)
+        {
+            var json = JsonConvert.SerializeObject(invoice);
+            return await _fbrApiClient.PostAsync("postinvoicedata_sb", json);            
+        }
+        #endregion
 
     }
 }

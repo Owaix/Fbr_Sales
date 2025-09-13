@@ -189,5 +189,39 @@ namespace EfPractice.Controllers
                 _ => 0
             };
         }
+
+        [HttpGet]
+        public async Task<IActionResult> SInv(int? id)
+        {
+            // Load invoice for edit or create new
+            SaleInvoiceViewModel model = new SaleInvoiceViewModel();
+            if (id.HasValue)
+            {
+                model.Invoice = await _master.GetSaleInvoiceByIdAsync(id.Value);
+            }
+            else
+            {
+                model.Invoice = new SaleInvoice { InvoiceDate = DateTime.Now, Items = new List<SaleInvoiceItem>() };
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SInv(SaleInvoiceViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                if (model.Invoice.Id > 0)
+                    await _master.UpdateSaleInvoiceAsync(model.Invoice);
+                else
+                    await _master.AddSaleInvoiceAsync(model.Invoice);
+
+                // Call FBR API
+                await _master.SendInvoiceToFbrAsync(model.Invoice);
+
+                return RedirectToAction("SInv");
+            }
+            return View(model);
+        }
     }
 }
