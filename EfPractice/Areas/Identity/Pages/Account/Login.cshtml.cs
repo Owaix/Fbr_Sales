@@ -134,7 +134,8 @@ namespace EfPractice.Areas.Identity.Pages.Account
                 }
 
                 // Normal user login
-                var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+                var user = await _signInManager.UserManager.FindByNameAsync(Input.Email)
+                         ?? await _signInManager.UserManager.FindByEmailAsync(Input.Email);
                 if (user != null)
                 {
                     var result = await _signInManager.CheckPasswordSignInAsync(user, Input.Password, lockoutOnFailure: false);

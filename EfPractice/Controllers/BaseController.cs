@@ -12,7 +12,6 @@ namespace EfPractice.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        // Property to get CompanyId from claims
         public int? CompanyId
         {
             get

@@ -33,7 +33,7 @@ namespace EfPractice.Models
         public int? CompanyID { get; set; }
         public int? SaleTax { get; set; }
     }
-    public class Customer
+    public class Customer  : IHasCompany
     {
         public int AC_Code { get; set; }
 
@@ -65,7 +65,7 @@ namespace EfPractice.Models
         public string? Land { get; set; }
         public int? City { get; set; }
         public int? Village { get; set; }
-        public int? CompanyID { get; set; }
+        public int CompanyId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public decimal? CollectPerMonth { get; set; }
 
         [RegularExpression(@"^[0-9\-]+$", ErrorMessage = "Only numbers and '-' are allowed")]
@@ -143,5 +143,30 @@ namespace EfPractice.Models
         public string ExpireDate { get; set; }
         public string BatchNo { get; set; }
         public int? Pur_D_UnitID { get; set; }
+    }
+
+    public class FbrResponse
+    {
+        public string invoiceNumber { get; set; }
+        public string? dated { get; set; }
+        public ValidationResponse validationResponse { get; set; }
+    }
+
+    public class ValidationResponse
+    {
+        public string statusCode { get; set; }
+        public string status { get; set; }
+        public string errorCode { get; set; }
+        public string error { get; set; }
+        public List<InvoiceStatus> invoiceStatuses { get; set; }
+    }
+
+    public class InvoiceStatus
+    {
+        public string itemSNo { get; set; }
+        public string statusCode { get; set; }
+        public string status { get; set; }
+        public string invoiceNo { get; set; }
+        public string errorCode { get; set; }
     }
 }

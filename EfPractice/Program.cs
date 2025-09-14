@@ -1,9 +1,9 @@
-using EfPractice.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using EfPractice.Areas.Identity.Data;
 using EfPractice.Repository.Interface;
 using EfPractice.Repository.Class;
+using EfPractice.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 //var connectionString = builder.Configuration.GetConnectionString("EFIdentityDBContextConnection") ?? throw new InvalidOperationException("Connection string 'EFIdentityDBContextConnection' not found.");

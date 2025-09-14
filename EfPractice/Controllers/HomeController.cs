@@ -5,7 +5,9 @@ using EfPractice.Repository.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace EfPractice.Controllers
 {
@@ -16,7 +18,7 @@ namespace EfPractice.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public HomeController(IMaster master, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor): base(httpContextAccessor)
+        public HomeController(IMaster master, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _master = master;
             _userManager = userManager;
@@ -58,7 +60,7 @@ namespace EfPractice.Controllers
             CustomerViewModel model = new CustomerViewModel();
             if (ModelState.IsValid)
             {
-                customer.CompanyID = CompanyId ?? 0;
+                customer.CompanyId = CompanyId ?? 0;
                 if (customer.CID > 0)
                     await _master.UpdateCustomerAsync(customer);
                 else
@@ -81,7 +83,7 @@ namespace EfPractice.Controllers
             if (id > 0)
                 model.Item = await _master.GetItemByIdAsync(id);
 
-            var items = await _master.GetAllItemsAsync(CompanyId ?? 0);
+            var items = await _master.GetAllItemsAsync();
             model.Items = items;
             return View(model);
         }
@@ -90,7 +92,7 @@ namespace EfPractice.Controllers
         public async Task<IActionResult> Items(Item item)
         {
             ItemsViewModel model = new ItemsViewModel();
-            model.Items = await _master.GetAllItemsAsync(CompanyId ?? 0);
+            model.Items = await _master.GetAllItemsAsync();
             if (ModelState.IsValid)
             {
                 item.CompanyID = CompanyId ?? 0;
@@ -124,9 +126,17 @@ namespace EfPractice.Controllers
         {
             CompanyViewModel model = new CompanyViewModel();
 
+            var companies = await _master.GetCompanyAsync(new Company
+            {
+                CompanyName = company.CompanyName,
+            });
+            //if (companies.Any(c => c.CompanyName))
+            //    ModelState.AddModelError("Company.CompanyName", "Company name already exists.");
+            //if (companies.Any(c => c.UserName == company.UserName && c.Id != company.Id))
+            //    ModelState.AddModelError("Company.UserName", "Username already exists.");
+
             if (ModelState.IsValid)
             {
-                company.Id = CompanyId ?? 0; // If you want to restrict update to current company only
                 if (company.Id > 0)
                     await _master.UpdateCompanyAsync(company);
                 else
@@ -136,7 +146,7 @@ namespace EfPractice.Controllers
                 var user = new ApplicationUser
                 {
                     UserName = company.UserName,
-                    Email = company.UserName,
+                    Email = company.Email,
                     CompanyId = company.Id,
                     UserRoleId = GetUserRoleId(company.UserRole)
                 };
@@ -194,33 +204,53 @@ namespace EfPractice.Controllers
         public async Task<IActionResult> SInv(int? id)
         {
             // Load invoice for edit or create new
-            SaleInvoiceViewModel model = new SaleInvoiceViewModel();
+            SaleInvoice model = new SaleInvoice();
             if (id.HasValue)
             {
-                model.Invoice = await _master.GetSaleInvoiceByIdAsync(id.Value);
+                model = await _master.GetSaleInvoiceByIdAsync(id.Value);
             }
             else
             {
-                model.Invoice = new SaleInvoice { InvoiceDate = DateTime.Now, Items = new List<SaleInvoiceItem>() };
+                model = new SaleInvoice { InvoiceDate = DateTime.Now, Items = new List<SaleInvoiceItem>() };
             }
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> SInv(SaleInvoiceViewModel model)
+        public async Task<IActionResult> SInv(SaleInvoice model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(model);
+
+            model.CompanyId = CompanyId ?? 0;
+
+            try
             {
-                if (model.Invoice.Id > 0)
-                    await _master.UpdateSaleInvoiceAsync(model.Invoice);
+                var resp = await _master.SendInvoiceToFbrAsync(model);
+                var content = await resp.Content.ReadAsStringAsync();
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var fbrResponse = JsonSerializer.Deserialize<FbrResponse>(content, options);
+
+                if (fbrResponse?.validationResponse?.statusCode == "00")
+                {
+                    model.invoiceNumber = fbrResponse.invoiceNumber;
+                    model.dated = Convert.ToDateTime(fbrResponse.dated);
+                    var id = await _master.AddSaleInvoiceAsync(model);
+                    TempData["Message"] = $"Invoice sent successfully. FBR Invoice#: {fbrResponse.invoiceNumber}";
+                    return RedirectToAction("SInv");
+                }
                 else
-                    await _master.AddSaleInvoiceAsync(model.Invoice);
-
-                // Call FBR API
-                await _master.SendInvoiceToFbrAsync(model.Invoice);
-
-                return RedirectToAction("SInv");
+                {
+                    FBRErrorCodes fBRErrorCodes = new FBRErrorCodes();
+                    var Error = fBRErrorCodes.GetErrorByCode(fbrResponse?.validationResponse?.errorCode);
+                    ModelState.AddModelError(string.Empty, Error ?? "Unknown FBR error");
+                }
             }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "Unexpected error: " + ex.Message);
+            }
+
             return View(model);
         }
     }

@@ -1,8 +1,11 @@
-﻿using EfPractice.Models;
+﻿using EfPractice.Context;
+using EfPractice.Models;
 using EfPractice.Models.CustomerModel;
 using EfPractice.Repository.Interface;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -16,12 +19,14 @@ namespace EfPractice.Repository.Class
         private readonly string _fbrBaseUrl;
         private readonly string _bearerToken;
         private readonly FbrApiClient _fbrApiClient;
-
-
-        public Master(StudentContext studentDB, FbrApiClient fbrApiClient)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly int? _companyId;
+        public Master(StudentContext studentDB, FbrApiClient fbrApiClient, IHttpContextAccessor httpContextAccessor)
         {
             _studentDB = studentDB;
             _fbrApiClient = fbrApiClient;
+            _httpContextAccessor = httpContextAccessor;
+            _companyId = Convert.ToInt16(_httpContextAccessor.HttpContext?.User?.FindFirst("CompanyId")?.Value);
         }
 
         public async Task<bool> AddItemHeaderAsync(Imh model)
@@ -589,7 +594,7 @@ namespace EfPractice.Repository.Class
         public async Task<List<Customer>> GetAllCustomersAsync(int companyId)
         {
             return await _studentDB.Customers
-                .Where(c => c.CompanyID == companyId)
+                .Where(c => c.CompanyId == companyId)
                 .ToListAsync();
         }
 
@@ -626,10 +631,10 @@ namespace EfPractice.Repository.Class
             return 0;
         }
 
-        public async Task<List<Item>> GetAllItemsAsync(int companyId)
+        public async Task<List<Item>> GetAllItemsAsync()
         {
             return await _studentDB.Items
-                .Where(i => i.CompanyID == companyId)
+                .Where(i => i.CompanyID == _companyId)
                 .ToListAsync();
         }
 
@@ -700,7 +705,23 @@ namespace EfPractice.Repository.Class
             return await _studentDB.Companies
                 .ToListAsync();
         }
+        public async Task<List<Company>> GetCompanyAsync(Company filter)
+        {
+            IQueryable<Company> query = _studentDB.Companies;
 
+            if (!string.IsNullOrEmpty(filter.Email))
+                query = query.Where(c => c.Email == filter.Email);
+
+            if (!string.IsNullOrEmpty(filter.UserName))
+                query = query.Where(c => c.UserName == filter.UserName);
+
+            if (!string.IsNullOrEmpty(filter.CompanyName))
+                query = query.Where(c => c.CompanyName.Contains(filter.CompanyName));
+
+            // Add more filters as needed...
+
+            return await query.ToListAsync();
+        }
 
         #region SaleInvoice
         public async Task<SaleInvoice> GetSaleInvoiceByIdAsync(int id)
@@ -724,9 +745,19 @@ namespace EfPractice.Repository.Class
         public async Task<HttpResponseMessage> SendInvoiceToFbrAsync(SaleInvoice invoice)
         {
             var json = JsonConvert.SerializeObject(invoice);
-            return await _fbrApiClient.PostAsync("postinvoicedata_sb", json);            
+            return await _fbrApiClient.PostAsync("postinvoicedata_sb", json);
         }
         #endregion
 
+        public async Task<int> AddSaleInvoiceDetailAsync(List<SaleInvoiceItem> invoice)
+        {
+            _studentDB.SaleInvoiceItems.AddRange(invoice);
+            return await _studentDB.SaveChangesAsync();
+        }
+
+        public Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return _studentDB.Database.BeginTransactionAsync();
+        }
     }
 }

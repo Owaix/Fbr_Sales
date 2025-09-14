@@ -32,10 +32,12 @@ namespace EfPractice.Controllers
             var returnUrl = model.ReturnUrl ?? Url.Content("~/");
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
+                var user = await _userManager.FindByNameAsync(model.Email)
+                           ?? await _userManager.FindByEmailAsync(model.Email);
+
                 if (user != null)
                 {
-                    var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
+                    var result = await _signInManager.  CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
                     if (result.Succeeded)
                     {
                         // Add custom claims

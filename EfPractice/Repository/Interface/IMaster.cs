@@ -1,5 +1,6 @@
 ﻿using EfPractice.Models;
 using EfPractice.Models.CustomerModel;
+using Microsoft.EntityFrameworkCore.Storage;
 
 
 namespace EfPractice.Repository.Interface
@@ -71,7 +72,7 @@ namespace EfPractice.Repository.Interface
         #endregion
 
         #region Item (with companyId filter)
-        Task<List<Item>> GetAllItemsAsync(int companyId);
+        Task<List<Item>> GetAllItemsAsync();
         Task<Item?> GetItemByIdAsync(int id);
         Task<int> AddItemAsync(Item item);
         Task<int> UpdateItemAsync(Item item);
@@ -84,6 +85,7 @@ namespace EfPractice.Repository.Interface
         Task<int> DeleteCateAsync(int id);
 
         Task<List<Company>> GetAllCompaniesAsync();
+        Task<List<Company>> GetCompanyAsync(Company filter);
         Task<Company?> GetCompanyByIdAsync(int id);
         Task<int> AddCompanyAsync(Company company);
         Task<int> UpdateCompanyAsync(Company company);
@@ -93,5 +95,7 @@ namespace EfPractice.Repository.Interface
         Task<int> AddSaleInvoiceAsync(SaleInvoice invoice);
         Task<int> UpdateSaleInvoiceAsync(SaleInvoice invoice);
         Task<HttpResponseMessage> SendInvoiceToFbrAsync(SaleInvoice invoice);
+        Task<int> AddSaleInvoiceDetailAsync(List<SaleInvoiceItem> invoice);
+        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }
