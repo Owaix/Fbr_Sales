@@ -18,7 +18,7 @@ namespace EfPractice.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public HomeController(IMaster master, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
+        public HomeController(IMaster master, UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor)
         {
             _master = master;
             _userManager = userManager;
@@ -201,11 +201,18 @@ namespace EfPractice.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SInv(int? id)
+        public async Task<IActionResult> SInv(int? id, string? invoiceNo)
         {
-            // Load invoice for edit or create new
             SaleInvoice model = new SaleInvoice();
-            if (id.HasValue)
+
+            if (!string.IsNullOrEmpty(invoiceNo))
+            {
+                // You need to implement this method in your repository
+                model = await _master.GetSaleInvoiceByNumberAsync(invoiceNo);
+                if (model == null)
+                    model = new SaleInvoice { InvoiceDate = DateTime.Now, Items = new List<SaleInvoiceItem>() };
+            }
+            else if (id.HasValue)
             {
                 model = await _master.GetSaleInvoiceByIdAsync(id.Value);
             }
@@ -252,6 +259,34 @@ namespace EfPractice.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SInvList(string? invoiceNo, string? buyer, DateTime? from, DateTime? to)
+        {
+            var invoices = await _master.GetSaleInvoices();
+
+            if (!string.IsNullOrWhiteSpace(invoiceNo))
+                invoices = invoices.Where(i => (i.invoiceNumber ?? "").Contains(invoiceNo, StringComparison.OrdinalIgnoreCase)
+                                             || (i.InvoiceRefNo ?? "").Contains(invoiceNo, StringComparison.OrdinalIgnoreCase))
+                               .ToList();
+            if (!string.IsNullOrWhiteSpace(buyer))
+                invoices = invoices.Where(i => (i.BuyerBusinessName ?? "").Contains(buyer, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (from.HasValue)
+                invoices = invoices.Where(i => i.InvoiceDate.Date >= from.Value.Date).ToList();
+            if (to.HasValue)
+                invoices = invoices.Where(i => i.InvoiceDate.Date <= to.Value.Date).ToList();
+
+            return View(invoices);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteInvoice(int id)
+        {
+            // Optional: implement DeleteSaleInvoiceAsync in repository first if not present
+            // await _master.DeleteSaleInvoiceAsync(id);
+            // TempData["Message"] = "Invoice deleted.";
+            return RedirectToAction(nameof(SInvList));
         }
     }
 }

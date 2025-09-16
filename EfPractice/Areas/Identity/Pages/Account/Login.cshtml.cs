@@ -115,7 +115,8 @@ namespace EfPractice.Areas.Identity.Pages.Account
                     {
                         new System.Security.Claims.Claim("IsSuperAdmin", "true"),
                         new System.Security.Claims.Claim("CompanyId", "0"),
-                        new System.Security.Claims.Claim("UserRoleId", "0")
+                        new System.Security.Claims.Claim("UserRoleId", "0"),
+                        new System.Security.Claims.Claim("UserName", ""),
                     };
 
                     // Create a dummy ApplicationUser for admin
@@ -143,6 +144,7 @@ namespace EfPractice.Areas.Identity.Pages.Account
                     {
                         var claims = new List<System.Security.Claims.Claim>
                         {
+                            new System.Security.Claims.Claim("UserName", user.UserName.ToString()),
                             new System.Security.Claims.Claim("CompanyId", user.CompanyId.ToString()),
                             new System.Security.Claims.Claim("UserRoleId", user.UserRoleId.ToString()),
                             new System.Security.Claims.Claim("IsSuperAdmin", "false")

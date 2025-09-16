@@ -1,0 +1,93 @@
+﻿@model List<EfPractice.Models.SaleInvoice>
+
+@{
+    ViewData["Title"] = "Sale Invoices";
+    decimal grand = 0;
+}
+
+<h2>Sale Invoices</h2>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2">
+            <div class="col-md-2">
+                <input name="invoiceNo" value="@Context.Request.Query["invoiceNo"]" class="form-control" placeholder="Invoice # / Ref" />
+            </div>
+            <div class="col-md-2">
+                <input name="buyer" value="@Context.Request.Query["buyer"]" class="form-control" placeholder="Buyer" />
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="from" value="@Context.Request.Query["from"]" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="to" value="@Context.Request.Query["to"]" class="form-control" />
+            </div>
+            <div class="col-md-2 d-grid">
+                <button class="btn btn-primary">Filter</button>
+            </div>
+            <div class="col-md-2 d-grid">
+                <a asp-action="SInv" class="btn btn-success">New Invoice</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No invoices found.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-sm table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Invoice #</th>
+                    <th>Ref #</th>
+                    <th>Date</th>
+                    <th>Buyer</th>
+                    <th>Items</th>
+                    <th>Total (Items Sum)</th>
+                    <th>Status</th>
+                    <th style="width:120px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var inv in Model)
+                {
+                    var total = (inv.Items?.Sum(i => i.TotalValues) ?? 0);
+                    grand += total;
+                    <tr>
+                        <td>@inv.Id</td>
+                        <td>@(inv.invoiceNumber ?? "-")</td>
+                        <td>@(inv.InvoiceRefNo ?? "-")</td>
+                        <td>@inv.InvoiceDate.ToString("yyyy-MM-dd")</td>
+                        <td>@inv.BuyerBusinessName</td>
+                        <td>@(inv.Items?.Count ?? 0)</td>
+                        <td class="text-end">@total.ToString("N2")</td>
+                        <td>@(string.IsNullOrEmpty(inv.invoiceNumber) ? "Draft" : "Sent")</td>
+                        <td>
+                            <a asp-action="SInv" asp-route-id="@inv.Id" class="btn btn-sm btn-primary">Details</a>
+                            @* Uncomment when delete implemented
+                        <form asp-action="DeleteInvoice" method="post" class="d-inline" onsubmit="return confirm('Delete invoice?');">
+                            <input type="hidden" name="id" value="@inv.Id" />
+                            <button class="btn btn-sm btn-danger">Del</button>
+                        </form>
+                        *@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr class="table-secondary">
+                    <th colspan="6" class="text-end">Grand Total:</th>
+                    <th class="text-end">@grand.ToString("N2")</th>
+                    <th colspan="2"></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+}
+
+<a asp-action="Main" class="btn btn-link">Back</a>

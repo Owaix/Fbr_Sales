@@ -759,5 +759,21 @@ namespace EfPractice.Repository.Class
         {
             return _studentDB.Database.BeginTransactionAsync();
         }
+
+        public async Task<SaleInvoice?> GetSaleInvoiceByNumberAsync(string invoiceNo)
+        {
+            return await _studentDB.SaleInvoices
+                        .Include(s => s.Items)
+                .FirstOrDefaultAsync(x => x.invoiceNumber == invoiceNo);
+        }
+        public async Task<List<SaleInvoice>> GetSaleInvoices()
+        {
+            return await _studentDB.SaleInvoices
+                .Include(s => s.Items)
+                .Where(s => s.CompanyId == _companyId) // company scoping
+                .OrderByDescending(s => s.InvoiceDate)
+                .ThenByDescending(s => s.Id)
+                .ToListAsync();
+        }
     }
 }

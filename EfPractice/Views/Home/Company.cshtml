@@ -45,6 +45,7 @@
                 <div class="row g-3">
                     <div class="col-md-4">
                         <label asp-for="Company.CompanyName"></label>
+                        <input asp-for="Company.Id" type="hidden" />
                         <input asp-for="Company.CompanyName" class="form-control" />
                         <span asp-validation-for="Company.CompanyName" class="text-danger"></span>
                     </div>

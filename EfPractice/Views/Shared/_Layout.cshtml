@@ -52,7 +52,7 @@
 						<div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
 					</div>
 					<div class="ms-3">
-						<h6 class="mb-0">Jhon Doe ffffffff</h6>
+						<h6 class="mb-0">@User.FindFirst("UserName")?.Value</h6>
 						<span>Admin</span>
 					</div>
 				</div>
@@ -66,7 +66,7 @@
 							}
 							@if (!User.Identity.IsAuthenticated)
 							{
-								<a href="~/Account/Login" class="dropdown-item">Login</a>
+								<a href="~/dentity/Account/login" class="dropdown-item">Login</a>
 								<a href="~/Account/Register" class="dropdown-item">Register</a>
 							}
 							else if (isSuperAdmin)
@@ -79,7 +79,7 @@
 								<a href="~/Home/Items" class="dropdown-item">Item</a>
 								<a href="~/Home/Company" class="dropdown-item">Company</a>
 								<a href="~/Home/Index" class="dropdown-item">Sale invoice</a>
-								<a href="~/Home/Sinv" class="dropdown-item">Sale invoice FBR</a>
+								<a href="~/Home/SInvList" class="dropdown-item">Sale invoice FBR</a>
 							}
 						</div>
 					</div>
@@ -181,12 +181,12 @@
 					<div class="nav-item dropdown">
 						<a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
 							<img class="rounded-circle me-lg-2" src="~/template/img/user.jpg" alt="" style="width: 40px; height: 40px;">
-							<span class="d-none d-lg-inline-flex">John Doe</span>
+							<span class="d-none d-lg-inline-flex">@User.FindFirst("UserName")?.Value</span>
 						</a>
 						<div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
 							@if (User.Identity.IsAuthenticated)
 							{
-								<a href="#" class="dropdown-item">My Profile</a>
+								<a href="/Home/Company/@User.FindFirst("CompanyId")?.Value" class="dropdown-item">My Profile</a>
 								<a href="#" class="dropdown-item">Settings</a>
 								<a href="/Account/Logout" class="dropdown-item">Log Out</a>
 							}

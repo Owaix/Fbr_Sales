@@ -97,5 +97,7 @@ namespace EfPractice.Repository.Interface
         Task<HttpResponseMessage> SendInvoiceToFbrAsync(SaleInvoice invoice);
         Task<int> AddSaleInvoiceDetailAsync(List<SaleInvoiceItem> invoice);
         Task<IDbContextTransaction> BeginTransactionAsync();
+        Task<SaleInvoice?> GetSaleInvoiceByNumberAsync(string invoiceNo);
+        Task<List<SaleInvoice>> GetSaleInvoices();
     }
 }

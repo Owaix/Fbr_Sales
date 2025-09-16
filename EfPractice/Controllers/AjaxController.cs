@@ -1,11 +1,13 @@
 using EfPractice.Models;
 using EfPractice.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EfPractice.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class AjaxController : ControllerBase
     {
         private readonly IMaster _master;
