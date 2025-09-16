@@ -16,16 +16,19 @@
 		z-index: 1000;
 		background: #fff;
 		border: 1px solid #ccc;
-		width: 688px;
+		width: auto; /* Let table size to content */
 		margin-top: 10px;
 		max-height: 200px;
 		overflow-y: auto;
 		display: block !important;
+		table-layout: auto; /* Let columns auto-size */
 	}
 
-		.autocomplete-table th, .autocomplete-table td {
+		.autocomplete-table th,
+		.autocomplete-table td {
 			padding: 4px 8px;
 			font-size: 14px;
+			white-space: nowrap; /* Prevent line breaks */
 		}
 
 		.autocomplete-table tr.selected {
@@ -253,13 +256,13 @@
 					selected = Math.min(selected + 1, filtered.length - 1);
 					$input.data('autocomplete-selected', selected);
 					renderAutocompleteTable(filtered, $container, selected);
-					scrollSelectedRowIntoView($container);
+					scrollSelectedRowIntoView($container.find('tbody'));
 				} else if (e.key === 'ArrowUp') {
 					e.preventDefault();
 					selected = Math.max(selected - 1, 0);
 					$input.data('autocomplete-selected', selected);
 					renderAutocompleteTable(filtered, $container, selected);
-					scrollSelectedRowIntoView($container);
+					scrollSelectedRowIntoView($container.find('tbody'));
 				} else if (e.key === 'Enter') {
 					e.preventDefault();
 					if (filtered.length > 0) {
@@ -415,17 +418,22 @@
 			});
 
 			function scrollSelectedRowIntoView($tbody) {
-			const $selectedRow = $tbody.find('tr.selected');
-			if ($selectedRow.length === 0) return;
+				const $selectedRow = $tbody.find('tr.selected');
+				if ($selectedRow.length === 0) return;
 
-			var container = $selectedRow.closest('.autocomplete-table-container');
-			var tableOffset = container.offset().top;
-			var rowOffset = $selectedRow.offset().top;
+				const container = $tbody.closest('.autocomplete-table-container')[0];
+				const row = $selectedRow[0];
+				const rowTop = row.offsetTop;
+				const rowBottom = rowTop + row.offsetHeight;
+				const containerScrollTop = container.scrollTop;
+				const containerHeight = container.clientHeight;
 
-			var scrollPosition = container.scrollTop() + (rowOffset - tableOffset);
-
-			container.scrollTop(scrollPosition);
-		}
+				if (rowTop < containerScrollTop) {
+					container.scrollTop = rowTop;
+				} else if (rowBottom > containerScrollTop + containerHeight) {
+					container.scrollTop = rowBottom - containerHeight;
+				}
+			}
 
 		$(document).on('input', '.product-desc-autocomplete', function (e) {
 			const $input = $(this);
