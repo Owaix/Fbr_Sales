@@ -1,17 +1,13 @@
 ﻿using EfPractice.Areas.Identity.Data;
 using EfPractice.Models;
-using EfPractice.Repository.Class;
 using EfPractice.Repository.Interface;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Text.Json;
 
 namespace EfPractice.Controllers
 {
-    [Authorize]
     public class HomeController : BaseController
     {
         private readonly IMaster _master;
@@ -27,19 +23,11 @@ namespace EfPractice.Controllers
 
         public IActionResult Main()
         {
-
-            //  var stdRecord = studentDB.Students.ToList();
-
-            return View(/*stdRecord*/);
-
+            return View();
         }
         public IActionResult Index()
         {
-
-            //  var stdRecord = studentDB.Students.ToList();
-
-            return View(/*stdRecord*/);
-
+            return View();
         }
 
         public async Task<IActionResult> Customer(int id = 0)
@@ -130,10 +118,6 @@ namespace EfPractice.Controllers
             {
                 CompanyName = company.CompanyName,
             });
-            //if (companies.Any(c => c.CompanyName))
-            //    ModelState.AddModelError("Company.CompanyName", "Company name already exists.");
-            //if (companies.Any(c => c.UserName == company.UserName && c.Id != company.Id))
-            //    ModelState.AddModelError("Company.UserName", "Username already exists.");
 
             if (ModelState.IsValid)
             {
@@ -142,7 +126,6 @@ namespace EfPractice.Controllers
                 else
                     await _master.AddCompanyAsync(company);
 
-                // Register user in Identity
                 var user = new ApplicationUser
                 {
                     UserName = company.UserName,
@@ -178,17 +161,16 @@ namespace EfPractice.Controllers
         }
         public string GetProvinceName(int id)
         {
-            switch (id)
+            return id switch
             {
-                case 1: return "Punjab";
-                case 2: return "Sindh";
-                case 3: return "KPK";
-                case 4: return "Balochistan";
-                default: return "Unknown";
-            }
+                1 => "Punjab",
+                2 => "Sindh",
+                3 => "KPK",
+                4 => "Balochistan",
+                _ => "Unknown"
+            };
         }
 
-        // Helper to map role string to int
         private int GetUserRoleId(string userRole)
         {
             return userRole switch
@@ -207,7 +189,6 @@ namespace EfPractice.Controllers
 
             if (!string.IsNullOrEmpty(invoiceNo))
             {
-                // You need to implement this method in your repository
                 model = await _master.GetSaleInvoiceByNumberAsync(invoiceNo);
                 if (model == null)
                     model = new SaleInvoice { InvoiceDate = DateTime.Now, Items = new List<SaleInvoiceItem>() };
@@ -229,28 +210,34 @@ namespace EfPractice.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            model.CompanyId = CompanyId ?? 0;
-
             try
             {
-                var resp = await _master.SendInvoiceToFbrAsync(model);
-                var content = await resp.Content.ReadAsStringAsync();
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var fbrResponse = JsonSerializer.Deserialize<FbrResponse>(content, options);
-
-                if (fbrResponse?.validationResponse?.statusCode == "00")
+                if (model.Id == 0)
                 {
-                    model.invoiceNumber = fbrResponse.invoiceNumber;
-                    model.dated = Convert.ToDateTime(fbrResponse.dated);
-                    var id = await _master.AddSaleInvoiceAsync(model);
-                    TempData["Message"] = $"Invoice sent successfully. FBR Invoice#: {fbrResponse.invoiceNumber}";
-                    return RedirectToAction("SInv");
+                    var resp = await _master.SendInvoiceToFbrAsync(model);
+                    var content = await resp.Content.ReadAsStringAsync();
+                    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                    var fbrResponse = JsonSerializer.Deserialize<FbrResponse>(content, options);
+
+                    if (fbrResponse?.validationResponse?.statusCode == "01")
+                    {
+                        model.invoiceNumber = fbrResponse.invoiceNumber;
+                        model.dated = Convert.ToDateTime(fbrResponse.dated);
+                        var id = await _master.AddSaleInvoiceAsync(model);
+                        TempData["Message"] = $"Invoice sent successfully. FBR Invoice#: {fbrResponse.invoiceNumber}";
+                        return RedirectToAction("PrintInvoice", new { id });
+                    }
+                    else
+                    {
+                        FBRErrorCodes fBRErrorCodes = new FBRErrorCodes();
+                        var Error = fBRErrorCodes.GetErrorByCode(fbrResponse?.validationResponse?.errorCode);
+                        ModelState.AddModelError(string.Empty, Error ?? "Unknown FBR error");
+                    }
                 }
                 else
                 {
-                    FBRErrorCodes fBRErrorCodes = new FBRErrorCodes();
-                    var Error = fBRErrorCodes.GetErrorByCode(fbrResponse?.validationResponse?.errorCode);
-                    ModelState.AddModelError(string.Empty, Error ?? "Unknown FBR error");
+                    await _master.UpdateSaleInvoiceAsync(model);
+                    return RedirectToAction("PrintInvoice", new { id = model.Id });
                 }
             }
             catch (Exception ex)
@@ -283,10 +270,27 @@ namespace EfPractice.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteInvoice(int id)
         {
-            // Optional: implement DeleteSaleInvoiceAsync in repository first if not present
-            // await _master.DeleteSaleInvoiceAsync(id);
-            // TempData["Message"] = "Invoice deleted.";
             return RedirectToAction(nameof(SInvList));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> PrintInvoice(int id)
+        {
+            var inv = await _master.GetSaleInvoiceByIdAsync(id);
+            if (inv == null) return NotFound();
+            Company? comp = null;
+            try
+            {
+                comp = await _master.GetCompanyByIdAsync(inv.CompanyId);
+            }
+            catch { }
+            var vm = new PrintInvoiceViewModel
+            {
+                Invoice = inv,
+                Company = comp
+            };
+            return View(vm);
+        }
+
     }
 }

@@ -1,0 +1,154 @@
+@model EfPractice.Models.PrintInvoiceViewModel
+@{
+    Layout = null; // standalone print page
+    var inv = Model.Invoice;
+    var comp = Model.Company;
+    var dt = inv.InvoiceDate.ToString("yyyy-MM-dd");
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Invoice @inv.invoiceNumber</title>
+    <style>
+        :root { --gray:#555; --border:#999; --accent:#0d6efd; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; }
+        body { margin:16px; font-size:13px; color:#222; }
+        h1,h2,h3,h4 { margin:4px 0; }
+        .header { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid var(--accent); padding-bottom:6px; }
+        .company { max-width:55%; }
+        .company h2 { margin:0; font-size:20px; }
+        .meta { text-align:right; font-size:12px; }
+        .meta table { border-collapse:collapse; margin-left:auto; }
+        .meta td { padding:2px 6px; }
+        .sec-title { background:var(--accent); color:#fff; padding:4px 8px; font-size:12px; letter-spacing:.5px; }
+        .panel { border:1px solid var(--border); margin-top:10px; }
+        .panel .body { padding:6px 10px; display:flex; flex-wrap:wrap; gap:24px; }
+        .field { font-size:11px; line-height:1.2; min-width:160px; }
+        .field label { display:block; font-weight:600; font-size:10px; text-transform:uppercase; letter-spacing:.5px; color:var(--gray); }
+        .items { margin-top:14px; }
+        table.items-table { width:100%; border-collapse:collapse; font-size:11px; }
+        table.items-table th, table.items-table td { border:1px solid #ccc; padding:4px 6px; }
+        table.items-table th { background:#f0f3f8; text-transform:uppercase; font-size:10px; letter-spacing:.5px; }
+        tfoot td { font-weight:600; }
+        .totals { margin-top:14px; width:300px; margin-left:auto; font-size:12px; }
+        .totals table { width:100%; border-collapse:collapse; }
+        .totals td { padding:4px 6px; }
+        .notes { margin-top:18px; font-size:11px; }
+        .print-actions { position:fixed; top:8px; right:12px; }
+        .btn { background:var(--accent); color:#fff; border:none; padding:6px 12px; font-size:12px; cursor:pointer; border-radius:3px; }
+        .btn.secondary { background:#6c757d; }
+        @@media print { .print-actions { display:none; } body { margin:6mm 8mm; } .panel, .items-table th, .items-table td { break-inside:avoid; } }
+    </style>
+</head>
+<body>
+<div class="print-actions">
+    <button class="btn" onclick="window.print()">Print</button>
+    <button class="btn secondary" onclick="window.close()">Close</button>
+</div>
+<div class="header">
+    <div class="company">
+        <h2>@(comp?.CompanyName ?? inv.SellerBusinessName)</h2>
+        <div style="white-space:pre-line; font-size:12px;">
+            @(comp?.Address ?? inv.SellerAddress)<br />
+            NTN/CNIC: @(inv.SellerNTNCNIC)  |  Province: @(inv.SellerProvince)
+        </div>
+    </div>
+    <div class="meta">
+        <table>
+            <tr><td style="font-weight:600; font-size:18px;" colspan="2">SALE INVOICE</td></tr>
+            <tr><td>Invoice #</td><td><strong>@(inv.invoiceNumber ?? inv.InvoiceRefNo ?? inv.Id.ToString())</strong></td></tr>
+            <tr><td>Date</td><td>@dt</td></tr>
+            <tr><td>Scenario</td><td>@(inv.ScenarioId ?? "-")</td></tr>
+            <tr><td>Type</td><td>@(inv.InvoiceType ?? "-")</td></tr>
+        </table>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="sec-title">Seller</div>
+    <div class="body">
+        <div class="field"><label>Business</label>@inv.SellerBusinessName</div>
+        <div class="field"><label>Address</label>@inv.SellerAddress</div>
+        <div class="field"><label>Province</label>@inv.SellerProvince</div>
+        <div class="field"><label>NTN / CNIC</label>@inv.SellerNTNCNIC</div>
+    </div>
+</div>
+<div class="panel">
+    <div class="sec-title">Buyer</div>
+    <div class="body">
+        <div class="field"><label>Business</label>@inv.BuyerBusinessName</div>
+        <div class="field"><label>Address</label>@inv.BuyerAddress</div>
+        <div class="field"><label>Province</label>@inv.BuyerProvince</div>
+        <div class="field"><label>NTN / CNIC</label>@inv.BuyerNTNCNIC</div>
+        <div class="field"><label>Reg Type</label>@inv.BuyerRegistrationType</div>
+    </div>
+</div>
+
+<div class="items">
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width:30px;">#</th>
+                <th>Description</th>
+                <th>HS Code</th>
+                <th>UoM</th>
+                <th style="text-align:right;">Rate</th>
+                <th style="text-align:right;">Qty</th>
+                <th style="text-align:right;">Value Excl ST</th>
+                <th style="text-align:right;">Sales Tax</th>
+                <th style="text-align:right;">Further Tax</th>
+                <th style="text-align:right;">Discount</th>
+                <th style="text-align:right;">Line Total</th>
+            </tr>
+        </thead>
+        <tbody>
+        @if(inv.Items!=null && inv.Items.Any()){
+            var idx=1; foreach(var it in inv.Items){
+                <tr>
+                    <td>@idx</td>
+                    <td>@it.ProductDescription</td>
+                    <td>@it.HsCode</td>
+                    <td>@it.UoM</td>
+                    <td style="text-align:right;">@it.Rate</td>
+                    <td style="text-align:right;">@it.Quantity</td>
+                    <td style="text-align:right;">@it.ValueSalesExcludingST.ToString("0.##")</td>
+                    <td style="text-align:right;">@it.SalesTaxApplicable.ToString("0.##")</td>
+                    <td style="text-align:right;">@it.FurtherTax.ToString("0.##")</td>
+                    <td style="text-align:right;">@it.Discount.ToString("0.##")</td>
+                    <td style="text-align:right;">@it.TotalValues.ToString("0.##")</td>
+                </tr>
+                idx++; }
+        } else {
+            <tr><td colspan="11" style="text-align:center; padding:12px;">No items</td></tr>
+        }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="5" style="text-align:right;">Totals:</td>
+                <td style="text-align:right;">@Model.TotalQuantity</td>
+                <td colspan="4"></td>
+                <td style="text-align:right;">@Model.SubTotal.ToString("0.##")</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<div class="totals">
+    <table>
+        <tr><td style="font-weight:600;">Subtotal</td><td style="text-align:right;">@Model.SubTotal.ToString("0.##")</td></tr>
+        <tr><td style="font-weight:600;">Grand Total</td><td style="text-align:right; border-top:1px solid #333; font-size:14px;">@Model.SubTotal.ToString("0.##")</td></tr>
+    </table>
+</div>
+
+<div class="notes">
+    <strong>Notes:</strong>
+    <div style="margin-top:4px;">
+        Thank you for your business. This invoice is generated electronically. Prices include applicable taxes unless stated otherwise.
+    </div>
+</div>
+
+<div style="margin-top:40px; font-size:11px; text-align:center; color:#777;">
+    Generated on @DateTime.Now.ToString("yyyy-MM-dd HH:mm")
+</div>
+</body>
+</html>

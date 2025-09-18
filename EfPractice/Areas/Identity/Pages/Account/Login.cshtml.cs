@@ -107,34 +107,7 @@ namespace EfPractice.Areas.Identity.Pages.Account
             returnUrl ??= Url.Content("~/Home/Index");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
-            {
-                // Hardcoded super admin login
-                if (Input.Email == "admin@gmail.com" && Input.Password == "admin")
-                {
-                    var claims = new List<System.Security.Claims.Claim>
-                    {
-                        new System.Security.Claims.Claim("IsSuperAdmin", "true"),
-                        new System.Security.Claims.Claim("CompanyId", "0"),
-                        new System.Security.Claims.Claim("UserRoleId", "0"),
-                        new System.Security.Claims.Claim("UserName", ""),
-                    };
-
-                    // Create a dummy ApplicationUser for admin
-                    var adminUser = new EfPractice.Areas.Identity.Data.ApplicationUser
-                    {
-                        UserName = "admin",
-                        Email = "admin@gmail.com",
-                        CompanyId = 0,
-                        UserRoleId = 0
-                    };
-
-                    await _signInManager.SignInWithClaimsAsync(adminUser, Input.RememberMe, claims);
-
-                    _logger.LogInformation("Super admin logged in.");
-                    return LocalRedirect("~/Home/Index");
-                }
-
-                // Normal user login
+            {              
                 var user = await _signInManager.UserManager.FindByNameAsync(Input.Email)
                          ?? await _signInManager.UserManager.FindByEmailAsync(Input.Email);
                 if (user != null)
@@ -146,8 +119,7 @@ namespace EfPractice.Areas.Identity.Pages.Account
                         {
                             new System.Security.Claims.Claim("UserName", user.UserName.ToString()),
                             new System.Security.Claims.Claim("CompanyId", user.CompanyId.ToString()),
-                            new System.Security.Claims.Claim("UserRoleId", user.UserRoleId.ToString()),
-                            new System.Security.Claims.Claim("IsSuperAdmin", "false")
+                            new System.Security.Claims.Claim("UserRoleId", user.UserRoleId.ToString()),                            
                         };
                         await _signInManager.SignInWithClaimsAsync(user, Input.RememberMe, claims);
 
