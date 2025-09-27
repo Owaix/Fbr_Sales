@@ -1,12 +1,45 @@
 @model EfPractice.Models.SaleInvoice
 
 <style>
-	.wide-desc { min-width: 220px; width: 100%; }
-	.narrow-cell { max-width: 80px; width: 100%; }
-	.autocomplete-table { position: absolute; z-index: 1000; background: #fff; border: 1px solid #ccc; width: auto; margin-top: 10px; max-height: 200px; overflow-y: auto; display: block !important; table-layout: auto; }
-	.autocomplete-table th, .autocomplete-table td { padding: 4px 8px; font-size: 14px; white-space: nowrap; }
-	.autocomplete-table tr.selected { background: #007bff; color: #fff; }
-	.autocomplete-table tr:hover { background: #0056b3; color: #fff; cursor: pointer; }
+	.wide-desc {
+		min-width: 220px;
+		width: 100%;
+	}
+
+	.narrow-cell {
+		max-width: 80px;
+		width: 100%;
+	}
+
+	.autocomplete-table {
+		position: absolute;
+		z-index: 1000;
+		background: #fff;
+		border: 1px solid #ccc;
+		width: auto;
+		margin-top: 10px;
+		max-height: 200px;
+		overflow-y: auto;
+		display: block !important;
+		table-layout: auto;
+	}
+
+		.autocomplete-table th, .autocomplete-table td {
+			padding: 4px 8px;
+			font-size: 14px;
+			white-space: nowrap;
+		}
+
+		.autocomplete-table tr.selected {
+			background: #007bff;
+			color: #fff;
+		}
+
+		.autocomplete-table tr:hover {
+			background: #0056b3;
+			color: #fff;
+			cursor: pointer;
+		}
 </style>
 <!-- Removed extra jQuery include to avoid overwriting select2 registration. Assume layout already loads jQuery. -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -69,7 +102,17 @@
 	<table class="table table-bordered" id="itemsTable">
 		<thead>
 			<tr>
-				<th>HS Code</th><th>Description</th><th>Rate</th><th>UoM</th><th>Quantity</th><th>Value Excl. ST</th><th>Sales Tax</th><th>Further Tax</th><th>Discount</th><th>Total</th><th>Actions</th>
+				<th>HS Code</th>
+				<th>Description</th>
+				<th>Rate</th>
+				<th>UoM</th>
+				<th>Quantity</th>
+				<th>Value Excl. ST</th>
+				<th>Sales Tax</th>
+				<th>Further Tax</th>
+				<th>Discount</th>
+				<th>Total</th>
+				<th>Actions</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -343,7 +386,7 @@
 				updateInvoiceGrandTotal();
 			}
 
-			$(document).on('keydown', 'input[name*="Quantity"]', function (e) {
+			$(document).on('keydown', 'input.narrow-cell', function (e) {
 				if (e.key === 'Enter') {
 					e.preventDefault();
 					const $row = $(this).closest('tr');
