@@ -33,44 +33,7 @@ namespace EfPractice.Models
         public int? CompanyID { get; set; }
         public int? SaleTax { get; set; }
     }
-    public class Customer  : IHasCompany
-    {
-        public int AC_Code { get; set; }
 
-        [Key]   // ✅ Explicit primary key
-        public int CID { get; set; }
-
-        [Required(ErrorMessage = "Customer name is required")]
-        [MaxLength(100, ErrorMessage = "Customer name cannot exceed 100 characters")]
-        public string? CusName { get; set; }
-        public int? PType_ID { get; set; }
-        public string? Add { get; set; }
-        public string? NTN_No { get; set; }
-        public string? ContactPerson { get; set; }
-        public string? Owner_Name { get; set; }
-        [RegularExpression(@"^[0-9\-]+$", ErrorMessage = "Only numbers and '-' are allowed")]
-        public string? Cell { get; set; }
-        public string? Eml { get; set; }
-        public string? Tel { get; set; }
-        public int? SID { get; set; }
-        public int? ZID { get; set; }
-        public string? AddPer { get; set; }
-        public double? Debit { get; set; }
-        public double? Credit { get; set; }
-        public bool? Black_List { get; set; }
-        public string? War_Cls { get; set; }
-        public string? War_DT { get; set; }
-        public string? Prn { get; set; }
-        public bool? InActive { get; set; }
-        public string? Land { get; set; }
-        public int? City { get; set; }
-        public int? Village { get; set; }
-        public int CompanyId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public decimal? CollectPerMonth { get; set; }
-
-        [RegularExpression(@"^[0-9\-]+$", ErrorMessage = "Only numbers and '-' are allowed")]
-        public string? MrNO { get; set; }
-    }
     public class SalesMaster
     {
         public int RID { get; set; }

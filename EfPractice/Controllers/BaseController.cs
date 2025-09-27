@@ -23,12 +23,13 @@ namespace EfPractice.Controllers
         {
             base.OnActionExecuting(context);
 
-            // If companyId is 0, sign out and redirect to login
-            if (CompanyId == 0)
+            // If companyId is 0 (not authenticated properly) redirect to Identity login page
+            if (CompanyId == 0 && !User.Identity?.IsAuthenticated == true)
             {
-                // Sign out
+                // Sign out existing cookie (if any)
                 HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme).Wait();
-                context.Result = RedirectToAction("Login", "Account");
+                var returnUrl = context.HttpContext.Request.Path + context.HttpContext.Request.QueryString;
+                context.Result = new RedirectToPageResult("/Account/Login", new { area = "Identity", ReturnUrl = returnUrl });
             }
         }
     }

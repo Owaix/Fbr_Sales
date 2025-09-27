@@ -51,11 +51,10 @@ namespace EfPractice.Repository.Class
 
         public async Task<List<Imh>> GetItemHeaderAsync()
         {
-            List<Imh> List = new List<Imh>();
-
-            List = await _studentDB.Imhs.ToListAsync();
-            return List;
-
+            return await _studentDB.Imhs
+                .AsNoTracking()
+                .Where(x => x.CompanyId == _companyId)
+                .ToListAsync();
         }
 
 
@@ -64,7 +63,7 @@ namespace EfPractice.Repository.Class
         {
 
 
-            var existingItemHeader = await _studentDB.Imhs.FindAsync(model.Mid);
+            var existingItemHeader = await _studentDB.Imhs.FirstOrDefaultAsync(x => x.Mid == model.Mid && x.CompanyId == _companyId);
 
             if (existingItemHeader != null)
             {
@@ -105,7 +104,10 @@ namespace EfPractice.Repository.Class
 
             itemCatergory.ImhList = new List<Imh>();
 
-            itemCatergory.ImhList = await _studentDB.Imhs.ToListAsync();
+            itemCatergory.ImhList = await _studentDB.Imhs
+                .AsNoTracking()
+                .Where(x => x.CompanyId == _companyId)
+                .ToListAsync();
 
 
             return itemCatergory;
@@ -122,10 +124,12 @@ namespace EfPractice.Repository.Class
         public async Task<bool> ADDItemCatergoryRegistrarionAsync(Cate model)
         {
             int maxCid = await _studentDB.Cates
+                                .Where(c => c.CompanyId == _companyId)
                                 .Select(c => (int?)c.Cid) // Cast to nullable int to handle empty sequence
                                 .MaxAsync() ?? 0;
 
             model.Cid = maxCid + 1;
+            model.CompanyId = _companyId ?? 0;
             _studentDB.Cates.Add(model);
             int rowsAffected = await _studentDB.SaveChangesAsync();
 
@@ -143,7 +147,7 @@ namespace EfPractice.Repository.Class
         public async Task<bool> UPDATEItemCatergoryRegistrarionAsync(Cate model)
         {
 
-            var existingItemHeader = await _studentDB.Cates.FindAsync(model.Cid);
+            var existingItemHeader = await _studentDB.Cates.FirstOrDefaultAsync(x => x.Cid == model.Cid && x.CompanyId == _companyId);
 
             if (existingItemHeader != null)
             {
@@ -178,38 +182,28 @@ namespace EfPractice.Repository.Class
 
         public async Task<List<Cate>> GETItemCatergoryRegistrarionAsync()
         {
-            List<Cate> cates = new List<Cate>();
-
-
-            cates = await (from category in _studentDB.Cates
-                           join header in _studentDB.Imhs
-                           on category.Mid equals header.Mid
-                           select new Cate
-                           {
-                               Cid = category.Cid,
-                               Name = category.Name,
-                               Mid = header.Mid,
-                               Mn = header.Mname
-                           }).ToListAsync();
-
-            return cates;
+            return await (from category in _studentDB.Cates.AsNoTracking().Where(c => c.CompanyId == _companyId)
+                          join header in _studentDB.Imhs.AsNoTracking().Where(h => h.CompanyId == _companyId)
+                          on category.Mid equals header.Mid
+                          select new Cate
+                          {
+                              Cid = category.Cid,
+                              Name = category.Name,
+                              Mid = header.Mid,
+                              Mn = header.Mname,
+                              CompanyId = category.CompanyId
+                          }).ToListAsync();
         }
 
         public async Task<ItemRegistrarion> GetCategoryListAsync()
         {
-            // Initialize the ItemRegistrarion object
-            ItemRegistrarion itemCategory = new ItemRegistrarion();
-
-            // Fetch the list of categories from the database
-            itemCategory.CatergoryList = await _studentDB.Cates.ToListAsync();
-
-            // Ensure the list is initialized, even if no data was fetched
-            if (itemCategory.CatergoryList == null)
+            var itemCategory = new ItemRegistrarion
             {
-                itemCategory.CatergoryList = new List<Cate>();
-            }
-
-            // Return the ItemRegistrarion object
+                CatergoryList = await _studentDB.Cates
+                    .AsNoTracking()
+                    .Where(c => c.CompanyId == _companyId)
+                    .ToListAsync()
+            };
             return itemCategory;
         }
 
@@ -222,29 +216,15 @@ namespace EfPractice.Repository.Class
 
         public async Task<bool> AddItemRegistration(Item model)
         {
-            Item item = new Item();
-            //int Itcode = await _studentDB.Items
-            //                    .Select(c => (int?)c.Itcode) 
-            //                    .MaxAsync() ?? 0;
-
-            //model.Itcode = Itcode + 1;
-            //_studentDB.Items.Add(model);
-            int rowsAffected = await _studentDB.SaveChangesAsync();
-
-            // Optional: Use the rowsAffected value if needed
-            if (rowsAffected > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            model.CompanyId = _companyId ?? model.CompanyId;
+            _studentDB.Items.Add(model);
+            return await _studentDB.SaveChangesAsync() > 0;
         }
+
         public async Task<bool> UpdateItemRegistration(Item model)
         {
 
-            var existingItem = await _studentDB.Items.FindAsync(model.ItemCode);
+            var existingItem = await _studentDB.Items.FirstOrDefaultAsync(x => x.Id == model.Id && x.CompanyId == _companyId);
 
             if (existingItem != null)
             {
@@ -282,26 +262,14 @@ namespace EfPractice.Repository.Class
         }
         public async Task<List<ItemRegistrarion>> GetItemRegistration()
         {
-            List<ItemRegistrarion> Item = new List<ItemRegistrarion>();
-
-
-            Item = await (from item in _studentDB.Items
-                          join Catergory in _studentDB.Cates
-                          on item.Id equals Catergory.Cid
+            return await (from item in _studentDB.Items.AsNoTracking().Where(i => i.CompanyId == _companyId)
+                          join cate in _studentDB.Cates.AsNoTracking().Where(c => c.CompanyId == _companyId)
+                          on item.Category equals cate.Cid.ToString()
                           select new ItemRegistrarion
                           {
-                              //Itcode = item.Itcode,
-                              //Itname = item.Itname,
-                              Ic = Catergory.Cid.ToString(),
-                              IcName = Catergory.Name,
-                              //Unit = item.Unit,
-                              //Rate = item.Srate,
-                              //Weight = item.Weight,
-                              //OpenAmt = item.Amt,
-                              //Prate = item.Prate,
+                              Ic = cate.Cid.ToString(),
+                              IcName = cate.Name
                           }).ToListAsync();
-
-            return Item;
         }
 
         #endregion
@@ -310,19 +278,12 @@ namespace EfPractice.Repository.Class
         #region supplier
         public async Task<List<Supplier>> GetSupplierAsync()
         {
-            List<Supplier> Supplier = new List<Supplier>();
-
-
-
-            Supplier = await _studentDB.Suppliers.ToListAsync();
-
-
-            return Supplier;
+            return await _studentDB.Suppliers.AsNoTracking().Where(s => s.CompanyId == _companyId).ToListAsync();
         }
 
         public async Task<bool> UpdateSupplierAsync(Supplier model)
         {
-            var existingItemHeader = await _studentDB.Suppliers.FindAsync(model.Headcode);
+            var existingItemHeader = await _studentDB.Suppliers.FirstOrDefaultAsync(x => x.Headcode == model.Headcode && x.CompanyId == _companyId);
 
             if (existingItemHeader != null)
             {
@@ -363,10 +324,12 @@ namespace EfPractice.Repository.Class
         public async Task<bool> AddSupplierAsync(Supplier model)
         {
             int Itcode = await _studentDB.Suppliers
+                                .Where(s => s.CompanyId == _companyId)
                                 .Select(c => (int?)c.Headcode) // Cast to nullable int to handle empty sequence
                                 .MaxAsync() ?? 0;
 
             model.Headcode = Itcode + 1;
+            model.CompanyId = _companyId ?? 0;
             _studentDB.Suppliers.Add(model);
             int rowsAffected = await _studentDB.SaveChangesAsync();
 
@@ -386,19 +349,12 @@ namespace EfPractice.Repository.Class
 
         public async Task<List<Party>> GetPartyAsync()
         {
-            List<Party> Parties = new List<Party>();
-
-
-
-            Parties = await _studentDB.Parties.ToListAsync();
-
-
-            return Parties;
+            return await _studentDB.Parties.AsNoTracking().Where(p => p.CompanyId == _companyId).ToListAsync();
         }
 
         public async Task<bool> UpdatePartyAsync(Party model)
         {
-            var existingItemHeader = await _studentDB.Parties.FindAsync(model.Headcode);
+            var existingItemHeader = await _studentDB.Parties.FirstOrDefaultAsync(x => x.Headcode == model.Headcode && x.CompanyId == _companyId);
 
             if (existingItemHeader != null)
             {
@@ -439,10 +395,12 @@ namespace EfPractice.Repository.Class
         public async Task<bool> AddPartyAsync(Party model)
         {
             int Itcode = await _studentDB.Parties
+                                .Where(p => p.CompanyId == _companyId)
                                 .Select(c => (int?)c.Headcode) // Cast to nullable int to handle empty sequence
                                 .MaxAsync() ?? 0;
 
             model.Headcode = Itcode + 1;
+            model.CompanyId = _companyId ?? 0;
             _studentDB.Parties.Add(model);
             int rowsAffected = await _studentDB.SaveChangesAsync();
 
@@ -469,6 +427,7 @@ namespace EfPractice.Repository.Class
         public async Task<bool> AddHeadAsync(Head model)
         {
             int Itcode = await _studentDB.Heads
+                               .Where(h => h.CompanyId == _companyId)
                                .Select(c => (int?)c.HeaderId) // Cast to nullable int to handle empty sequence
                                .MaxAsync() ?? 0;
 
@@ -481,6 +440,7 @@ namespace EfPractice.Repository.Class
             }
 
             model.HeaderId = Itcode + 1;
+            model.CompanyId = _companyId ?? 0;
             _studentDB.Heads.Add(model);
             int rowsAffected = await _studentDB.SaveChangesAsync();
 
@@ -497,7 +457,7 @@ namespace EfPractice.Repository.Class
 
         public async Task<bool> UpdateHeadAsync(Head model)
         {
-            var existingItemHeader = await _studentDB.Heads.FindAsync(model.HeaderId);
+            var existingItemHeader = await _studentDB.Heads.FirstOrDefaultAsync(x => x.HeaderId == model.HeaderId && x.CompanyId == _companyId);
 
             if (existingItemHeader != null)
             {
@@ -537,11 +497,7 @@ namespace EfPractice.Repository.Class
 
         public async Task<List<Head>> GetHeadListAsync()
         {
-            List<Head> Head = new List<Head>();
-
-            Head = await _studentDB.Heads.ToListAsync();
-
-            return Head;
+            return await _studentDB.Heads.AsNoTracking().Where(h => h.CompanyId == _companyId).ToListAsync();
         }
         #endregion
 
@@ -550,11 +506,7 @@ namespace EfPractice.Repository.Class
         public async Task<List<City>> GetCityListAsync()
         {
 
-            List<City> City = new List<City>();
-
-            City = await _studentDB.Cities.ToListAsync();
-
-            return City;
+            return await _studentDB.Cities.AsNoTracking().ToListAsync();
 
         }
 
@@ -565,37 +517,47 @@ namespace EfPractice.Repository.Class
 
         public async Task<Customer?> GetCustomerByIdAsync(int id)
         {
-            return await _studentDB.Customers.FindAsync(id);
+            return await _studentDB.Customers.AsNoTracking().FirstOrDefaultAsync(c => c.CID == id && c.CompanyId == _companyId);
+        }
+
+        public async Task<Customer?> GetCustomerByNTNAsync(string ntn, int companyId)
+        {
+            return await _studentDB.Customers.AsNoTracking().FirstOrDefaultAsync(c => c.NTN_No == ntn && c.CompanyId == companyId);
         }
 
         public async Task<int> AddCustomerAsync(Customer customer)
         {
+            customer.CompanyId = _companyId ?? customer.CompanyId;
             _studentDB.Customers.Add(customer);
             return await _studentDB.SaveChangesAsync();
         }
 
         public async Task<int> UpdateCustomerAsync(Customer customer)
         {
-            _studentDB.Customers.Update(customer);
+            var existing = await _studentDB.Customers.FirstOrDefaultAsync(c => c.CID == customer.CID && c.CompanyId == _companyId);
+            if (existing == null) return 0;
+            existing.CusName = customer.CusName;
+            existing.NTN_No = customer.NTN_No;
+            existing.Add = customer.Add;
+            existing.City = customer.City;
+            existing.InActive = customer.InActive;
+            existing.Cell = customer.Cell;
+            existing.MrNO = customer.MrNO;
+            existing.RegistrationType = customer.RegistrationType;
             return await _studentDB.SaveChangesAsync();
         }
 
         public async Task<int> DeleteCustomerAsync(int id)
         {
-            var customer = await _studentDB.Customers.FindAsync(id);
-            if (customer != null)
-            {
-                _studentDB.Customers.Remove(customer);
-                return await _studentDB.SaveChangesAsync();
-            }
-            return 0;
+            var customer = await _studentDB.Customers.FirstOrDefaultAsync(c => c.CID == id && c.CompanyId == _companyId);
+            if (customer == null) return 0;
+            _studentDB.Customers.Remove(customer);
+            return await _studentDB.SaveChangesAsync();
         }
 
         public async Task<List<Customer>> GetAllCustomersAsync(int companyId)
         {
-            return await _studentDB.Customers
-                .Where(c => c.CompanyId == companyId)
-                .ToListAsync();
+            return await _studentDB.Customers.AsNoTracking().Where(c => c.CompanyId == companyId).ToListAsync();
         }
 
         #endregion
@@ -605,37 +567,40 @@ namespace EfPractice.Repository.Class
 
         public async Task<Item?> GetItemByIdAsync(int id)
         {
-            return await _studentDB.Items.FindAsync(id);
+            return await _studentDB.Items.AsNoTracking().FirstOrDefaultAsync(i => i.Id == id && i.CompanyId == _companyId);
         }
 
         public async Task<int> AddItemAsync(Item item)
         {
+            item.CompanyId = _companyId ?? item.CompanyId;
             _studentDB.Items.Add(item);
             return await _studentDB.SaveChangesAsync();
         }
 
         public async Task<int> UpdateItemAsync(Item item)
         {
-            _studentDB.Items.Update(item);
+            var existing = await _studentDB.Items.FirstOrDefaultAsync(i => i.Id == item.Id && i.CompanyId == _companyId);
+            if (existing == null) return 0;
+            existing.ItemName = item.ItemName;
+            existing.Description = item.Description;
+            existing.HSCode = item.HSCode;
+            existing.Rate = item.Rate;
+            existing.UOM = item.UOM;
+            existing.Category = item.Category;
             return await _studentDB.SaveChangesAsync();
         }
 
         public async Task<int> DeleteItemAsync(int id)
         {
-            var item = await _studentDB.Items.FindAsync(id);
-            if (item != null)
-            {
-                _studentDB.Items.Remove(item);
-                return await _studentDB.SaveChangesAsync();
-            }
-            return 0;
+            var existing = await _studentDB.Items.FirstOrDefaultAsync(i => i.Id == id && i.CompanyId == _companyId);
+            if (existing == null) return 0;
+            _studentDB.Items.Remove(existing);
+            return await _studentDB.SaveChangesAsync();
         }
 
         public async Task<List<Item>> GetAllItemsAsync()
         {
-            return await _studentDB.Items
-                .Where(i => i.CompanyID == _companyId)
-                .ToListAsync();
+            return await _studentDB.Items.AsNoTracking().Where(i => i.CompanyId == _companyId).ToListAsync();
         }
 
         #endregion
@@ -644,102 +609,92 @@ namespace EfPractice.Repository.Class
 
         public async Task<Cate?> GetCateByIdAsync(int id)
         {
-            return await _studentDB.Cates.FindAsync(id);
+            return await _studentDB.Cates.AsNoTracking().FirstOrDefaultAsync(c => c.Cid == id && c.CompanyId == _companyId);
         }
 
         public async Task<int> AddCateAsync(Cate cate)
         {
+            cate.CompanyId = _companyId ?? cate.CompanyId;
             _studentDB.Cates.Add(cate);
             return await _studentDB.SaveChangesAsync();
         }
 
         public async Task<int> UpdateCateAsync(Cate cate)
         {
-            _studentDB.Cates.Update(cate);
+            var existing = await _studentDB.Cates.FirstOrDefaultAsync(c => c.Cid == cate.Cid && c.CompanyId == _companyId);
+            if (existing == null) return 0;
+            existing.Name = cate.Name;
+            existing.Mid = cate.Mid;
             return await _studentDB.SaveChangesAsync();
         }
 
         public async Task<int> DeleteCateAsync(int id)
         {
-            var cate = await _studentDB.Cates.FindAsync(id);
-            if (cate != null)
-            {
-                _studentDB.Cates.Remove(cate);
-                return await _studentDB.SaveChangesAsync();
-            }
-            return 0;
+            var existing = await _studentDB.Cates.FirstOrDefaultAsync(c => c.Cid == id && c.CompanyId == _companyId);
+            if (existing == null) return 0;
+            _studentDB.Cates.Remove(existing);
+            return await _studentDB.SaveChangesAsync();
         }
 
         #endregion
 
+        #region Company
         public async Task<Company?> GetCompanyByIdAsync(int id)
         {
-            return await _studentDB.Companies.FindAsync(id);
+            return await _studentDB.Companies.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
         }
-
         public async Task<int> AddCompanyAsync(Company company)
         {
             _studentDB.Companies.Add(company);
             return await _studentDB.SaveChangesAsync();
         }
-
         public async Task<int> UpdateCompanyAsync(Company company)
         {
             _studentDB.Companies.Update(company);
             return await _studentDB.SaveChangesAsync();
         }
-
         public async Task<int> DeleteCompanyAsync(int id)
         {
             var company = await _studentDB.Companies.FindAsync(id);
-            if (company != null)
-            {
-                _studentDB.Companies.Remove(company);
-                return await _studentDB.SaveChangesAsync();
-            }
-            return 0;
+            if (company == null) return 0;
+            _studentDB.Companies.Remove(company);
+            return await _studentDB.SaveChangesAsync();
         }
-
         public async Task<List<Company>> GetAllCompaniesAsync()
         {
-            return await _studentDB.Companies
-                .ToListAsync();
+            return await _studentDB.Companies.AsNoTracking().ToListAsync();
         }
         public async Task<List<Company>> GetCompanyAsync(Company filter)
         {
-            IQueryable<Company> query = _studentDB.Companies;
-
-            if (!string.IsNullOrEmpty(filter.Email))
-                query = query.Where(c => c.Email == filter.Email);
-
-            if (!string.IsNullOrEmpty(filter.UserName))
-                query = query.Where(c => c.UserName == filter.UserName);
-
-            if (!string.IsNullOrEmpty(filter.CompanyName))
-                query = query.Where(c => c.CompanyName.Contains(filter.CompanyName));
-
-            // Add more filters as needed...
-
+            IQueryable<Company> query = _studentDB.Companies.AsNoTracking();
+            if (!string.IsNullOrEmpty(filter.Email)) query = query.Where(c => c.Email == filter.Email);
+            if (!string.IsNullOrEmpty(filter.UserName)) query = query.Where(c => c.UserName == filter.UserName);
+            if (!string.IsNullOrEmpty(filter.BusinessName)) query = query.Where(c => c.BusinessName.Contains(filter.BusinessName));
             return await query.ToListAsync();
         }
+        #endregion
 
         #region SaleInvoice
         public async Task<SaleInvoice> GetSaleInvoiceByIdAsync(int id)
         {
             return await _studentDB.SaleInvoices
+                .AsNoTracking()
                 .Include(x => x.Items)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == id && x.CompanyId == _companyId);
         }
 
         public async Task<int> AddSaleInvoiceAsync(SaleInvoice invoice)
         {
+            invoice.CompanyId = _companyId ?? invoice.CompanyId;
             _studentDB.SaleInvoices.Add(invoice);
             return await _studentDB.SaveChangesAsync();
         }
 
         public async Task<int> UpdateSaleInvoiceAsync(SaleInvoice invoice)
         {
-            _studentDB.SaleInvoices.Update(invoice);
+            var existing = await _studentDB.SaleInvoices.FirstOrDefaultAsync(s => s.Id == invoice.Id && s.CompanyId == _companyId);
+            if (existing == null) return 0;
+            _studentDB.Entry(existing).CurrentValues.SetValues(invoice);
             return await _studentDB.SaveChangesAsync();
         }
         public async Task<HttpResponseMessage> SendInvoiceToFbrAsync(SaleInvoice invoice)
@@ -747,7 +702,6 @@ namespace EfPractice.Repository.Class
             var json = JsonConvert.SerializeObject(invoice);
             return await _fbrApiClient.PostAsync("postinvoicedata_sb", json);
         }
-        #endregion
 
         public async Task<int> AddSaleInvoiceDetailAsync(List<SaleInvoiceItem> invoice)
         {
@@ -763,17 +717,20 @@ namespace EfPractice.Repository.Class
         public async Task<SaleInvoice?> GetSaleInvoiceByNumberAsync(string invoiceNo)
         {
             return await _studentDB.SaleInvoices
+                        .AsNoTracking()
                         .Include(s => s.Items)
-                .FirstOrDefaultAsync(x => x.invoiceNumber == invoiceNo);
+                        .FirstOrDefaultAsync(x => x.invoiceNumber == invoiceNo && x.CompanyId == _companyId);
         }
         public async Task<List<SaleInvoice>> GetSaleInvoices()
         {
             return await _studentDB.SaleInvoices
+                .AsNoTracking()
                 .Include(s => s.Items)
-                .Where(s => s.CompanyId == _companyId) // company scoping
+                .Where(s => s.CompanyId == _companyId)
                 .OrderByDescending(s => s.InvoiceDate)
                 .ThenByDescending(s => s.Id)
                 .ToListAsync();
         }
+        #endregion
     }
 }

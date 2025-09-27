@@ -10,10 +10,6 @@ namespace EfPractice.Models
         public int Id { get; set; }
         public string InvoiceType { get; set; }
         public DateTime InvoiceDate { get; set; }
-        public string SellerNTNCNIC { get; set; }
-        public string SellerBusinessName { get; set; }
-        public string SellerProvince { get; set; }
-        public string SellerAddress { get; set; }
         public string BuyerNTNCNIC { get; set; }
         public string BuyerBusinessName { get; set; }
         public string BuyerProvince { get; set; }

@@ -23,12 +23,13 @@
                 <input type="date" name="to" value="@Context.Request.Query["to"]" class="form-control" />
             </div>
             <div class="col-md-2 d-grid">
-                <button class="btn btn-primary">Filter</button>
+                <button class="btn btn-primary">Server Filter</button>
             </div>
             <div class="col-md-2 d-grid">
                 <a asp-action="SInv" class="btn btn-success">New Invoice</a>
             </div>
         </form>
+        <small class="text-muted">Tip: Use the global search box below (client-side) or the form above (server-side).</small>
     </div>
 </div>
 
@@ -39,7 +40,7 @@
 else
 {
     <div class="table-responsive">
-        <table class="table table-sm table-bordered align-middle">
+        <table id="invoiceTable" class="table table-sm table-bordered align-middle table-striped">
             <thead class="table-light">
                 <tr>
                     <th>#</th>
@@ -50,7 +51,7 @@ else
                     <th>Items</th>
                     <th>Total (Items Sum)</th>
                     <th>Status</th>
-                    <th style="width:120px;">Actions</th>
+                    <th style="width:160px;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -67,14 +68,9 @@ else
                         <td>@(inv.Items?.Count ?? 0)</td>
                         <td class="text-end">@total.ToString("N2")</td>
                         <td>@(string.IsNullOrEmpty(inv.invoiceNumber) ? "Draft" : "Sent")</td>
-                        <td>
-                            <a asp-action="SInv" asp-route-id="@inv.Id" class="btn btn-sm btn-primary">Details</a>
-                            @* Uncomment when delete implemented
-                        <form asp-action="DeleteInvoice" method="post" class="d-inline" onsubmit="return confirm('Delete invoice?');">
-                            <input type="hidden" name="id" value="@inv.Id" />
-                            <button class="btn btn-sm btn-danger">Del</button>
-                        </form>
-                        *@
+                        <td class="text-nowrap">
+                            <a asp-action="SInv" asp-route-id="@inv.Id" class="btn btn-sm btn-primary">Edit</a>
+                            <a asp-action="PrintInvoice" asp-route-id="@inv.Id" target="_blank" class="btn btn-sm btn-secondary">Print</a>
                         </td>
                     </tr>
                 }
@@ -91,3 +87,22 @@ else
 }
 
 <a asp-action="Main" class="btn btn-link">Back</a>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(function(){
+            const table = $('#invoiceTable').DataTable({
+                order: [[3,'desc']],
+                pageLength: 25,
+                lengthMenu: [[10,25,50,100,-1],[10,25,50,100,'All']],
+                columnDefs: [
+                    { targets: [0,5], searchable: false },
+                    { targets: 8, orderable:false, searchable:false }
+                ]
+            });
+        });
+    </script>
+}

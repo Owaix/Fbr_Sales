@@ -47,10 +47,10 @@
 </div>
 <div class="header">
     <div class="company">
-        <h2>@(comp?.CompanyName ?? inv.SellerBusinessName)</h2>
+            <h2>@(comp?.BusinessName ?? comp.BusinessName)</h2>
         <div style="white-space:pre-line; font-size:12px;">
-            @(comp?.Address ?? inv.SellerAddress)<br />
-            NTN/CNIC: @(inv.SellerNTNCNIC)  |  Province: @(inv.SellerProvince)
+                @(comp?.Address ?? comp.Address)<br />
+                NTN/CNIC: @(comp.NTNCNIC)  |  Province: @(comp.Province)
         </div>
     </div>
     <div class="meta">
@@ -67,10 +67,10 @@
 <div class="panel">
     <div class="sec-title">Seller</div>
     <div class="body">
-        <div class="field"><label>Business</label>@inv.SellerBusinessName</div>
-        <div class="field"><label>Address</label>@inv.SellerAddress</div>
-        <div class="field"><label>Province</label>@inv.SellerProvince</div>
-        <div class="field"><label>NTN / CNIC</label>@inv.SellerNTNCNIC</div>
+            <div class="field"><label>Business</label>@comp.BusinessName</div>
+            <div class="field"><label>Address</label>@comp.Address</div>
+            <div class="field"><label>Province</label>@comp.Province</div>
+            <div class="field"><label>NTN / CNIC</label>@comp.NTNCNIC</div>
     </div>
 </div>
 <div class="panel">

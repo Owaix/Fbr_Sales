@@ -83,7 +83,7 @@ namespace EfPractice.Controllers
             model.Items = await _master.GetAllItemsAsync();
             if (ModelState.IsValid)
             {
-                item.CompanyID = CompanyId ?? 0;
+                item.CompanyId = CompanyId ?? 0;
                 if (item.Id > 0)
                     await _master.UpdateItemAsync(item);
                 else
@@ -116,7 +116,7 @@ namespace EfPractice.Controllers
 
             var companies = await _master.GetCompanyAsync(new Company
             {
-                CompanyName = company.CompanyName,
+                BusinessName = company.BusinessName,
             });
 
             if (ModelState.IsValid)
@@ -290,6 +290,37 @@ namespace EfPractice.Controllers
                 Company = comp
             };
             return View(vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CustomerSearch(string term)
+        {
+            var customers = await _master.GetAllCustomersAsync(CompanyId ?? 0);
+            if (!string.IsNullOrWhiteSpace(term))
+            {
+                term = term.ToLower();
+                customers = customers.Where(c => c.CompanyId == CompanyId &&
+                (c.CusName ?? string.Empty).ToLower().Contains(term) || (c.NTN_No ?? string.Empty).ToLower().Contains(term))
+                                     .Take(50)
+                                     .ToList();
+            }
+            var result = customers.Select(c => new
+            {
+                id = c.CusName, // will bind directly to BuyerBusinessName
+                text = c.CusName,
+                ntn = c.NTN_No,
+                address = c.Add,
+                province = c.City switch
+                {
+                    1 => "Punjab",
+                    2 => "Sindh",
+                    3 => "KPK",
+                    4 => "Balochistan",
+                    _ => string.Empty
+                },
+                regType = c.RegistrationType
+            });
+            return Json(result);
         }
 
     }

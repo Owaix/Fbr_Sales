@@ -4,17 +4,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EfPractice.Models
 {
-    [Index(nameof(CompanyName), IsUnique = true)]
+    [Index(nameof(BusinessName), IsUnique = true)]
     [Index(nameof(UserName), IsUnique = true)]
     public class Company
     {
         [Key]
         public int Id { get; set; }
-
-        [Required(ErrorMessage = "Company name is required")]
-        [MaxLength(100)]
-        public string CompanyName { get; set; } = string.Empty;
-
+    
         [Required(ErrorMessage = "Address is required")]
         [MaxLength(200)]
         public string Address { get; set; } = string.Empty;
@@ -40,6 +36,11 @@ namespace EfPractice.Models
         [DataType(DataType.Password)]
         [MinLength(6, ErrorMessage = "Password must be at least 6 characters long")]
         public string Password { get; set; } = string.Empty;
+        public string NTNCNIC { get; set; }
 
+        [Required(ErrorMessage = "Business name is required")]
+        [MaxLength(100)]
+        public string BusinessName { get; set; }
+        public string Province { get; set; }
     }
 }

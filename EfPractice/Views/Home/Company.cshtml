@@ -1,241 +1,253 @@
 ﻿@model EfPractice.Models.CompanyViewModel
 
 @{
-    ViewData["Title"] = "Company Profile";
+	ViewData["Title"] = "Company Profile";
 }
 <meta charset="utf-8" />
 <title>@ViewData["Title"] - My ASP.NET Application</title>
 
 <style>
-    .form-control {
-        width: 100%;
-    }
+	.form-control {
+		width: 100%;
+	}
 
-    .table-container {
-        max-height: 250px;
-        overflow-y: auto;
-    }
+	.table-container {
+		max-height: 250px;
+		overflow-y: auto;
+	}
 
-    tr:hover {
-        background-color: #f1f1f1;
-    }
+	tr:hover {
+		background-color: #f1f1f1;
+	}
 
-    .btn {
-        cursor: pointer;
-    }
+	.btn {
+		cursor: pointer;
+	}
 
-    thead {
-        background-color: #007bff;
-        color: white;
-    }
+	thead {
+		background-color: #007bff;
+		color: white;
+	}
 
-    .card-add {
-        margin-bottom: 20px;
-    }
+	.card-add {
+		margin-bottom: 20px;
+	}
 </style>
 
 <div class="container mt-5">
-    <h2 class="mb-4">Company Profile</h2>
+	<h2 class="mb-4">Company Profile</h2>
 
-    <!-- Form -->
-    <div class="card card-add">
-        <div class="card-body">
+	<!-- Form -->
+	<div class="card card-add">
+		<div class="card-body">
 
-            <form asp-action="Company" asp-controller="Home" method="post">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label asp-for="Company.CompanyName"></label>
-                        <input asp-for="Company.Id" type="hidden" />
-                        <input asp-for="Company.CompanyName" class="form-control" />
-                        <span asp-validation-for="Company.CompanyName" class="text-danger"></span>
-                    </div>
+			<form asp-action="Company" asp-controller="Home" method="post">
+				<div class="row g-3">
+					<div class="col-md-4">
+						<label asp-for="Company.NTNCNIC" class="form-label">NTN/CNIC</label>
+						<input asp-for="Company.NTNCNIC" class="form-control" />
+					</div>
+					<div class="col-md-4">
+						<label asp-for="Company.Province" class="form-label">Province</label>
+						<input asp-for="Company.Province" class="form-control" />
+					</div>
+				</div>
+				<div class="row g-3">
+					<div class="col-md-4">
+						<label asp-for="Company.BusinessName"></label>
+						<input asp-for="Company.Id" type="hidden" />
+						<input asp-for="Company.BusinessName" class="form-control" />
+						<span asp-validation-for="Company.BusinessName" class="text-danger"></span>
+					</div>
 
-                    <div class="col-md-4">
-                        <label asp-for="Company.Address"></label>
-                        <input asp-for="Company.Address" class="form-control" />
-                        <span asp-validation-for="Company.Address" class="text-danger"></span>
-                    </div>
+					<div class="col-md-4">
+						<label asp-for="Company.Address"></label>
+						<input asp-for="Company.Address" class="form-control" />
+						<span asp-validation-for="Company.Address" class="text-danger"></span>
+					</div>
 
-                    <div class="col-md-4">
-                        <label asp-for="Company.CellNo"></label>
-                        <input asp-for="Company.CellNo" class="form-control" />
-                        <span asp-validation-for="Company.CellNo" class="text-danger"></span>
-                    </div>
+					<div class="col-md-4">
+						<label asp-for="Company.CellNo"></label>
+						<input asp-for="Company.CellNo" class="form-control" />
+						<span asp-validation-for="Company.CellNo" class="text-danger"></span>
+					</div>
 
-                    <div class="col-md-4">
-                        <label asp-for="Company.UserRole"></label>
-                        <select asp-for="Company.UserRole" class="form-select">
-                            <option value="">Select Role</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Manager">Manager</option>
-                            <option value="Staff">Staff</option>
-                        </select>
-                        <span asp-validation-for="Company.UserRole" class="text-danger"></span>
-                    </div>
+					<div class="col-md-4">
+						<label asp-for="Company.UserRole"></label>
+						<select asp-for="Company.UserRole" class="form-select">
+							<option value="">Select Role</option>
+							<option value="Admin">Admin</option>
+							<option value="Manager">Manager</option>
+							<option value="Staff">Staff</option>
+						</select>
+						<span asp-validation-for="Company.UserRole" class="text-danger"></span>
+					</div>
 
-                    <div class="col-md-4">
-                        <label asp-for="Company.UserName"></label>
-                        <input asp-for="Company.UserName" class="form-control" />
-                        <span asp-validation-for="Company.UserName" class="text-danger"></span>
-                    </div>
+					<div class="col-md-4">
+						<label asp-for="Company.UserName"></label>
+						<input asp-for="Company.UserName" class="form-control" />
+						<span asp-validation-for="Company.UserName" class="text-danger"></span>
+					</div>
 
-                    <div class="col-md-4">
-                        <label asp-for="Company.Email"></label>
-                        <input asp-for="Company.Email" class="form-control" />
-                        <span asp-validation-for="Company.Email" class="text-danger"></span>
-                    </div>
+					<div class="col-md-4">
+						<label asp-for="Company.Email"></label>
+						<input asp-for="Company.Email" class="form-control" />
+						<span asp-validation-for="Company.Email" class="text-danger"></span>
+					</div>
 
-                    <div class="col-md-4">
-                        <label asp-for="Company.Password"></label>
-                        <input asp-for="Company.Password" type="password" class="form-control" />
-                        <span asp-validation-for="Company.Password" class="text-danger"></span>
-                    </div>
-                        
-                    <div class="col-md-4 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn btn-primary w-50">Add</button>
-                        <button type="reset" class="btn btn-secondary w-50">Reset</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
+					<div class="col-md-4">
+						<label asp-for="Company.Password"></label>
+						<input asp-for="Company.Password" type="password" class="form-control" />
+						<span asp-validation-for="Company.Password" class="text-danger"></span>
+					</div>
 
-    <!-- Table -->
-    <div class="table-container">
-        <table id="companyTable" class="table table-bordered">
-            <thead class="table-primary">
-                <tr>
-                    <th>ID</th>
-                    <th>Company Name</th>
-                    <th>Address</th>
-                    <th>Cell No</th>
-                    <th>User Role</th>
-                    <th>User Name</th>
-                    <th>Password</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var company in Model.Companies)
-                {
-                    <tr>
-                        <td>@company.Id</td>
-                        <td>@company.CompanyName</td>
-                        <td>@company.Address</td>
-                        <td>@company.CellNo</td>
-                        <td>@company.UserRole</td>
-                        <td>@company.UserName</td>
-                        <td>@company.Password</td>
-                        <td>
-                            <a asp-action="Company" asp-route-id="@company.Id" class="btn btn-sm btn-warning">Edit</a>
-                            <a asp-action="CompanyDelete" asp-route-id="@company.Id" class="btn btn-sm btn-danger">Delete</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+					<div class="col-md-4 d-flex align-items-end gap-2">
+						<button type="submit" class="btn btn-primary w-50">Add</button>
+						<button type="reset" class="btn btn-secondary w-50">Reset</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Table -->
+	<div class="table-container">
+		<table id="companyTable" class="table table-bordered">
+			<thead class="table-primary">
+				<tr>
+					<th>ID</th>
+					<th>Company Name</th>
+					<th>Address</th>
+					<th>Cell No</th>
+					<th>User Role</th>
+					<th>User Name</th>
+					<th>Email</th>
+					<th>Password</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var company in Model.Companies)
+				{
+					<tr>
+						<td>@company.Id</td>
+						<td>@company.BusinessName</td>
+						<td>@company.Address</td>
+						<td>@company.CellNo</td>
+						<td>@company.UserRole</td>
+						<td>@company.UserName</td>
+						<td>@company.Email</td>
+						<td>@company.Password</td>
+						<td>
+							<a asp-action="Company" asp-route-id="@company.Id" class="btn btn-sm btn-warning">Edit</a>
+							<a asp-action="CompanyDelete" asp-route-id="@company.Id" class="btn btn-sm btn-danger">Delete</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        var editingRow = null;
-        var companyId = 1; // auto increment ID
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script>
+		var editingRow = null;
+		var companyId = 1; // auto increment ID
 
-        function clearForm() {
-            $("#CompanyName, #Address, #CellNo, #UserRole, #UserName, #Password").val('');
-            $("#addButton").text("Add").removeClass("btn-warning").addClass("btn-primary");
-            editingRow = null;
-        }
+		function clearForm() {
+			$("#BusinessName, #Address, #CellNo, #UserRole, #UserName, #Password").val('');
+			$("#addButton").text("Add").removeClass("btn-warning").addClass("btn-primary");
+			editingRow = null;
+		}
 
-        $("#addButton").click(function () {
-            var companyData = {
-                id: editingRow ? $(editingRow).find("td:eq(0)").text() : companyId,
-                companyName: $("#CompanyName").val(),
-                address: $("#Address").val(),
-                cellNo: $("#CellNo").val(),
-                userRole: $("#UserRole").val(),
-                userName: $("#UserName").val(),
-                password: $("#Password").val()
-            };
+		$("#addButton").click(function () {
+			var companyData = {
+				id: editingRow ? $(editingRow).find("td:eq(0)").text() : companyId,
+				BusinessName: $("#BusinessName").val(),
+				address: $("#Address").val(),
+				cellNo: $("#CellNo").val(),
+				userRole: $("#UserRole").val(),
+				userName: $("#UserName").val(),
+				password: $("#Password").val()
+			};
 
-            if (!companyData.companyName || !companyData.address || !companyData.cellNo ||
-                !companyData.userRole || !companyData.userName || !companyData.password) {
-                Swal.fire("Error!", "Please fill all fields.", "error");
-                return;
-            }
+			if (!companyData.BusinessName || !companyData.address || !companyData.cellNo ||
+				!companyData.userRole || !companyData.userName || !companyData.password) {
+				Swal.fire("Error!", "Please fill all fields.", "error");
+				return;
+			}
 
-            if (editingRow) {
-                // update row
-                $(editingRow).find("td:eq(1)").text(companyData.companyName);
-                $(editingRow).find("td:eq(2)").text(companyData.address);
-                $(editingRow).find("td:eq(3)").text(companyData.cellNo);
-                $(editingRow).find("td:eq(4)").text(companyData.userRole);
-                $(editingRow).find("td:eq(5)").text(companyData.userName);
-                $(editingRow).find("td:eq(6)").text(companyData.password);
+			if (editingRow) {
+				// update row
+				$(editingRow).find("td:eq(1)").text(companyData.BusinessName);
+				$(editingRow).find("td:eq(2)").text(companyData.address);
+				$(editingRow).find("td:eq(3)").text(companyData.cellNo);
+				$(editingRow).find("td:eq(4)").text(companyData.userRole);
+				$(editingRow).find("td:eq(5)").text(companyData.userName);
+				$(editingRow).find("td:eq(6)").text(companyData.password);
 
-                Swal.fire("Updated!", "Company updated successfully.", "success");
-                clearForm();
-            } else {
-                // add row
-                var row = `<tr>
-                            <td>${companyData.id}</td>
-                            <td>${companyData.companyName}</td>
-                            <td>${companyData.address}</td>
-                            <td>${companyData.cellNo}</td>
-                            <td>${companyData.userRole}</td>
-                            <td>${companyData.userName}</td>
-                            <td>${companyData.password}</td>
-                            <td>
-                                <button type="button" class="btn btn-info editRow">Edit</button>
-                                <button type="button" class="btn btn-danger deleteRow">Delete</button>
-                            </td>
-                        </tr>`;
-                $("#companyTable tbody").append(row);
-                companyId++;
-                Swal.fire("Added!", "Company added successfully.", "success");
-                clearForm();
-            }
-        });
+				Swal.fire("Updated!", "Company updated successfully.", "success");
+				clearForm();
+			} else {
+				// add row
+				var row = `<tr>
+							<td>${companyData.id}</td>
+							<td>${companyData.BusinessName}</td>
+							<td>${companyData.address}</td>
+							<td>${companyData.cellNo}</td>
+							<td>${companyData.userRole}</td>
+							<td>${companyData.userName}</td>
+							<td>${companyData.password}</td>
+							<td>
+								<button type="button" class="btn btn-info editRow">Edit</button>
+								<button type="button" class="btn btn-danger deleteRow">Delete</button>
+							</td>
+						</tr>`;
+				$("#companyTable tbody").append(row);
+				companyId++;
+				Swal.fire("Added!", "Company added successfully.", "success");
+				clearForm();
+			}
+		});
 
-        // reset button
-        $("#resetButton").click(function () {
-            clearForm();
-            Swal.fire("Reset!", "Form cleared successfully.", "info");
-        });
+		// reset button
+		$("#resetButton").click(function () {
+			clearForm();
+			Swal.fire("Reset!", "Form cleared successfully.", "info");
+		});
 
-        // edit row
-        $("#companyTable").on("click", ".editRow", function () {
-            editingRow = $(this).closest("tr");
+		// edit row
+		$("#companyTable").on("click", ".editRow", function () {
+			editingRow = $(this).closest("tr");
 
-            $("#CompanyName").val($(editingRow).find("td:eq(1)").text());
-            $("#Address").val($(editingRow).find("td:eq(2)").text());
-            $("#CellNo").val($(editingRow).find("td:eq(3)").text());
-            $("#UserRole").val($(editingRow).find("td:eq(4)").text());
-            $("#UserName").val($(editingRow).find("td:eq(5)").text());
-            $("#Password").val($(editingRow).find("td:eq(6)").text());
+			$("#BusinessName").val($(editingRow).find("td:eq(1)").text());
+			$("#Address").val($(editingRow).find("td:eq(2)").text());
+			$("#CellNo").val($(editingRow).find("td:eq(3)").text());
+			$("#UserRole").val($(editingRow).find("td:eq(4)").text());
+			$("#UserName").val($(editingRow).find("td:eq(5)").text());
+			$("#Password").val($(editingRow).find("td:eq(6)").text());
 
-            $("#addButton").text("Update").removeClass("btn-primary").addClass("btn-warning");
-        });
+			$("#addButton").text("Update").removeClass("btn-primary").addClass("btn-warning");
+		});
 
-        // delete row
-        $("#companyTable").on("click", ".deleteRow", function () {
-            var row = $(this).closest("tr");
-            Swal.fire({
-                title: "Are you sure?",
-                text: "This company will be deleted!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Yes, delete it!"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    row.remove();
-                    Swal.fire("Deleted!", "Company removed successfully.", "success");
-                    clearForm();
-                }
-            });
-        });
-    </script>
+		// delete row
+		$("#companyTable").on("click", ".deleteRow", function () {
+			var row = $(this).closest("tr");
+			Swal.fire({
+				title: "Are you sure?",
+				text: "This company will be deleted!",
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonText: "Yes, delete it!"
+			}).then((result) => {
+				if (result.isConfirmed) {
+					row.remove();
+					Swal.fire("Deleted!", "Company removed successfully.", "success");
+					clearForm();
+				}
+			});
+		});
+	</script>
 }

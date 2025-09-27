@@ -69,6 +69,7 @@ namespace EfPractice.Repository.Interface
         Task<int> AddCustomerAsync(Customer customer);
         Task<int> UpdateCustomerAsync(Customer customer);
         Task<int> DeleteCustomerAsync(int id);
+        Task<Customer?> GetCustomerByNTNAsync(string ntn, int companyId);
         #endregion
 
         #region Item (with companyId filter)

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EfPractice.Models
 {
-    public class Item
+    public class Item : IHasCompany
     {
         [Key]
         public int Id { get; set; }
@@ -23,6 +24,8 @@ namespace EfPractice.Models
         public string? UOM { get; set; }
 
         public decimal? Rate { get; set; }
-        public int CompanyID { get; set; }
+
+        [Column("CompanyID")]
+        public int CompanyId { get; set; }
     }
 }

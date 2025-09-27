@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EfPractice.Models
 {
-    public partial class Supplier
+    public partial class Supplier : IHasCompany
     {
         [Key]
         public int? Headcode { get; set; }
@@ -22,5 +22,6 @@ namespace EfPractice.Models
         public int? Limit { get; set; }
         public string? Owner { get; set; }
         public decimal? Ob { get; set; }
+        public int CompanyId { get; set; }
     }
 }

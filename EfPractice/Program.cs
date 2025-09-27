@@ -6,62 +6,59 @@ using EfPractice.Repository.Class;
 using EfPractice.Context;
 
 var builder = WebApplication.CreateBuilder(args);
-//var connectionString = builder.Configuration.GetConnectionString("EFIdentityDBContextConnection") ?? throw new InvalidOperationException("Connection string 'EFIdentityDBContextConnection' not found.");
 
-// Add services to the container.
+// MVC / Razor
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
-//var provider = builder.Services.BuildServiceProvider();
-//var config = provider.GetService<IConfiguration>();
-//builder.Services.AddDbContext<StudentContext>(item => item.UseSqlServer(config.GetConnectionString("dbcs")));
+// HttpContext accessor (needed for StudentContext company scoping)
+builder.Services.AddHttpContextAccessor();
 
-//builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-//    .AddEntityFrameworkStores<StudentContext>();
-
-
-
-
-// In your Program.cs or Startup.cs (depending on your project setup)
-var provider = builder.Services.BuildServiceProvider();
-var config = provider.GetService<IConfiguration>();
-
+// DbContext
 builder.Services.AddDbContext<StudentContext>(options =>
-    options.UseSqlServer(config.GetConnectionString("dbcs")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("dbcs")));
 
+// Identity
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<StudentContext>();
 
+// Repos / Http clients
 builder.Services.AddScoped<IMaster, Master>();
 builder.Services.AddHttpClient<FbrApiClient>();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Apply pending migrations automatically (safe for dev/test)
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<StudentContext>();
+        db.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        // Log or handle migration exceptions (avoid crashing silently)
+        Console.WriteLine($"Migration error: {ex.Message}");
+    }
+}
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-app.UseAuthentication();;
-
+app.UseAuthentication();
 app.UseAuthorization();
-app.MapRazorPages();
-
-//app.MapGet("/", async context =>
-//{
-//    context.Response.Redirect("/Identity/Account/Login");
-//});
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Main}/{id?}");
 app.MapRazorPages();
-
 
 app.Run();
