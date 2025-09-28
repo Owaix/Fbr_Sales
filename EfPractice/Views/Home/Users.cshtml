@@ -1,0 +1,44 @@
+@model IEnumerable<EfPractice.Areas.Identity.Data.ApplicationUser>
+@{
+    ViewData["Title"] = "Users";
+}
+<h2>Users</h2>
+<a asp-action="AddUser" class="btn btn-success btn-sm mb-3">New User</a>
+<table id="usersTable" class="table table-sm table-bordered table-striped align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>UserName</th>
+            <th>Email</th>
+            <th>CompanyId</th>
+            <th>UserRoleId</th>
+            <th>Lockout</th>
+            <th style="width:200px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var u in Model)
+    {
+        <tr>
+            <td>@u.UserName</td>
+            <td>@u.Email</td>
+            <td>@u.CompanyId</td>
+            <td>@u.UserRoleId</td>
+            <td>@(u.LockoutEnd.HasValue ? "Locked" : "-")</td>
+            <td class="text-nowrap">
+                <a asp-action="EditUser" asp-route-id="@u.Id" class="btn btn-sm btn-primary">Edit</a>
+                <a asp-action="ResetPassword" asp-route-id="@u.Id" class="btn btn-sm btn-warning">Reset PW</a>
+                <form asp-action="DeleteUser" asp-route-id="@u.Id" method="post" class="d-inline" onsubmit="return confirm('Delete user?');">
+                    <button class="btn btn-sm btn-danger">Del</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>$(function(){ $('#usersTable').DataTable({ pageLength:25, order:[[0,'asc']] }); });</script>
+}

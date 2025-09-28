@@ -33,9 +33,6 @@ namespace EfPractice.Models
         public int? CompanyID { get; set; }
         public int? SaleTax { get; set; }
     }
-    public class Customer  : IHasCompany
-    {
-        public int AC_Code { get; set; }
 
         [Key]   // ✅ Explicit primary key
         public int CID { get; set; }

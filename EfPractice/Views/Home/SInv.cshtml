@@ -16,19 +16,18 @@
 		z-index: 1000;
 		background: #fff;
 		border: 1px solid #ccc;
-		width: auto; /* Let table size to content */
+		width: auto;
 		margin-top: 10px;
 		max-height: 200px;
 		overflow-y: auto;
 		display: block !important;
-		table-layout: auto; /* Let columns auto-size */
+		table-layout: auto;
 	}
 
-		.autocomplete-table th,
-		.autocomplete-table td {
+		.autocomplete-table th, .autocomplete-table td {
 			padding: 4px 8px;
 			font-size: 14px;
-			white-space: nowrap; /* Prevent line breaks */
+			white-space: nowrap;
 		}
 
 		.autocomplete-table tr.selected {
@@ -42,9 +41,9 @@
 			cursor: pointer;
 		}
 </style>
-
-<!-- Ensure jQuery is loaded -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Removed extra jQuery include to avoid overwriting select2 registration. Assume layout already loads jQuery. -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <h2>Sale Invoice</h2>
 <a asp-action="SInvList" class="btn btn-outline-secondary btn-sm mb-3">Back to List</a>
@@ -70,47 +69,29 @@
 	</div>
 
 	<fieldset class="border p-2 mb-3">
-		<legend class="w-auto">Seller Info</legend>
-		<div class="row mb-2">
-			<div class="col-md-3">
-				<label asp-for="SellerNTNCNIC" class="form-label">NTN/CNIC</label>
-				<input asp-for="SellerNTNCNIC" class="form-control" />
-			</div>
-			<div class="col-md-3">
-				<label asp-for="SellerBusinessName" class="form-label">Business Name</label>
-				<input asp-for="SellerBusinessName" class="form-control" />
-			</div>
-			<div class="col-md-3">
-				<label asp-for="SellerProvince" class="form-label">Province</label>
-				<input asp-for="SellerProvince" class="form-control" />
-			</div>
-			<div class="col-md-3">
-				<label asp-for="SellerAddress" class="form-label">Address</label>
-				<input asp-for="SellerAddress" class="form-control" />
-			</div>
-		</div>
-	</fieldset>
-
-	<fieldset class="border p-2 mb-3">
 		<legend class="w-auto">Buyer Info</legend>
 		<div class="row mb-2">
-			<div class="col-md-3">
+			<div class="col-md-4 mb-2">
+				<label class="form-label">Search / Select Buyer (Name)</label>
+				<select id="buyerSelector" style="width:100%"></select>
+			</div>
+			<div class="col-md-2">
 				<label asp-for="BuyerNTNCNIC" class="form-label">NTN/CNIC</label>
 				<input asp-for="BuyerNTNCNIC" class="form-control" />
 			</div>
 			<div class="col-md-3">
 				<label asp-for="BuyerBusinessName" class="form-label">Business Name</label>
-				<input asp-for="BuyerBusinessName" class="form-control" />
+				<input asp-for="BuyerBusinessName" id="BuyerBusinessName" class="form-control" />
 			</div>
 			<div class="col-md-3">
 				<label asp-for="BuyerProvince" class="form-label">Province</label>
 				<input asp-for="BuyerProvince" class="form-control" />
 			</div>
-			<div class="col-md-3">
+			<div class="col-md-4 mt-2">
 				<label asp-for="BuyerAddress" class="form-label">Address</label>
 				<input asp-for="BuyerAddress" class="form-control" />
 			</div>
-			<div class="col-md-3 mt-2">
+			<div class="col-md-4 mt-2">
 				<label asp-for="BuyerRegistrationType" class="form-label">Registration Type</label>
 				<input asp-for="BuyerRegistrationType" class="form-control" />
 			</div>
@@ -138,47 +119,26 @@
 			@for (int i = 0; i < Model.Items.Count; i++)
 			{
 				<tr>
-					<td>
-						<input asp-for="Items[@i].HsCode" class="form-control narrow-cell" />
-					</td>
+					<td><input asp-for="Items[@i].HsCode" class="form-control narrow-cell" /></td>
 					<td style="position:relative;">
 						<input asp-for="Items[@i].ProductDescription" class="form-control wide-desc product-desc-autocomplete" autocomplete="off" />
 						<div class="autocomplete-table-container"></div>
 					</td>
-					<td>
-						<input asp-for="Items[@i].Rate" class="form-control narrow-cell" />
-					</td>
-					<td>
-						<input asp-for="Items[@i].UoM" class="form-control narrow-cell" />
-					</td>
-					<td>
-						<input asp-for="Items[@i].Quantity" class="form-control item-calc narrow-cell" type="text" step="0.01" />
-					</td>
-					<td>
-						<input asp-for="Items[@i].ValueSalesExcludingST" class="form-control item-calc narrow-cell" type="text" step="0.01" />
-					</td>
-					<td>
-						<input asp-for="Items[@i].SalesTaxApplicable" class="form-control item-calc narrow-cell" type="text" step="0.01" />
-					</td>
-					<td>
-						<input asp-for="Items[@i].FurtherTax" class="form-control item-calc narrow-cell" type="text" step="0.01" />
-					</td>
-					<td>
-						<input asp-for="Items[@i].Discount" class="form-control item-calc narrow-cell" type="text" step="0.01" />
-					</td>
-					<td>
-						<input asp-for="Items[@i].TotalValues" class="form-control total-value narrow-cell" type="text" step="0.01" readonly tabindex="0" />
-					</td>
-					<td>
-						<button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button>
-					</td>
+					<td><input asp-for="Items[@i].Rate" class="form-control narrow-cell" /></td>
+					<td><input asp-for="Items[@i].UoM" class="form-control narrow-cell" /></td>
+					<td><input asp-for="Items[@i].Quantity" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
+					<td><input asp-for="Items[@i].ValueSalesExcludingST" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
+					<td><input asp-for="Items[@i].SalesTaxApplicable" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
+					<td><input asp-for="Items[@i].FurtherTax" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
+					<td><input asp-for="Items[@i].Discount" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
+					<td><input asp-for="Items[@i].TotalValues" class="form-control total-value narrow-cell" type="text" step="0.01" readonly tabindex="0" /></td>
+					<td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
 				</tr>
 			}
 		</tbody>
 	</table>
 	<button type="button" class="btn btn-success mb-3" onclick="addRow()">Add Item</button>
 
-	<!-- Grand Total Textbox after the item grid -->
 	<div class="row mb-3">
 		<div class="col-md-3 ms-auto">
 			<label class="form-label fw-bold">Grand Total</label>
@@ -193,18 +153,60 @@
 
 @section Scripts {
 	<script>
-			if (typeof $ === 'undefined') {
-				alert('jQuery is not loaded! Autocomplete will not work.');
-			}
+		let buyersCache = [];
+		async function loadBuyersOnce(){
+			if(buyersCache.length) return buyersCache;
+			try{ const resp = await fetch('/Home/CustomerSearch'); if(resp.ok){ buyersCache = await resp.json(); } else { buyersCache=[]; } }catch{ buyersCache=[]; }
+			return buyersCache;
+		}
 
+		function clientMatcher(params, data){
+			if(!params.term) return data; // show all when empty
+			const term = params.term.toLowerCase();
+			if((data.text||'').toLowerCase().includes(term) || (data.ntn||'').toLowerCase().includes(term) || (data.address||'').toLowerCase().includes(term) || (data.province||'').toLowerCase().includes(term))
+				return data;
+			return null;
+		}
+
+		function initBuyerSelect(enriched){
+			if(!$.fn.select2){ console.warn('Select2 not loaded'); return; }
+			$('#buyerSelector').empty();
+			$('#buyerSelector').select2({
+				placeholder:'Search buyer...',
+				allowClear:true,
+				data: enriched,
+				matcher: clientMatcher,
+				escapeMarkup: m=>m
+			});
+			$('#buyerSelector').on('select2:select', function(e){
+				const d = e.params.data;
+				$('#BuyerBusinessName').val(d.text);
+				$('input[name="BuyerNTNCNIC"]').val(d.ntn);
+				$('input[name="BuyerAddress"]').val(d.address);
+				$('input[name="BuyerProvince"]').val(d.province);
+				$('input[name="BuyerRegistrationType"]').val(d.regType);
+			});
+			$('#buyerSelector').on('select2:clear', function(){
+				$('#BuyerBusinessName, input[name="BuyerNTNCNIC"], input[name="BuyerAddress"], input[name="BuyerProvince"], input[name="BuyerRegistrationType"]').val('');
+			});
+		}
+
+		async function setupBuyerSelect(){
+			const raw = await loadBuyersOnce();
+			const enriched = raw.map(r=>({ id: r.text, text: r.text, ntn: r.ntn, address: r.address, province: r.province, regType: r.regType }));
+			initBuyerSelect(enriched);
+		}
+
+		if(!window.jQuery){ console.error('jQuery not found'); }
+		else if(!$.fn.select2){
+			const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'; s.onload=setupBuyerSelect; document.head.appendChild(s);
+		}else{ $(setupBuyerSelect); }
+	</script>
+	<script>
 			let itemData = [];
 			async function fetchItems() {
 				const response = await fetch(`/api/Ajax/GetItems`);
-				if (response.ok) {
-					itemData = await response.json();
-				} else {
-					itemData = [];
-				}
+				itemData = response.ok ? await response.json() : [];
 			}
 
 			$(document).ready(function () {
@@ -384,7 +386,7 @@
 				updateInvoiceGrandTotal();
 			}
 
-			$(document).on('keydown', 'input[name*="Quantity"]', function (e) {
+			$(document).on('keydown', 'input.narrow-cell', function (e) {
 				if (e.key === 'Enter') {
 					e.preventDefault();
 					const $row = $(this).closest('tr');

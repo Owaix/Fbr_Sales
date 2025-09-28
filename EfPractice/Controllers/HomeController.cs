@@ -1,6 +1,7 @@
 ﻿using EfPractice.Areas.Identity.Data;
 using EfPractice.Models;
 using EfPractice.Repository.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -83,7 +84,7 @@ namespace EfPractice.Controllers
             model.Items = await _master.GetAllItemsAsync();
             if (ModelState.IsValid)
             {
-                item.CompanyID = CompanyId ?? 0;
+                item.CompanyId = CompanyId ?? 0;
                 if (item.Id > 0)
                     await _master.UpdateItemAsync(item);
                 else
@@ -116,7 +117,7 @@ namespace EfPractice.Controllers
 
             var companies = await _master.GetCompanyAsync(new Company
             {
-                CompanyName = company.CompanyName,
+                BusinessName = company.BusinessName,
             });
 
             if (ModelState.IsValid)
@@ -131,7 +132,8 @@ namespace EfPractice.Controllers
                     UserName = company.UserName,
                     Email = company.Email,
                     CompanyId = company.Id,
-                    UserRoleId = GetUserRoleId(company.UserRole)
+                    // Force Admin role for company owner user
+                    UserRoleId = GetUserRoleId("Admin")
                 };
                 var result = await _userManager.CreateAsync(user, company.Password);
                 if (!result.Succeeded)
@@ -290,6 +292,157 @@ namespace EfPractice.Controllers
                 Company = comp
             };
             return View(vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CustomerSearch(string term)
+        {
+            var customers = await _master.GetAllCustomersAsync(CompanyId ?? 0);
+            if (!string.IsNullOrWhiteSpace(term))
+            {
+                term = term.ToLower();
+                customers = customers.Where(c => c.CompanyId == CompanyId &&
+                (c.CusName ?? string.Empty).ToLower().Contains(term) || (c.NTN_No ?? string.Empty).ToLower().Contains(term))
+                                     .Take(50)
+                                     .ToList();
+            }
+            var result = customers.Select(c => new
+            {
+                id = c.CusName, // will bind directly to BuyerBusinessName
+                text = c.CusName,
+                ntn = c.NTN_No,
+                address = c.Add,
+                province = c.City switch
+                {
+                    1 => "Punjab",
+                    2 => "Sindh",
+                    3 => "KPK",
+                    4 => "Balochistan",
+                    _ => string.Empty
+                },
+                regType = c.RegistrationType
+            });
+            return Json(result);
+        }
+
+        public async Task<IActionResult> Users()
+        {
+            var cid = CompanyId ?? 0;
+            var users = _userManager.Users.Where(u => u.CompanyId == cid).ToList();
+            return View(users);
+        }
+
+        [HttpGet]
+        public IActionResult AddUser()
+        {
+            return View("UserEdit", new UserEditViewModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddUser(UserEditViewModel vm)
+        {
+            if (!ModelState.IsValid) return View("UserEdit", vm);
+            if (string.IsNullOrWhiteSpace(vm.Password))
+            {
+                ModelState.AddModelError("Password", "Password required");
+                return View("UserEdit", vm);
+            }
+            var user = new ApplicationUser
+            {
+                UserName = vm.UserName,
+                Email = vm.Email,
+                CompanyId = CompanyId ?? 0,
+                // Force normal User role for users created from user screen
+                UserRoleId = GetUserRoleId("User")
+            };
+            var result = await _userManager.CreateAsync(user, vm.Password!);
+            if (!result.Succeeded)
+            {
+                foreach (var e in result.Errors) ModelState.AddModelError(string.Empty, e.Description);
+                return View("UserEdit", vm);
+            }
+            return RedirectToAction(nameof(Users));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null || user.CompanyId != (CompanyId ?? 0)) return NotFound();
+            var vm = new UserEditViewModel
+            {
+                Id = user.Id,
+                Email = user.Email ?? string.Empty,
+                UserName = user.UserName ?? string.Empty,
+                RoleName = user.UserRoleId switch { 1 => "Admin", 2 => "Manager", 3 => "Staff", _ => "User" }
+            };
+            return View("UserEdit", vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditUser(UserEditViewModel vm)
+        {
+            if (!ModelState.IsValid) return View("UserEdit", vm);
+            if (vm.Id == null) return NotFound();
+            var user = await _userManager.FindByIdAsync(vm.Id);
+            if (user == null || user.CompanyId != (CompanyId ?? 0)) return NotFound();
+            user.Email = vm.Email;
+            user.UserName = vm.UserName;
+            user.UserRoleId = GetUserRoleId(vm.RoleName);
+            var update = await _userManager.UpdateAsync(user);
+            if (!update.Succeeded)
+            {
+                foreach (var e in update.Errors) ModelState.AddModelError(string.Empty, e.Description);
+                return View("UserEdit", vm);
+            }
+            if (!string.IsNullOrWhiteSpace(vm.Password))
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var passRes = await _userManager.ResetPasswordAsync(user, token, vm.Password);
+                if (!passRes.Succeeded)
+                {
+                    foreach (var e in passRes.Errors) ModelState.AddModelError(string.Empty, e.Description);
+                    return View("UserEdit", vm);
+                }
+            }
+            return RedirectToAction(nameof(Users));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null || user.CompanyId != (CompanyId ?? 0)) return NotFound();
+            var res = await _userManager.DeleteAsync(user);
+            if (!res.Succeeded)
+            {
+                TempData["UserError"] = string.Join("; ", res.Errors.Select(e => e.Description));
+            }
+            return RedirectToAction(nameof(Users));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null || user.CompanyId != (CompanyId ?? 0)) return NotFound();
+            return View("ResetPassword", new ResetPasswordViewModel { UserId = id });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel vm)
+        {
+            if (!ModelState.IsValid) return View("ResetPassword", vm);
+            var user = await _userManager.FindByIdAsync(vm.UserId);
+            if (user == null || user.CompanyId != (CompanyId ?? 0)) return NotFound();
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var res = await _userManager.ResetPasswordAsync(user, token, vm.NewPassword);
+            if (!res.Succeeded)
+            {
+                foreach (var e in res.Errors) ModelState.AddModelError(string.Empty, e.Description);
+                return View("ResetPassword", vm);
+            }
+            return RedirectToAction(nameof(Users));
         }
 
     }

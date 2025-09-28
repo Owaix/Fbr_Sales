@@ -30,61 +30,11 @@ namespace EfPractice.Context
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
-            var companyId = GetCompanyId();
-
-            foreach (var entityType in builder.Model.GetEntityTypes())
-            {
-                if (typeof(IHasCompany).IsAssignableFrom(entityType.ClrType))
-                {
-                    var parameter = Expression.Parameter(entityType.ClrType, "e");
-                    var property = Expression.Property(parameter, nameof(IHasCompany.CompanyId));
-                    var companyIdConstant = Expression.Constant(companyId);
-                    var equal = Expression.Equal(property, companyIdConstant);
-
-                    // Build lambda: e => e.CompanyId == companyId
-                    var lambda = Expression.Lambda(
-                        typeof(Func<,>).MakeGenericType(entityType.ClrType, typeof(bool)),
-                        equal,
-                        parameter
-                    );
-
-                    builder.Entity(entityType.ClrType).HasQueryFilter(lambda);
-                }
-            }
-        }
-
-        public override int SaveChanges()
-        {
-            SetCompanyId();
-            return base.SaveChanges();
-        }
-        private int GetCompanyId()
-        {
-            var claim = _httpContextAccessor.HttpContext?.User?.FindFirst("CompanyId")?.Value;
-            return int.TryParse(claim, out var id) ? id : 0;
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            SetCompanyId();
             return await base.SaveChangesAsync(cancellationToken);
-        }
-
-        private void SetCompanyId()
-        {
-            var companyIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst("CompanyId")?.Value;
-            if (int.TryParse(companyIdClaim, out var companyId))
-            {
-                foreach (var entry in ChangeTracker.Entries()
-                             .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified))
-                {
-                    if (entry.Entity is IHasCompany entityWithCompany)
-                    {
-                        entityWithCompany.CompanyId = companyId;
-                    }
-                }
-            }
         }
     }
 }

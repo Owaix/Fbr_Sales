@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EfPractice.Models
 {
-    public partial class Party
+    public partial class Party : IHasCompany
     {
         [Key]
         public int? Headcode { get; set; }
@@ -24,5 +24,6 @@ namespace EfPractice.Models
         public decimal? Ob { get; set; }
         public string? St { get; set; }
         public string? Ntn { get; set; }
+        public int CompanyId { get; set; }
     }
 }

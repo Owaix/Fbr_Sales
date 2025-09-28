@@ -103,7 +103,7 @@
 
     <!-- Table -->
     <div class="table-container">
-        <table id="customerTable" class="table table-bordered">
+        <table id="customerTable" class="table table-bordered table-striped align-middle">
             <thead class="table-primary">
                 <tr>
                     <th>ID</th>
@@ -143,16 +143,29 @@
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(function(){
+            $('#customerTable').DataTable({
+                pageLength:25,
+                order:[[1,'asc']],
+                columnDefs:[
+                    {targets:[0,8], searchable:false},
+                    {targets:8, orderable:false}
+                ]
+            });
+        });
+    </script>
     <script>
         var editingRow = null;
-        var customerId = 1; // auto increment ID
-
+        var customerId = 1; // auto increment ID (client only)
         function clearForm() {
             $("#CustomerName, #NTN, #Address, #Province, #CustomerStatus, #Cell, #ContractNo").val('');
             $("#addButton").text("Add").removeClass("btn-warning").addClass("btn-primary");
             editingRow = null;
         }
-
         $("#addButton").click(function () {
             var customerData = {
                 id: editingRow ? $(editingRow).find("td:eq(0)").text() : customerId,
@@ -164,15 +177,11 @@
                 cell: $("#Cell").val(),
                 contract: $("#ContractNo").val()
             };
-
-            if (!customerData.name || !customerData.ntn || !customerData.address ||
-                !customerData.province || !customerData.status || !customerData.cell || !customerData.contract) {
+            if (!customerData.name || !customerData.ntn || !customerData.address || !customerData.province || !customerData.status || !customerData.cell || !customerData.contract) {
                 Swal.fire("Error!", "Please fill all fields.", "error");
                 return;
             }
-
             if (editingRow) {
-                // update existing row
                 $(editingRow).find("td:eq(1)").text(customerData.name);
                 $(editingRow).find("td:eq(2)").text(customerData.ntn);
                 $(editingRow).find("td:eq(3)").text(customerData.address);
@@ -180,69 +189,45 @@
                 $(editingRow).find("td:eq(5)").text(customerData.status);
                 $(editingRow).find("td:eq(6)").text(customerData.cell);
                 $(editingRow).find("td:eq(7)").text(customerData.contract);
-
                 Swal.fire("Updated!", "Customer updated successfully.", "success");
                 clearForm();
             } else {
-                // add new row
-                var row = `<tr>
-                            <td>${customerData.id}</td>
-                            <td>${customerData.name}</td>
-                            <td>${customerData.ntn}</td>
-                            <td>${customerData.address}</td>
-                            <td>${customerData.province}</td>
-                            <td>${customerData.status}</td>
-                            <td>${customerData.cell}</td>
-                            <td>${customerData.contract}</td>
-                            <td>
-                                <button type="button" class="btn btn-info editRow">Edit</button>
-                                <button type="button" class="btn btn-danger deleteRow">Delete</button>
-                            </td>
-                        </tr>`;
-                $("#customerTable tbody").append(row);
+                var table = $('#customerTable').DataTable();
+                table.row.add([
+                    customerData.id,
+                    customerData.name,
+                    customerData.ntn,
+                    customerData.address,
+                    customerData.province,
+                    customerData.status,
+                    customerData.cell,
+                    customerData.contract,
+                    '<a href="#" class="btn btn-sm btn-info editRow">Edit</a> <a href="#" class="btn btn-sm btn-danger deleteRow">Delete</a>'
+                ]).draw(false);
                 customerId++;
                 Swal.fire("Added!", "Customer added successfully.", "success");
                 clearForm();
             }
         });
-
-        // reset button
-        $("#resetButton").click(function () {
-            clearForm();
-            Swal.fire("Reset!", "Form cleared successfully.", "info");
-        });
-
-        // edit row
-        $("#customerTable").on("click", ".editRow", function () {
+        $("#resetButton").click(function () { clearForm(); Swal.fire("Reset!", "Form cleared successfully.", "info"); });
+        $('#customerTable').on("click", ".editRow", function (e) {
+            e.preventDefault();
             editingRow = $(this).closest("tr");
-
-            $("#CustomerName").val($(editingRow).find("td:eq(1)").text());
-            $("#NTN").val($(editingRow).find("td:eq(2)").text());
-            $("#Address").val($(editingRow).find("td:eq(3)").text());
-            $("#Province").val($(editingRow).find("td:eq(4)").text());
-            $("#CustomerStatus").val($(editingRow).find("td:eq(5)").text());
-            $("#Cell").val($(editingRow).find("td:eq(6)").text());
-            $("#ContractNo").val($(editingRow).find("td:eq(7)").text());
-
+            var tds = editingRow.children('td');
+            $("#CustomerName").val(tds.eq(1).text());
+            $("#NTN").val(tds.eq(2).text());
+            $("#Address").val(tds.eq(3).text());
+            $("#Province").val(tds.eq(4).text());
+            $("#CustomerStatus").val(tds.eq(5).text()==='Inactive'?'true':'false');
+            $("#Cell").val(tds.eq(6).text());
+            $("#ContractNo").val(tds.eq(7).text());
             $("#addButton").text("Update").removeClass("btn-primary").addClass("btn-warning");
         });
-
-        // delete row
-        $("#customerTable").on("click", ".deleteRow", function () {
+        $('#customerTable').on("click", ".deleteRow", function (e) {
+            e.preventDefault();
             var row = $(this).closest("tr");
-            Swal.fire({
-                title: "Are you sure?",
-                text: "This customer will be deleted!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Yes, delete it!"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    row.remove();
-                    Swal.fire("Deleted!", "Customer removed successfully.", "success");
-                    clearForm();
-                }
-            });
+            Swal.fire({ title: "Are you sure?", text: "This customer will be deleted!", icon: "warning", showCancelButton: true, confirmButtonText: "Yes, delete it!" })
+                .then((result) => { if (result.isConfirmed) { $('#customerTable').DataTable().row(row).remove().draw(); Swal.fire("Deleted!", "Customer removed successfully.", "success"); clearForm(); } });
         });
     </script>
 }
