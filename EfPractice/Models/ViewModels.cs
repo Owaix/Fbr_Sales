@@ -65,7 +65,7 @@ namespace EfPractice.Models
         public string? Land { get; set; }
         public int? City { get; set; }
         public int? Village { get; set; }
-        public int CompanyId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int CompanyId { get; set; }//{ get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public decimal? CollectPerMonth { get; set; }
 
         [RegularExpression(@"^[0-9\-]+$", ErrorMessage = "Only numbers and '-' are allowed")]
