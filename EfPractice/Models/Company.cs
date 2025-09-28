@@ -42,5 +42,9 @@ namespace EfPractice.Models
         [MaxLength(100)]
         public string BusinessName { get; set; }
         public string Province { get; set; }
+
+        // New: per-company FBR bearer token
+        [MaxLength(500)]
+        public string? FbrBearerToken { get; set; }
     }
 }

@@ -51,8 +51,16 @@
 						<label asp-for="Company.Province" class="form-label">Province</label>
 						<input asp-for="Company.Province" class="form-control" />
 					</div>
+					<div class="col-md-4">
+						<label asp-for="Company.UserRole"></label>
+						<select asp-for="Company.UserRole" class="form-select">
+							<option value="">Select Role</option>
+							<option value="Admin">Admin</option>
+							<option value="User">User</option>
+						</select>
+					</div>
 				</div>
-				<div class="row g-3">
+				<div class="row g-3 mt-1">
 					<div class="col-md-4">
 						<label asp-for="Company.BusinessName"></label>
 						<input asp-for="Company.Id" type="hidden" />
@@ -71,38 +79,32 @@
 						<input asp-for="Company.CellNo" class="form-control" />
 						<span asp-validation-for="Company.CellNo" class="text-danger"></span>
 					</div>
-
-					<div class="col-md-4">
-						<label asp-for="Company.UserRole"></label>
-						<select asp-for="Company.UserRole" class="form-select">
-							<option value="">Select Role</option>
-							<option value="Admin">Admin</option>
-							<option value="Manager">Manager</option>
-							<option value="Staff">Staff</option>
-						</select>
-						<span asp-validation-for="Company.UserRole" class="text-danger"></span>
+				</div>
+				<div class="row g-3 mt-1">
+					<div class="col-md-12">
+						<label asp-for="Company.FbrBearerToken" class="form-label">FBR Bearer Token</label>
+						<input asp-for="Company.FbrBearerToken" type="password" class="form-control" placeholder="Paste API token here" />
+						<span asp-validation-for="Company.FbrBearerToken" class="text-danger"></span>
 					</div>
-
+				</div>
+				<div class="row g-3 mt-1">
 					<div class="col-md-4">
 						<label asp-for="Company.UserName"></label>
 						<input asp-for="Company.UserName" class="form-control" />
 						<span asp-validation-for="Company.UserName" class="text-danger"></span>
 					</div>
-
 					<div class="col-md-4">
 						<label asp-for="Company.Email"></label>
 						<input asp-for="Company.Email" class="form-control" />
 						<span asp-validation-for="Company.Email" class="text-danger"></span>
 					</div>
-
 					<div class="col-md-4">
 						<label asp-for="Company.Password"></label>
-						<input asp-for="Company.Password" type="password" class="form-control" />
+						<input asp-for="Company.Password" class="form-control" />
 						<span asp-validation-for="Company.Password" class="text-danger"></span>
 					</div>
-
-					<div class="col-md-4 d-flex align-items-end gap-2">
-						<button type="submit" class="btn btn-primary w-50">Add</button>
+					<div class="col-md-4 d-flex align-items-end gap-2 mt-2">
+						<button type="submit" class="btn btn-primary w-50">Save</button>
 						<button type="reset" class="btn btn-secondary w-50">Reset</button>
 					</div>
 				</div>
