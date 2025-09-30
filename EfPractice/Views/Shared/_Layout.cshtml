@@ -51,18 +51,24 @@
 					<div class="nav-item dropdown">
 						<a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Master</a>
 						<div class="dropdown-menu bg-transparent border-0">
-							@{ var isSuperAdmin = User.HasClaim("CompanyId", "0"); }
-							@if (!User.Identity.IsAuthenticated){
+							@{
+								var isSuperAdmin = User.HasClaim("CompanyId", "0");
+							}
+							@if (!User.Identity.IsAuthenticated)
+							{
 								<a href="~/identity/Account/login" class="dropdown-item">Login</a>
 								<a href="~/Account/Register" class="dropdown-item">Register</a>
-							}else if (isSuperAdmin){
+							}
+							else if (isSuperAdmin)
+							{
 								<a href="~/Home/Company" class="dropdown-item">Company</a>
-							}else{
+							}
+							else
+							{
+								<a href="~/Home/Users" class="dropdown-item">Users</a>
 								<a href="~/Home/Customer" class="dropdown-item">Customer</a>
 								<a href="~/Home/Items" class="dropdown-item">Item</a>
-								<a href="~/Home/Company" class="dropdown-item">Company</a>
 								<a href="~/Home/SInvList" class="dropdown-item">Sale Invoice</a>
-								<a href="~/Home/Users" class="dropdown-item">Users</a>
 							}
 						</div>
 					</div>
@@ -90,10 +96,13 @@
 					<div class="nav-item dropdown">
 						<a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><img class="rounded-circle me-lg-2" src="~/template/img/user.jpg" style="width:40px;height:40px;" /><span class="d-none d-lg-inline-flex">@User.FindFirst("UserName")?.Value</span></a>
 						<div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-							@if (User.Identity.IsAuthenticated){
+							@if (User.Identity.IsAuthenticated)
+							{
 								<a href="/Home/Company/@User.FindFirst("CompanyId")?.Value" class="dropdown-item">My Profile</a>
 								<a href="/Account/Logout" class="dropdown-item">Log Out</a>
-							}else{
+							}
+							else
+							{
 								<a href="/Account/Login" class="dropdown-item">Login</a>
 								<a href="/Account/Register" class="dropdown-item">Register</a>
 							}

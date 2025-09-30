@@ -1,44 +1,101 @@
-@model IEnumerable<EfPractice.Areas.Identity.Data.ApplicationUser>
+@model EfPractice.Models.UserListEditViewModel
 @{
     ViewData["Title"] = "Users";
 }
-<h2>Users</h2>
-<a asp-action="AddUser" class="btn btn-success btn-sm mb-3">New User</a>
-<table id="usersTable" class="table table-sm table-bordered table-striped align-middle">
-    <thead class="table-light">
-        <tr>
-            <th>UserName</th>
-            <th>Email</th>
-            <th>CompanyId</th>
-            <th>UserRoleId</th>
-            <th>Lockout</th>
-            <th style="width:200px;">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var u in Model)
-    {
-        <tr>
-            <td>@u.UserName</td>
-            <td>@u.Email</td>
-            <td>@u.CompanyId</td>
-            <td>@u.UserRoleId</td>
-            <td>@(u.LockoutEnd.HasValue ? "Locked" : "-")</td>
-            <td class="text-nowrap">
-                <a asp-action="EditUser" asp-route-id="@u.Id" class="btn btn-sm btn-primary">Edit</a>
-                <a asp-action="ResetPassword" asp-route-id="@u.Id" class="btn btn-sm btn-warning">Reset PW</a>
-                <form asp-action="DeleteUser" asp-route-id="@u.Id" method="post" class="d-inline" onsubmit="return confirm('Delete user?');">
-                    <button class="btn btn-sm btn-danger">Del</button>
-                </form>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+<div class="container mt-5">
+    <h2 class="mb-4">User Profile</h2>
+    <!-- Form -->
+    <div class="card card-add mb-3">
+        <div class="card-body">
+            @if (ViewData["ShowValidationSummary"] as bool? == true || !ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    @Html.ValidationSummary(true, "Please fix the following errors:")
+                </div>
+            }
+            <form asp-action="SaveUser" method="post" autocomplete="off">
+                @if(Model.EditUser?.Id!=null){<input type="hidden" asp-for="EditUser.Id" />}
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label asp-for="EditUser.UserName" class="form-label"></label>
+                        <input asp-for="EditUser.UserName" class="form-control" />
+                        <span asp-validation-for="EditUser.UserName" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="EditUser.Email" class="form-label"></label>
+                        <input asp-for="EditUser.Email" class="form-control" />
+                        <span asp-validation-for="EditUser.Email" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="EditUser.RoleName" class="form-label">Role</label>
+                        <select asp-for="EditUser.RoleName" class="form-select">
+                            <option value="User">User</option>
+                            <option value="Staff">Staff</option>
+                            <option value="Manager">Manager</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="EditUser.Password" class="form-label"></label>
+                        <input asp-for="EditUser.Password" class="form-control" autocomplete="new-password" />
+                        <span class="form-text">@((Model.EditUser?.Id==null)?"Required":"Leave blank to keep current password")</span>
+                        <span asp-validation-for="EditUser.Password" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="EditUser.ConfirmPassword" class="form-label"></label>
+                        <input asp-for="EditUser.ConfirmPassword" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="EditUser.ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end gap-2">
+                        <button class="btn btn-primary w-50" type="submit">Save</button>
+                        <button class="btn btn-secondary w-50" type="button" onclick="clearUserEdit()">Reset</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Table -->
+    <div class="table-container">
+        <table id="usersTable" class="table table-sm table-bordered table-striped align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>UserName</th>
+                    <th>Email</th>
+                    <th>CompanyId</th>
+                    <th>UserRoleId</th>
+                    <th>Lockout</th>
+                    <th style="width:120px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var u in Model.Users)
+            {
+                <tr>
+                    <td>@u.UserName</td>
+                    <td>@u.Email</td>
+                    <td>@u.CompanyId</td>
+                    <td>@u.UserRoleId</td>
+                    <td>@(u.LockoutEnd.HasValue ? "Locked" : "-")</td>
+                    <td class="text-nowrap">
+                        <button class="btn btn-sm btn-primary" type="button" onclick="editUser('@u.Id')">Edit</button>
+                        <form asp-action="DeleteUser" asp-route-id="@u.Id" method="post" class="d-inline" onsubmit="return confirm('Delete user?');">
+                            <button class="btn btn-sm btn-danger">Del</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
 @section Scripts {
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-    <script>$(function(){ $('#usersTable').DataTable({ pageLength:25, order:[[0,'asc']] }); });</script>
+    <script>
+        $(function(){ $('#usersTable').DataTable({ pageLength:25, order:[[0,'asc']] }); });
+        window.editUser = function(id){ window.location = '?editId=' + id; }
+        window.clearUserEdit = function(){ window.location = '?'; }
+    </script>
+    <partial name="_ValidationScriptsPartial" />
 }

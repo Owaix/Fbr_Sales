@@ -53,4 +53,5 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 /.vs
+/EfPractice/Migrations/*
 /EfPractice/Migrations

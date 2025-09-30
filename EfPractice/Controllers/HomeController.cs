@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace EfPractice.Controllers
 {
-    public class HomeController : BaseController
+    public partial class HomeController : BaseController
     {
         private readonly IMaster _master;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -132,7 +132,6 @@ namespace EfPractice.Controllers
                     UserName = company.UserName,
                     Email = company.Email,
                     CompanyId = company.Id,
-                    // Force Admin role for company owner user
                     UserRoleId = GetUserRoleId("Admin")
                 };
                 var result = await _userManager.CreateAsync(user, company.Password);

@@ -1,6 +1,9 @@
 ﻿using EfPractice.Models;
 using EfPractice.Models.CustomerModel;
 using Microsoft.EntityFrameworkCore.Storage;
+using EfPractice.Areas.Identity.Data;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 
 namespace EfPractice.Repository.Interface
@@ -100,5 +103,9 @@ namespace EfPractice.Repository.Interface
         Task<IDbContextTransaction> BeginTransactionAsync();
         Task<SaleInvoice?> GetSaleInvoiceByNumberAsync(string invoiceNo);
         Task<List<SaleInvoice>> GetSaleInvoices();
+        Task<List<ApplicationUser>> GetAllUsersAsync();
+        Task AddUserAsync(UserEditViewModel model);
+        Task UpdateUserAsync(UserEditViewModel model);
+        Task DeleteUserAsync(string id);
     }
 }

@@ -5,7 +5,9 @@ namespace EfPractice.Models
     public class UserEditViewModel
     {
         public string? Id { get; set; }
-        [Required, EmailAddress]
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
+        [MaxLength(100)]
         public string Email { get; set; } = string.Empty;
         [Required]
         public string UserName { get; set; } = string.Empty;

@@ -10,6 +10,9 @@ using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Text;
+using EfPractice.Areas.Identity.Data;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
 namespace EfPractice.Repository.Class
 {
@@ -662,7 +665,10 @@ namespace EfPractice.Repository.Class
         }
         public async Task<List<Company>> GetAllCompaniesAsync()
         {
-            return await _studentDB.Companies.AsNoTracking().ToListAsync();
+            if (_httpContextAccessor.HttpContext.User.HasClaim("CompanyId", "0"))
+                return await _studentDB.Companies.AsNoTracking().ToListAsync();
+            else
+                return await _studentDB.Companies.AsNoTracking().Where(x => x.Id == _companyId).ToListAsync();
         }
         public async Task<List<Company>> GetCompanyAsync(Company filter)
         {
@@ -730,6 +736,51 @@ namespace EfPractice.Repository.Class
                 .OrderByDescending(s => s.InvoiceDate)
                 .ThenByDescending(s => s.Id)
                 .ToListAsync();
+        }
+        #endregion
+
+        #region User Management
+
+        public async Task<List<ApplicationUser>> GetAllUsersAsync()
+        {
+            return await _studentDB.Users.AsNoTracking().Where(u => u.CompanyId == _companyId).ToListAsync();
+        }
+
+        public async Task AddUserAsync(UserEditViewModel model)
+        {
+            var user = new ApplicationUser
+            {
+                UserName = model.UserName,
+                Email = model.Email,
+                CompanyId = _companyId ?? 0,
+                UserRoleId = model.RoleName == "Admin" ? 1 : model.RoleName == "Manager" ? 2 : model.RoleName == "Staff" ? 3 : 0
+            };
+            var userManager = (UserManager<ApplicationUser>)_httpContextAccessor.HttpContext.RequestServices.GetService(typeof(UserManager<ApplicationUser>));
+            await userManager.CreateAsync(user, model.Password ?? "123456");
+        }
+
+        public async Task UpdateUserAsync(UserEditViewModel model)
+        {
+            var userManager = (UserManager<ApplicationUser>)_httpContextAccessor.HttpContext.RequestServices.GetService(typeof(UserManager<ApplicationUser>));
+            var user = await _studentDB.Users.FirstOrDefaultAsync(u => u.Id == model.Id && u.CompanyId == _companyId);
+            if (user == null) return;
+            user.UserName = model.UserName;
+            user.Email = model.Email;
+            user.UserRoleId = model.RoleName == "Admin" ? 1 : model.RoleName == "Manager" ? 2 : model.RoleName == "Staff" ? 3 : 0;
+            await userManager.UpdateAsync(user);
+            if (!string.IsNullOrWhiteSpace(model.Password))
+            {
+                var token = await userManager.GeneratePasswordResetTokenAsync(user);
+                await userManager.ResetPasswordAsync(user, token, model.Password);
+            }
+        }
+
+        public async Task DeleteUserAsync(string id)
+        {
+            var userManager = (UserManager<ApplicationUser>)_httpContextAccessor.HttpContext.RequestServices.GetService(typeof(UserManager<ApplicationUser>));
+            var user = await _studentDB.Users.FirstOrDefaultAsync(u => u.Id == id && u.CompanyId == _companyId);
+            if (user != null)
+                await userManager.DeleteAsync(user);
         }
         #endregion
     }
