@@ -57,6 +57,12 @@
 							<option value="4">Balochistan</option>
 						</select>
 					</div>
+					<div class="col-md-4">
+						<label asp-for="Company.UserRole" class="form-label">Role</label>
+						<select asp-for="Company.UserRole" class="form-select">
+							<option value="1">Admin</option>
+						</select>
+					</div>
 				</div>
 				<div class="row g-3 mt-1">
 					<div class="col-md-4">
@@ -137,7 +143,7 @@
 						<td>@company.UserRole</td>
 						<td>@company.UserName</td>
 						<td>@company.Email</td>
-						<td>@company.Password</td>
+						<td>**********</td>
 						<td>
 							<a asp-action="Company" asp-route-id="@company.Id" class="btn btn-sm btn-warning">Edit</a>
 							<a asp-action="CompanyDelete" asp-route-id="@company.Id" class="btn btn-sm btn-danger">Delete</a>

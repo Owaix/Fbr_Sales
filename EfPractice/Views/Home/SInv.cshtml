@@ -287,7 +287,7 @@
 							const $qtyInput = duplicateRow.find('input[name*="Quantity"]');
 							let qty = parseFloat($qtyInput.val()) || 0;
 							$qtyInput.val(qty + 1);
-							calculateRowTotal(duplicateRow);
+							calculateRowTotals(duplicateRow);
 						} else {
 							$row.find('input[name*="HsCode"]').val(item.hsCode);
 							$row.find('input[name*="ProductDescription"]').val(item.productDescription);
@@ -298,7 +298,7 @@
 							$row.find('input[name*="SalesTaxApplicable"]').val(item.salesTaxApplicable);
 							$row.find('input[name*="FurtherTax"]').val(item.furtherTax);
 							$row.find('input[name*="Discount"]').val(item.discount);
-							calculateRowTotal($row);
+							calculateRowTotals($row);
 						}
 
 						$container.hide();
@@ -361,11 +361,13 @@
 					<td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
 				</tr>`;
 				$('#itemsTable tbody').append(row);
-				updateInvoiceGrandTotal();
+				CalcInvoiceGrandTotal();
 				$('#itemsTable tbody tr:last input[name*="ProductDescription"]').focus().select();
 			}
 
-			function updateInvoiceGrandTotal() {
+			function updateInvoiceGrandTotal() { }
+
+			function CalcInvoiceGrandTotal() {
 				let sum = 0;
 				$('#itemsTable tbody .total-value').each(function () {
 					const v = parseFloat($(this).val()) || 0;
@@ -374,7 +376,9 @@
 				$('#GrandTotal').val(sum.toFixed(2));
 			}
 
-			function calculateRowTotal($row) {
+			function calculateRowTotal($row){}
+
+			function calculateRowTotals($row) {
 				var rate = parseFloat($row.find('input[name*="Rate"]').val()) || 0;
 				var qty = parseFloat($row.find('input[name*="Quantity"]').val()) || 0;
 				var valueExclST = parseFloat($row.find('input[name*="ValueSalesExcludingST"]').val()) || 0;
@@ -422,6 +426,10 @@
 						return;
 					}
 					removeRow($row.find('button.btn-danger')[0] || $row); // remove the row
+				}
+				if (e.key === 'Tab') {
+					const $row = $(this).closest('tr');
+					calculateRowTotals($row);
 				}
 			});
 

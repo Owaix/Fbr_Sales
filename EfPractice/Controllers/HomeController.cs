@@ -120,6 +120,9 @@ namespace EfPractice.Controllers
                 BusinessName = company.BusinessName,
             });
 
+            if (company.Password != string.Empty)
+                ModelState.Remove("Password");
+
             if (ModelState.IsValid)
             {
                 if (company.Id > 0)
@@ -132,7 +135,7 @@ namespace EfPractice.Controllers
                     UserName = company.UserName,
                     Email = company.Email,
                     CompanyId = company.Id,
-                    UserRoleId = GetUserRoleId("Admin")
+                    UserRoleId = Convert.ToInt16(company.UserRole)
                 };
                 var result = await _userManager.CreateAsync(user, company.Password);
                 if (!result.Succeeded)
