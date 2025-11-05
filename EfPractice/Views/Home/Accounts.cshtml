@@ -1,0 +1,55 @@
+@model EfPractice.Models.AccountViewModel
+<h2>Accounts</h2>
+<div class="card mb-3">
+	<div class="card-body">
+		<form asp-action="Accounts" method="post" class="row g-3" autocomplete="off">
+			<input type="hidden" asp-for="Account.Id" />
+			<div class="col-md-3">
+				<label asp-for="Account.AccountId" class="form-label">Account Code</label>
+				<input asp-for="Account.AccountId" class="form-control" />
+				<span asp-validation-for="Account.AccountId" class="text-danger"></span>
+			</div>
+			<div class="col-md-6">
+				<label asp-for="Account.AccountTitle" class="form-label">Account Title</label>
+				<input asp-for="Account.AccountTitle" class="form-control" />
+				<span asp-validation-for="Account.AccountTitle" class="text-danger"></span>
+			</div>
+			<div class="col-12">
+				<button type="submit" class="btn btn-primary">@(Model.Account.Id == 0 ? "Add" : "Update")</button>
+				<a asp-action="Accounts" class="btn btn-secondary">Clear</a>
+			</div>
+		</form>
+	</div>
+</div>
+@if (Model.Accounts?.Any() == true)
+{
+	<table class="table table-sm table-bordered table-striped">
+		<thead class="table-light">
+			<tr>
+				<th>Id</th>
+				<th>Account Code</th>
+				<th>Account Title</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var a in Model.Accounts)
+			{
+				<tr>
+					<td>@a.Id</td>
+					<td>@a.AccountId</td>
+					<td>@a.AccountTitle</td>
+					<td class="text-nowrap">
+						<a asp-action="Accounts" asp-route-id="@a.Id" class="btn btn-sm btn-primary">Edit</a>
+						<form asp-action="DeleteAccount" asp-route-id="@a.Id" method="post" class="d-inline" onsubmit="return confirm('Delete account?');">
+							<button class="btn btn-sm btn-danger">Del</button>
+						</form>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

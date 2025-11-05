@@ -21,6 +21,8 @@ namespace EfPractice.Context
         public virtual DbSet<Company> Companies { get; set; } = null!;
         public virtual DbSet<SaleInvoice> SaleInvoices { get; set; } = null!;
         public virtual DbSet<SaleInvoiceItem> SaleInvoiceItems { get; set; } = null!;
+        public virtual DbSet<Tax> Taxes { get; set; } = null!;
+        public virtual DbSet<Account> Accounts { get; set; } = null!;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public StudentContext(DbContextOptions<StudentContext> options, IHttpContextAccessor httpContextAccessor) : base(options)

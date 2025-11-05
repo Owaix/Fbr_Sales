@@ -1,0 +1,109 @@
+@model EfPractice.Models.TaxViewModel
+<h2>Taxes</h2>
+<div class="card mb-3">
+	<div class="card-body">
+		<form asp-action="Taxes" method="post" class="row g-3" autocomplete="off">
+			<input type="hidden" asp-for="Tax.Id" />
+			<div class="col-md-2">
+				<label asp-for="Tax.Code" class="form-label"></label>
+				<input asp-for="Tax.Code" class="form-control" />
+				<span asp-validation-for="Tax.Code" class="text-danger"></span>
+			</div>
+			<div class="col-md-3">
+				<label asp-for="Tax.Name" class="form-label"></label>
+				<input asp-for="Tax.Name" class="form-control" />
+				<span asp-validation-for="Tax.Name" class="text-danger"></span>
+			</div>
+			<div class="col-md-2">
+				<label asp-for="Tax.DefaultRate" class="form-label">Default Rate</label>
+				<input asp-for="Tax.DefaultRate" class="form-control" />
+			</div>
+			<div class="col-md-2">
+				<label asp-for="Tax.DefaultRateType" class="form-label">Default Rate Type</label>
+				<select asp-for="Tax.DefaultRateType" class="form-select">
+					<option value="Percentage">Percentage</option>
+					<option value="Fixed">Fixed</option>
+				</select>
+			</div>
+			<div class="col-md-2 d-flex align-items-end">
+				<div class="form-check">
+					<input class="form-check-input" asp-for="Tax.Active" />
+					<label class="form-check-label" asp-for="Tax.Active">Active</label>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<label asp-for="Tax.TaxType" class="form-label">Tax Type</label>
+				<select asp-for="Tax.TaxType" class="form-select">
+					<option value="GST">GST</option>
+					<option value="VAT">VAT</option>
+					<option value="SalesTax">Sales Tax</option>
+				</select>
+			</div>
+			<div class="col-md-3">
+				<label asp-for="Tax.SalesAccountHeadId" class="form-label">Sales Head</label>
+				<select asp-for="Tax.SalesAccountHeadId" class="form-select" asp-items="@(new SelectList(Model.Accounts, "Id", "AccountTitle"))">
+					<option value="">-- select --</option>
+				</select>
+			</div> <div class="col-md-3">
+				<label asp-for="Tax.PurchaseAccountHeadId" class="form-label">Purchase Head</label>
+				<select asp-for="Tax.PurchaseAccountHeadId" class="form-select" asp-items="@(new SelectList(Model.Accounts, "Id", "AccountTitle"))">
+					<option value="">-- select --</option>
+				</select>
+			</div>
+			<div class="col-12">
+				<button type="submit" class="btn btn-primary">@(Model.Tax.Id == 0 ? "Add" : "Update")</button>
+				<a asp-action="Taxes" class="btn btn-secondary">Clear</a>
+			</div>
+		</form>
+	</div>
+</div>
+@if (Model.Taxes?.Any() == true)
+{
+	<table class="table table-sm table-bordered table-striped">
+		<thead class="table-light">
+			<tr>
+				<th>Code</th>
+				<th>Name</th>
+				<th>Rate</th>
+				<th>Type</th>
+				<th>Tax Type</th>
+				<th>Sales Head</th>
+				<th>Purchase Head</th>
+				<th>Active</th>
+				<th>Created By</th>
+				<th>Created Date</th>
+				<th>Modified By</th>
+				<th>Modified Date</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var t in Model.Taxes)
+			{
+				<tr>
+					<td>@t.Code</td>
+					<td>@t.Name</td>
+					<td>@t.DefaultRate</td>
+					<td>@t.DefaultRateType</td>
+					<td>@t.TaxType</td>
+					<td>@t.SalesAccountHeadId</td>
+					<td>@t.PurchaseAccountHeadId</td>
+					<td>@(t.Active ? "Yes" : "No")</td>
+					<td>@t.CreatedBy</td>
+					<td>@t.CreatedDate.ToString("yyyy-MM-dd")</td>
+					<td>@t.ModifiedBy</td>
+					<td>@t.ModifiedDate?.ToString("yyyy-MM-dd")</td>
+					<td class="text-nowrap">
+						<a asp-action="Taxes" asp-route-id="@t.Id" class="btn btn-sm btn-primary">Edit</a>
+						<form asp-action="DeleteTax" asp-route-id="@t.Id" method="post" class="d-inline" onsubmit="return confirm('Delete tax?');">
+							<button class="btn btn-sm btn-danger">Del</button>
+						</form>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

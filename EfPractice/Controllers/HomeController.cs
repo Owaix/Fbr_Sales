@@ -1,7 +1,6 @@
 ﻿using EfPractice.Areas.Identity.Data;
 using EfPractice.Models;
 using EfPractice.Repository.Interface;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -445,6 +444,86 @@ namespace EfPractice.Controllers
                 return View("ResetPassword", vm);
             }
             return RedirectToAction(nameof(Users));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Taxes(int id = 0)
+        {
+            var vm = new TaxViewModel
+            {
+                Taxes = await _master.GetTaxesAsync(CompanyId ?? 0),
+                Tax = id > 0 ? await _master.GetTaxByIdAsync(id) ?? new Tax() : new Tax(),
+                Accounts = await _master.GetAccountsAsync(CompanyId ?? 0)
+            };
+            vm.Accounts = vm.Accounts.Select(Accounts =>
+            {
+                Accounts.AccountTitle = Accounts.AccountId + " - " + Accounts.AccountTitle;
+                return Accounts;
+            }).ToList();
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Taxes(Tax tax)
+        {
+            if (ModelState.IsValid)
+            {
+                if (tax.Id == 0)
+                    await _master.AddTaxAsync(tax);
+                else
+                    await _master.UpdateTaxAsync(tax);
+                return RedirectToAction(nameof(Taxes));
+            }
+            var vm = new TaxViewModel
+            {
+                Tax = tax,
+                Taxes = await _master.GetTaxesAsync(CompanyId ?? 0),
+                Accounts = await _master.GetAccountsAsync(CompanyId ?? 0)
+            };
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteTax(int id)
+        {
+            await _master.DeleteTaxAsync(id);
+            return RedirectToAction(nameof(Taxes));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Accounts(int id = 0)
+        {
+            var vm = new AccountViewModel
+            {
+                Accounts = await _master.GetAccountsAsync(CompanyId ?? 0),
+                Account = id > 0 ? await _master.GetAccountByIdAsync(id) ?? new Account() : new Account()
+            }; return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Accounts(Account account)
+        {
+            if (ModelState.IsValid)
+            {
+                if (account.Id == 0)
+                    await _master.AddAccountAsync(account);
+                else
+                    await _master.UpdateAccountAsync(account);
+                return RedirectToAction(nameof(Accounts));
+            }
+            var vm = new AccountViewModel
+            {
+                Account = account,
+                Accounts = await _master.GetAccountsAsync(CompanyId ?? 0)
+            };
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAccount(int id)
+        {
+            await _master.DeleteAccountAsync(id);
+            return RedirectToAction(nameof(Accounts));
         }
 
     }

@@ -783,5 +783,79 @@ namespace EfPractice.Repository.Class
                 await userManager.DeleteAsync(user);
         }
         #endregion
+
+        #region Tax
+        public async Task<List<Tax>> GetTaxesAsync(int companyId)
+        {
+            return await _studentDB.Taxes.AsNoTracking().Where(t => t.CompanyId == companyId).OrderBy(t => t.Code).ToListAsync();
+        }
+        public async Task<Tax?> GetTaxByIdAsync(int id)
+        {
+            return await _studentDB.Taxes.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id && t.CompanyId == _companyId);
+        }
+        public async Task<int> AddTaxAsync(Tax tax)
+        {
+            tax.CompanyId = _companyId ?? tax.CompanyId;
+            tax.CreatedBy = _httpContextAccessor.HttpContext?.User?.FindFirst("UserName")?.Value;
+            tax.CreatedDate = DateTime.UtcNow;
+            _studentDB.Taxes.Add(tax);
+            return await _studentDB.SaveChangesAsync();
+        }
+        public async Task<int> UpdateTaxAsync(Tax tax)
+        {
+            var existing = await _studentDB.Taxes.FirstOrDefaultAsync(t => t.Id == tax.Id && t.CompanyId == _companyId);
+            if (existing == null) return 0;
+            existing.Code = tax.Code;
+            existing.Name = tax.Name;
+            existing.DefaultRate = tax.DefaultRate;
+            existing.DefaultRateType = tax.DefaultRateType;
+            existing.SalesAccountHeadId = tax.SalesAccountHeadId;
+            existing.PurchaseAccountHeadId = tax.PurchaseAccountHeadId;
+            existing.TaxType = tax.TaxType;
+            existing.Active = tax.Active;
+            existing.ModifiedBy = _httpContextAccessor.HttpContext?.User?.FindFirst("UserName")?.Value;
+            existing.ModifiedDate = DateTime.UtcNow;
+            return await _studentDB.SaveChangesAsync();
+        }
+        public async Task<int> DeleteTaxAsync(int id)
+        {
+            var existing = await _studentDB.Taxes.FirstOrDefaultAsync(t => t.Id == id && t.CompanyId == _companyId);
+            if (existing == null) return 0;
+            _studentDB.Taxes.Remove(existing);
+            return await _studentDB.SaveChangesAsync();
+        }
+        #endregion
+
+        #region Accounts
+        public async Task<List<Account>> GetAccountsAsync(int companyId)
+        {
+            return await _studentDB.Accounts.AsNoTracking().Where(a => a.CompanyId == companyId).OrderBy(a => a.AccountId).ToListAsync();
+        }
+        public async Task<Account?> GetAccountByIdAsync(int id)
+        {
+            return await _studentDB.Accounts.AsNoTracking().FirstOrDefaultAsync(a => a.Id == id && a.CompanyId == _companyId);
+        }
+        public async Task<int> AddAccountAsync(Account account)
+        {
+            account.CompanyId = _companyId ?? account.CompanyId;
+            _studentDB.Accounts.Add(account);
+            return await _studentDB.SaveChangesAsync();
+        }
+        public async Task<int> UpdateAccountAsync(Account account)
+        {
+            var existing = await _studentDB.Accounts.FirstOrDefaultAsync(a => a.Id == account.Id && a.CompanyId == _companyId);
+            if (existing == null) return 0;
+            existing.AccountId = account.AccountId;
+            existing.AccountTitle = account.AccountTitle;
+            return await _studentDB.SaveChangesAsync();
+        }
+        public async Task<int> DeleteAccountAsync(int id)
+        {
+            var existing = await _studentDB.Accounts.FirstOrDefaultAsync(a => a.Id == id && a.CompanyId == _companyId);
+            if (existing == null) return 0;
+            _studentDB.Accounts.Remove(existing);
+            return await _studentDB.SaveChangesAsync();
+        }
+        #endregion
     }
 }

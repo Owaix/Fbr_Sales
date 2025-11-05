@@ -132,4 +132,17 @@ namespace EfPractice.Models
         public string invoiceNo { get; set; }
         public string errorCode { get; set; }
     }
+
+    public class TaxViewModel
+    {
+        public Tax Tax { get; set; } = new Tax();
+        public List<Tax> Taxes { get; set; } = new List<Tax>();
+        public List<Account> Accounts { get; set; } = new List<Account>();
+    }
+
+    public class AccountViewModel
+    {
+        public Account Account { get; set; } = new Account();
+        public List<Account> Accounts { get; set; } = new List<Account>();
+    }
 }

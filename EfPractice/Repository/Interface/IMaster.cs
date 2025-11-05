@@ -107,5 +107,19 @@ namespace EfPractice.Repository.Interface
         Task AddUserAsync(UserEditViewModel model);
         Task UpdateUserAsync(UserEditViewModel model);
         Task DeleteUserAsync(string id);
+        #region Tax
+        Task<List<Tax>> GetTaxesAsync(int companyId);
+        Task<Tax?> GetTaxByIdAsync(int id);
+        Task<int> AddTaxAsync(Tax tax);
+        Task<int> UpdateTaxAsync(Tax tax);
+        Task<int> DeleteTaxAsync(int id);
+        #endregion
+
+        // Accounts
+        Task<List<Account>> GetAccountsAsync(int companyId);
+        Task<Account?> GetAccountByIdAsync(int id);
+        Task<int> AddAccountAsync(Account account);
+        Task<int> UpdateAccountAsync(Account account);
+        Task<int> DeleteAccountAsync(int id);
     }
 }
