@@ -520,7 +520,7 @@ namespace EfPractice.Repository.Class
 
         public async Task<Customer?> GetCustomerByIdAsync(int id)
         {
-            return await _studentDB.Customers.AsNoTracking().FirstOrDefaultAsync(c => c.CID == id && c.CompanyId == _companyId);
+            return await _studentDB.Customers.AsNoTracking().FirstOrDefaultAsync(c => c.CustomerID == id && c.CompanyId == _companyId);
         }
 
         public async Task<Customer?> GetCustomerByNTNAsync(string ntn, int companyId)
@@ -537,8 +537,9 @@ namespace EfPractice.Repository.Class
 
         public async Task<int> UpdateCustomerAsync(Customer customer)
         {
-            var existing = await _studentDB.Customers.FirstOrDefaultAsync(c => c.CID == customer.CID && c.CompanyId == _companyId);
+            var existing = await _studentDB.Customers.FirstOrDefaultAsync(c => c.CustomerID == customer.CustomerID && c.CompanyId == _companyId);
             if (existing == null) return 0;
+            // legacy fields mapping (backward compatibility)
             existing.CusName = customer.CusName;
             existing.NTN_No = customer.NTN_No;
             existing.Add = customer.Add;
@@ -547,12 +548,35 @@ namespace EfPractice.Repository.Class
             existing.Cell = customer.Cell;
             existing.MrNO = customer.MrNO;
             existing.RegistrationType = customer.RegistrationType;
+            // new fields mapping
+            existing.Code = customer.Code;
+            existing.CustomerType = customer.CustomerType;
+            existing.Telephone = customer.Telephone;
+            existing.BusinessSector = customer.BusinessSector;
+            existing.Country = customer.Country;
+            existing.State = customer.State;
+            existing.CityName = customer.CityName;
+            existing.ProductPriceLevel = customer.ProductPriceLevel;
+            existing.ATL = customer.ATL;
+            existing.ShouldBeSupplier = customer.ShouldBeSupplier;
+            existing.AccountManager = customer.AccountManager;
+            existing.ContactPerson = customer.ContactPerson;
+            existing.Mobile = customer.Mobile;
+            existing.Email = customer.Email;
+            existing.Area = customer.Area;
+            existing.Fax = customer.Fax;
+            existing.CreditLimit = customer.CreditLimit;
+            existing.CreditPeriod = customer.CreditPeriod;
+            existing.CreditTerms = customer.CreditTerms;
+            existing.Website = customer.Website;
+            existing.STRegionNo = customer.STRegionNo;
+            existing.Remarks = customer.Remarks;
             return await _studentDB.SaveChangesAsync();
         }
 
         public async Task<int> DeleteCustomerAsync(int id)
         {
-            var customer = await _studentDB.Customers.FirstOrDefaultAsync(c => c.CID == id && c.CompanyId == _companyId);
+            var customer = await _studentDB.Customers.FirstOrDefaultAsync(c => c.CustomerID == id && c.CompanyId == _companyId);
             if (customer == null) return 0;
             _studentDB.Customers.Remove(customer);
             return await _studentDB.SaveChangesAsync();

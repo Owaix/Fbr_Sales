@@ -1,232 +1,222 @@
 ﻿@model EfPractice.Models.CustomerViewModel
 
 @{
-    ViewData["Title"] = "Customer Profile";
+	ViewData["Title"] = "Customer Profile";
 }
 <meta charset="utf-8" />
 <title>@ViewData["Title"] - My ASP.NET Application</title>
 
 <style>
-    .form-control {
-        width: 100%;
-    }
+	.form-control {
+		width: 100%;
+	}
 
-    .table-container {
-        max-height: 250px;
-        overflow-y: auto;
-    }
+	.table-container {
+		max-height: 300px;
+		overflow-y: auto;
+	}
 
-    tr:hover {
-        background-color: #f1f1f1;
-    }
+	thead {
+		background-color: #007bff;
+		color: white;
+	}
 
-    .btn {
-        cursor: pointer;
-    }
-
-    thead {
-        background-color: #007bff;
-        color: white;
-    }
-
-    .card-add {
-        margin-bottom: 20px;
-    }
+	.card-add {
+		margin-bottom: 20px;
+	}
 </style>
 
-<div class="container mt-5">
-    <h2 class="mb-4">Customer Profile</h2>
+<div class="container mt-4">
+	<h2 class="mb-3">Customer Profile</h2>
 
-    <!-- Form -->
-    <div class="card card-add">
-        <div class="card-body">
-            <form asp-action="Customer" asp-controller="Home" method="post">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label asp-for="Customer.CusName"></label>
-                        <input type="hidden" asp-for="Customer.CID" />
-                        <input asp-for="Customer.CusName" class="form-control" />
-                        <span asp-validation-for="Customer.CusName" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label asp-for="Customer.NTN_No"></label>
-                        <input asp-for="Customer.NTN_No" class="form-control" />
-                        <span asp-validation-for="Customer.NTN_No" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label asp-for="Customer.Add"></label>
-                        <input asp-for="Customer.Add" class="form-control" />
-                    </div>
-
-                    <div class="col-md-4">
-                        <label>Province</label>
-                        <select asp-for="Customer.City" class="form-select">
-                            <option value="">Select Province</option>
-                            <option value="1">Punjab</option>
-                            <option value="2">Sindh</option>
-                            <option value="3">KPK</option>
-                            <option value="4">Balochistan</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label>Customer Status</label>
-                        <select asp-for="Customer.InActive" class="form-select">
-                            <option value="false">Active</option>
-                            <option value="true">Inactive</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label asp-for="Customer.Cell"></label>
-                        <input asp-for="Customer.Cell" class="form-control" />
-                        <span asp-validation-for="Customer.Cell" class="text-danger"></span>
-
-                    </div>
-
-                    <div class="col-md-4">
-                        <label asp-for="Customer.MrNO">Contract No:</label>
-                        <input asp-for="Customer.MrNO" class="form-control" />
-                        <span asp-validation-for="Customer.MrNO" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-4 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn btn-primary w-50">Save</button>
-                        <button type="reset" class="btn btn-secondary w-50">Reset</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Table -->
-    <div class="table-container">
-        <table id="customerTable" class="table table-bordered table-striped align-middle">
-            <thead class="table-primary">
-                <tr>
-                    <th>ID</th>
-                    <th>Customer Name</th>
-                    <th>NTN/CNIC</th>
-                    <th>Address</th>
-                    <th>Province</th>
-                    <th>Status</th>
-                    <th>Cell</th>
-                    <th>Contract No</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var c in Model.Customers)
-                {
-                    <tr>
-                        <td>@c.CID</td>
-                        <td>@c.CusName</td>
-                        <td>@c.NTN_No</td>
-                        <td>@c.Add</td>
-                        <td>@c.Prn</td>
-                        <td>@(c.InActive == true ? "Inactive" : "Active")</td>
-                        <td>@c.Cell</td>
-                        <td>@c.MrNO</td>
-                        <td>
-                            <a asp-action="Customer" asp-route-id="@c.CID" class="btn btn-sm btn-warning">Edit</a>
-                            <a asp-action="CustomerDelete" asp-route-id="@c.CID" class="btn btn-sm btn-danger">Delete</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+	<form asp-action="Customer" asp-controller="Home" method="post">
+		<input type="hidden" asp-for="Customer.CustomerID" />
+		<ul class="nav nav-tabs" role="tablist">
+			<li class="nav-item">
+				<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab">
+					General Information
+				</button>
+			</li>
+			<li class="nav-item">
+				<button class="nav-link" data-bs-toggle="tab" data-bs-target="#additional" type="button" role="tab">
+					Additional Information
+				</button>
+			</li>
+		</ul>
+		<div class="tab-content border border-top-0 p-3 bg-white">
+			<div class="tab-pane fade show active" id="general" role="tabpanel">
+				<div class="row g-3">
+					<div class="col-md-3">
+						<label asp-for="Customer.Code"></label>
+						<input asp-for="Customer.Code" class="form-control" />
+						<span asp-validation-for="Customer.Code" class="text-danger"></span>
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.Name">Customer Name</label>
+						<input asp-for="Customer.Name" class="form-control" required />
+						<span asp-validation-for="Customer.Name" class="text-danger"></span>
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.CustomerType">Customer Type</label>
+						<select asp-for="Customer.CustomerType" asp-items="Model.CustomerTypes" class="form-select"></select>
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.Telephone">Telephone</label>
+						<input asp-for="Customer.Telephone" class="form-control" />
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.BusinessSector">Business Sector</label>
+						<select asp-for="Customer.BusinessSector" asp-items="Model.BusinessSectors" class="form-select"></select>
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.Country">Country</label>
+						<select asp-for="Customer.Country" asp-items="Model.Countries" class="form-select"></select>
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.State">State</label>
+						<select asp-for="Customer.State" asp-items="Model.States" class="form-select"></select>
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.CityName">City</label>
+						<select asp-for="Customer.CityName" asp-items="Model.Cities" class="form-select"></select>
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.ProductPriceLevel">Product Price Level</label>
+						<select asp-for="Customer.ProductPriceLevel" asp-items="Model.ProductPriceLevels" class="form-select"></select>
+					</div>
+					<div class="col-md-3 form-check pt-4">
+						<input asp-for="Customer.Active" class="form-check-input" />
+						<label asp-for="Customer.Active" class="form-check-label">Active</label>
+					</div>
+					<div class="col-md-3 form-check pt-4">
+						<input asp-for="Customer.ATL" class="form-check-input" />
+						<label asp-for="Customer.ATL" class="form-check-label">ATL</label>
+					</div>
+					<div class="col-md-3 form-check pt-4">
+						<input asp-for="Customer.ShouldBeSupplier" class="form-check-input" />
+						<label asp-for="Customer.ShouldBeSupplier" class="form-check-label">Should Be Supplier?</label>
+					</div>
+					<div class="col-md-6">
+						<label asp-for="Customer.Address">Address</label>
+						<textarea asp-for="Customer.Address" class="form-control" rows="2"></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane fade" id="additional" role="tabpanel">
+				<div class="row g-3">
+					<div class="col-md-3">
+						<label asp-for="Customer.AccountManager">Account Manager</label>
+						<select asp-for="Customer.AccountManager" asp-items="Model.AccountManagers" class="form-select"></select>
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.ContactPerson">Contact Person</label>
+						<input asp-for="Customer.ContactPerson" class="form-control" />
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.Mobile">Mobile</label>
+						<input asp-for="Customer.Mobile" class="form-control" />
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.Email">Email</label>
+						<input asp-for="Customer.Email" class="form-control" />
+						<span asp-validation-for="Customer.Email" class="text-danger"></span>
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.Area">Area</label>
+						<select asp-for="Customer.Area" asp-items="Model.Areas" class="form-select"></select>
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.Fax">Fax</label>
+						<input asp-for="Customer.Fax" class="form-control" />
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.CreditLimit">Credit Limit</label>
+						<input asp-for="Customer.CreditLimit" class="form-control" />
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.CreditPeriod">Credit Period (Days)</label>
+						<input asp-for="Customer.CreditPeriod" class="form-control" />
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.CreditTerms">Credit Terms</label>
+						<select asp-for="Customer.CreditTerms" asp-items="Model.CreditTermsOptions" class="form-select"></select>
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.Website">Website</label>
+						<input asp-for="Customer.Website" class="form-control" />
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.STRegionNo">S.T Region No</label>
+						<input asp-for="Customer.STRegionNo" class="form-control" />
+					</div>
+					<div class="col-md-3">
+						<label asp-for="Customer.NtnCnic">N.T.N / CNIC</label>
+						<input asp-for="Customer.NtnCnic" class="form-control" />
+						<span asp-validation-for="Customer.NtnCnic" class="text-danger"></span>
+					</div>
+					<div class="col-md-6">
+						<label asp-for="Customer.Remarks">Remarks</label>
+						<textarea asp-for="Customer.Remarks" class="form-control" rows="2"></textarea>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="mt-3 d-flex gap-2">
+			<button type="submit" class="btn btn-primary">Save</button>
+			<button type="reset" class="btn btn-secondary">Reset</button>
+		</div>
+	</form>
+	<hr />
+	<div class="table-container">
+		<table class="table table-bordered table-striped align-middle" id="customerTable">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Type</th>
+					<th>Telephone</th>
+					<th>City</th>
+					<th>Active</th>
+					<th>Credit Limit</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var c in Model.Customers)
+				{
+					<tr>
+						<td>@c.CustomerID</td>
+						<td>@c.Name</td>
+						<td>@c.CustomerType</td>
+						<td>@c.Telephone</td>
+						<td>@c.CityName</td>
+						<td>@(c.Active ? "Yes" : "No")</td>
+						<td>@c.CreditLimit</td>
+						<td>
+							<a asp-action="Customer" asp-route-id="@c.CustomerID" class="btn btn-sm btn-warning">Edit</a>
+							<a asp-action="CustomerDelete" asp-route-id="@c.CustomerID" class="btn btn-sm btn-danger">Delete</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-    <script>
-        $(function(){
-            $('#customerTable').DataTable({
-                pageLength:25,
-                order:[[1,'asc']],
-                columnDefs:[
-                    {targets:[0,8], searchable:false},
-                    {targets:8, orderable:false}
-                ]
-            });
-        });
-    </script>
-    <script>
-        var editingRow = null;
-        var customerId = 1; // auto increment ID (client only)
-        function clearForm() {
-            $("#CustomerName, #NTN, #Address, #Province, #CustomerStatus, #Cell, #ContractNo").val('');
-            $("#addButton").text("Add").removeClass("btn-warning").addClass("btn-primary");
-            editingRow = null;
-        }
-        $("#addButton").click(function () {
-            var customerData = {
-                id: editingRow ? $(editingRow).find("td:eq(0)").text() : customerId,
-                name: $("#CustomerName").val(),
-                ntn: $("#NTN").val(),
-                address: $("#Address").val(),
-                province: $("#Province").val(),
-                status: $("#CustomerStatus").val(),
-                cell: $("#Cell").val(),
-                contract: $("#ContractNo").val()
-            };
-            if (!customerData.name || !customerData.ntn || !customerData.address || !customerData.province || !customerData.status || !customerData.cell || !customerData.contract) {
-                Swal.fire("Error!", "Please fill all fields.", "error");
-                return;
-            }
-            if (editingRow) {
-                $(editingRow).find("td:eq(1)").text(customerData.name);
-                $(editingRow).find("td:eq(2)").text(customerData.ntn);
-                $(editingRow).find("td:eq(3)").text(customerData.address);
-                $(editingRow).find("td:eq(4)").text(customerData.province);
-                $(editingRow).find("td:eq(5)").text(customerData.status);
-                $(editingRow).find("td:eq(6)").text(customerData.cell);
-                $(editingRow).find("td:eq(7)").text(customerData.contract);
-                Swal.fire("Updated!", "Customer updated successfully.", "success");
-                clearForm();
-            } else {
-                var table = $('#customerTable').DataTable();
-                table.row.add([
-                    customerData.id,
-                    customerData.name,
-                    customerData.ntn,
-                    customerData.address,
-                    customerData.province,
-                    customerData.status,
-                    customerData.cell,
-                    customerData.contract,
-                    '<a href="#" class="btn btn-sm btn-info editRow">Edit</a> <a href="#" class="btn btn-sm btn-danger deleteRow">Delete</a>'
-                ]).draw(false);
-                customerId++;
-                Swal.fire("Added!", "Customer added successfully.", "success");
-                clearForm();
-            }
-        });
-        $("#resetButton").click(function () { clearForm(); Swal.fire("Reset!", "Form cleared successfully.", "info"); });
-        $('#customerTable').on("click", ".editRow", function (e) {
-            e.preventDefault();
-            editingRow = $(this).closest("tr");
-            var tds = editingRow.children('td');
-            $("#CustomerName").val(tds.eq(1).text());
-            $("#NTN").val(tds.eq(2).text());
-            $("#Address").val(tds.eq(3).text());
-            $("#Province").val(tds.eq(4).text());
-            $("#CustomerStatus").val(tds.eq(5).text()==='Inactive'?'true':'false');
-            $("#Cell").val(tds.eq(6).text());
-            $("#ContractNo").val(tds.eq(7).text());
-            $("#addButton").text("Update").removeClass("btn-primary").addClass("btn-warning");
-        });
-        $('#customerTable').on("click", ".deleteRow", function (e) {
-            e.preventDefault();
-            var row = $(this).closest("tr");
-            Swal.fire({ title: "Are you sure?", text: "This customer will be deleted!", icon: "warning", showCancelButton: true, confirmButtonText: "Yes, delete it!" })
-                .then((result) => { if (result.isConfirmed) { $('#customerTable').DataTable().row(row).remove().draw(); Swal.fire("Deleted!", "Customer removed successfully.", "success"); clearForm(); } });
-        });
-    </script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+	<script>
+		$(function(){
+			$('#customerTable').DataTable({
+				pageLength:25,
+				order:[[1,'asc']],
+				columnDefs:[
+					{targets:[0,7], searchable:false},
+					{targets:7, orderable:false}
+				]
+			});
+		});
+	</script>
 }

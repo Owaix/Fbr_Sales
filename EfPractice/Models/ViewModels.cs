@@ -1,11 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EfPractice.Models
 {
     public class CustomerViewModel
     {
         public Customer Customer { get; set; } = new Customer();
-        public List<Customer> Customers { get; set; } = new List<Customer>();
+        public List<Customer> Customers { get; set; } = new();
+        public List<SelectListItem> CustomerTypes { get; set; } = new();
+        public List<SelectListItem> BusinessSectors { get; set; } = new();
+        public List<SelectListItem> Countries { get; set; } = new();
+        public List<SelectListItem> States { get; set; } = new();
+        public List<SelectListItem> Cities { get; set; } = new();
+        public List<SelectListItem> ProductPriceLevels { get; set; } = new();
+        public List<SelectListItem> AccountManagers { get; set; } = new();
+        public List<SelectListItem> Areas { get; set; } = new();
+        public List<SelectListItem> CreditTermsOptions { get; set; } = new();
     }
 
     public class ItemsViewModel

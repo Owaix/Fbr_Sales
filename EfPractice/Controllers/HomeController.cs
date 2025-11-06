@@ -3,6 +3,8 @@ using EfPractice.Models;
 using EfPractice.Repository.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering; // added for SelectListItem
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -30,33 +32,76 @@ namespace EfPractice.Controllers
             return View();
         }
 
+        // REWRITTEN CUSTOMER ACTIONS FOR REDESIGNED CRUD
         public async Task<IActionResult> Customer(int id = 0)
         {
-            CustomerViewModel model = new CustomerViewModel();
+            var vm = new CustomerViewModel();
             if (id > 0)
-                model.Customer = await _master.GetCustomerByIdAsync(id);
+                vm.Customer = await _master.GetCustomerByIdAsync(id) ?? new Customer();
 
-            var customers = await _master.GetAllCustomersAsync(CompanyId ?? 0);
-            customers.ForEach(c => c.Prn = GetProvinceName(c.City ?? 0));
-            model.Customers = customers;
-            return View(model);
+            vm.Customers = await _master.GetAllCustomersAsync(CompanyId ?? 0);
+            vm.Customers.ForEach(c => c.Prn = GetProvinceName(c.City ?? 0));
+
+            // Static dropdown data (replace with DB sourced lists if available)
+            vm.CustomerTypes = new List<SelectListItem> { new("Retail", "Retail"), new("Wholesale", "Wholesale"), new("Corporate", "Corporate") };
+            vm.BusinessSectors = new List<SelectListItem> { new("IT", "IT"), new("Finance", "Finance"), new("Manufacturing", "Manufacturing"), new("Agriculture", "Agriculture") };
+            vm.Countries = new List<SelectListItem> { new("Pakistan", "Pakistan"), new("USA", "USA"), new("UK", "UK") };
+            vm.States = new List<SelectListItem> { new("Punjab", "Punjab"), new("Sindh", "Sindh"), new("KPK", "KPK"), new("Balochistan", "Balochistan") };
+            vm.Cities = new List<SelectListItem> { new("Lahore", "Lahore"), new("Karachi", "Karachi"), new("Islamabad", "Islamabad"), new("Peshawar", "Peshawar") };
+            vm.ProductPriceLevels = new List<SelectListItem> { new("Standard", "Standard"), new("Premium", "Premium"), new("Discount", "Discount") };
+            vm.AccountManagers = new List<SelectListItem> { new("Ali", "Ali"), new("Ahmed", "Ahmed"), new("Sara", "Sara") };
+            vm.Areas = new List<SelectListItem> { new("North", "North"), new("South", "South"), new("East", "East"), new("West", "West") };
+            vm.CreditTermsOptions = new List<SelectListItem> { new("Cash", "Cash"), new("Net 30", "Net 30"), new("Net 60", "Net 60") };
+            return View(vm);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Customer(Customer customer)
         {
-            CustomerViewModel model = new CustomerViewModel();
-            if (ModelState.IsValid)
+            try
             {
+                if (!ModelState.IsValid)
+                {
+                    return View(customer);
+                }
+
                 customer.CompanyId = CompanyId ?? 0;
-                if (customer.CID > 0)
+                if (customer.CustomerID > 0)
                     await _master.UpdateCustomerAsync(customer);
                 else
                     await _master.AddCustomerAsync(customer);
+                // After successful save reset the form model
+                customer = new Customer();
+                TempData["Success"] = "Customer saved successfully.";
+
+                var vm = new CustomerViewModel
+                {
+                    Customers = await _master.GetAllCustomersAsync(CompanyId ?? 0),
+                    Customer = customer
+                };
+                vm.Customers.ForEach(c => c.Prn = GetProvinceName(c.City ?? 0));
+                vm.CustomerTypes = new List<SelectListItem> { new("Retail", "Retail"), new("Wholesale", "Wholesale"), new("Corporate", "Corporate") };
+                vm.BusinessSectors = new List<SelectListItem> { new("IT", "IT"), new("Finance", "Finance"), new("Manufacturing", "Manufacturing"), new("Agriculture", "Agriculture") };
+                vm.Countries = new List<SelectListItem> { new("Pakistan", "Pakistan"), new("USA", "USA"), new("UK", "UK") };
+                vm.States = new List<SelectListItem> { new("Punjab", "Punjab"), new("Sindh", "Sindh"), new("KPK", "KPK"), new("Balochistan", "Balochistan") };
+                vm.Cities = new List<SelectListItem> { new("Lahore", "Lahore"), new("Karachi", "Karachi"), new("Islamabad", "Islamabad"), new("Peshawar", "Peshawar") };
+                vm.ProductPriceLevels = new List<SelectListItem> { new("Standard", "Standard"), new("Premium", "Premium"), new("Discount", "Discount") };
+                vm.AccountManagers = new List<SelectListItem> { new("Ali", "Ali"), new("Ahmed", "Ahmed"), new("Sara", "Sara") };
+                vm.Areas = new List<SelectListItem> { new("North", "North"), new("South", "South"), new("East", "East"), new("West", "West") };
+                vm.CreditTermsOptions = new List<SelectListItem> { new("Cash", "Cash"), new("Net 30", "Net 30"), new("Net 60", "Net 60") };
+                return RedirectToAction("Customer");
+
             }
-            model.Customers = await _master.GetAllCustomersAsync(CompanyId ?? 0);
-            model.Customers.ForEach(c => c.Prn = GetProvinceName(c.City ?? 0));
-            return View(model);
+            catch (DbUpdateConcurrencyException ex)
+            {
+                foreach (var entry in ex.Entries)
+                {
+                    Console.WriteLine($"Entity: {entry.Entity.GetType().Name}");
+                    Console.WriteLine($"State: {entry.State}");
+                }
+                throw; // rethrow after inspecting
+            }
         }
 
         public async Task<IActionResult> CustomerDelete(int id)
