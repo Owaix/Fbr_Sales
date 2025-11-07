@@ -29,7 +29,8 @@
 <div class="container mt-4">
 	<h2 class="mb-3">Customer Profile</h2>
 
-	<form asp-action="Customer" asp-controller="Home" method="post">
+	<form asp-action="Customer" asp-controller="Home" method="post" novalidate>
+		@Html.ValidationSummary(true, "", new { @class = "text-danger" })
 		<input type="hidden" asp-for="Customer.CustomerID" />
 		<ul class="nav nav-tabs" role="tablist">
 			<li class="nav-item">
@@ -202,21 +203,3 @@
 		</table>
 	</div>
 </div>
-
-@section Scripts {
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-	<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-	<script>
-		$(function(){
-			$('#customerTable').DataTable({
-				pageLength:25,
-				order:[[1,'asc']],
-				columnDefs:[
-					{targets:[0,7], searchable:false},
-					{targets:7, orderable:false}
-				]
-			});
-		});
-	</script>
-}

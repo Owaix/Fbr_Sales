@@ -13,37 +13,40 @@
                     @Html.ValidationSummary(true, "Please fix the following errors:")
                 </div>
             }
-            <form asp-action="SaveUser" method="post" autocomplete="off">
-                @if(Model.EditUser?.Id!=null){<input type="hidden" asp-for="EditUser.Id" />}
+            <form asp-action="Users" asp-controller="Home" method="post" novalidate>
+                @if (Model.User?.Id != null)
+                {
+                    <input type="hidden" asp-for="User.Id" />
+                }
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label asp-for="EditUser.UserName" class="form-label"></label>
-                        <input asp-for="EditUser.UserName" class="form-control" />
-                        <span asp-validation-for="EditUser.UserName" class="text-danger"></span>
+                        <label asp-for="User.UserName" class="form-label"></label>
+                        <input asp-for="User.UserName" class="form-control" />
+                        <span asp-validation-for="User.UserName" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
-                        <label asp-for="EditUser.Email" class="form-label"></label>
-                        <input asp-for="EditUser.Email" class="form-control" />
-                        <span asp-validation-for="EditUser.Email" class="text-danger"></span>
+                        <label asp-for="User.Email" class="form-label"></label>
+                        <input asp-for="User.Email" class="form-control" />
+                        <span asp-validation-for="User.Email" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
-                        <label asp-for="EditUser.RoleName" class="form-label">Role</label>
-                        <select asp-for="EditUser.RoleName" class="form-select">
+                        <label asp-for="User.RoleName" class="form-label">Role</label>
+                        <select asp-for="User.RoleName" class="form-select">
                             <option value="User">User</option>
                             <option value="Staff">Staff</option>
                             <option value="Manager">Manager</option>
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label asp-for="EditUser.Password" class="form-label"></label>
-                        <input asp-for="EditUser.Password" class="form-control" autocomplete="new-password" />
-                        <span class="form-text">@((Model.EditUser?.Id==null)?"Required":"Leave blank to keep current password")</span>
-                        <span asp-validation-for="EditUser.Password" class="text-danger"></span>
+                        <label asp-for="User.Password" class="form-label"></label>
+                        <input asp-for="User.Password" class="form-control" autocomplete="new-password" />
+                        <span class="form-text">@((Model.User?.Id == null) ? "Required" : "Leave blank to keep current password")</span>
+                        <span asp-validation-for="User.Password" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
-                        <label asp-for="EditUser.ConfirmPassword" class="form-label"></label>
-                        <input asp-for="EditUser.ConfirmPassword" class="form-control" autocomplete="new-password" />
-                        <span asp-validation-for="EditUser.ConfirmPassword" class="text-danger"></span>
+                        <label asp-for="User.ConfirmPassword" class="form-label"></label>
+                        <input asp-for="User.ConfirmPassword" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="User.ConfirmPassword" class="text-danger"></span>
                     </div>
                     <div class="col-md-4 d-flex align-items-end gap-2">
                         <button class="btn btn-primary w-50" type="submit">Save</button>

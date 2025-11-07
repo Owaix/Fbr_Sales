@@ -22,6 +22,13 @@ namespace EfPractice.Models
     {
         public Item Item { get; set; } = new Item();
         public List<Item> Items { get; set; } = new List<Item>();
+        // New dropdown sources
+        public List<SelectListItem> Units { get; set; } = new();
+        public List<SelectListItem> Categories { get; set; } = new();
+        public List<SelectListItem> SubCategories { get; set; } = new();
+        public List<SelectListItem> Brands { get; set; } = new();
+        public List<SelectListItem> Taxes { get; set; } = new();
+        public List<SelectListItem> TaxTypes { get; set; } = new();
     }
 
     public class CompanyViewModel

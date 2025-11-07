@@ -608,12 +608,27 @@ namespace EfPractice.Repository.Class
         {
             var existing = await _studentDB.Items.FirstOrDefaultAsync(i => i.Id == item.Id && i.CompanyId == _companyId);
             if (existing == null) return 0;
-            existing.ItemName = item.ItemName;
+            existing.ItemCode = item.ItemCode;
+            existing.Name = item.Name;
             existing.Description = item.Description;
             existing.HSCode = item.HSCode;
             existing.Rate = item.Rate;
             existing.UOM = item.UOM;
             existing.Category = item.Category;
+            // new fields
+            existing.ReorderLevel = item.ReorderLevel;
+            existing.SubCategory = item.SubCategory;
+            existing.BuyingRate = item.BuyingRate;
+            existing.ListPrice = item.ListPrice;
+            existing.PosRate = item.PosRate;
+            existing.Active = item.Active;
+            existing.BarcodeNo = item.BarcodeNo;
+            existing.BarcodePrice = item.BarcodePrice;
+            existing.Brand = item.Brand;
+            existing.Label = item.Label;
+            existing.TaxId = item.TaxId;
+            existing.TaxRate = item.TaxRate;
+            existing.TaxType = item.TaxType;
             return await _studentDB.SaveChangesAsync();
         }
 

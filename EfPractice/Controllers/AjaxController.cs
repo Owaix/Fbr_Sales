@@ -23,7 +23,7 @@ namespace EfPractice.Controllers
             var result = items.Select(x => new
             {
                 HsCode = x.HSCode,
-                ProductDescription = x.ItemName,
+                ProductDescription = x.Name,
                 Rate = x.Rate?.ToString() ?? "",
                 UoM = x.UOM,
                 Quantity = 1,

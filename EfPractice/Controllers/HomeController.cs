@@ -61,37 +61,33 @@ namespace EfPractice.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return View(customer);
-                }
-
-                customer.CompanyId = CompanyId ?? 0;
-                if (customer.CustomerID > 0)
-                    await _master.UpdateCustomerAsync(customer);
-                else
-                    await _master.AddCustomerAsync(customer);
-                // After successful save reset the form model
-                customer = new Customer();
-                TempData["Success"] = "Customer saved successfully.";
-
-                var vm = new CustomerViewModel
+                var model = new CustomerViewModel
                 {
                     Customers = await _master.GetAllCustomersAsync(CompanyId ?? 0),
-                    Customer = customer
+                    Customer = customer,
                 };
-                vm.Customers.ForEach(c => c.Prn = GetProvinceName(c.City ?? 0));
-                vm.CustomerTypes = new List<SelectListItem> { new("Retail", "Retail"), new("Wholesale", "Wholesale"), new("Corporate", "Corporate") };
-                vm.BusinessSectors = new List<SelectListItem> { new("IT", "IT"), new("Finance", "Finance"), new("Manufacturing", "Manufacturing"), new("Agriculture", "Agriculture") };
-                vm.Countries = new List<SelectListItem> { new("Pakistan", "Pakistan"), new("USA", "USA"), new("UK", "UK") };
-                vm.States = new List<SelectListItem> { new("Punjab", "Punjab"), new("Sindh", "Sindh"), new("KPK", "KPK"), new("Balochistan", "Balochistan") };
-                vm.Cities = new List<SelectListItem> { new("Lahore", "Lahore"), new("Karachi", "Karachi"), new("Islamabad", "Islamabad"), new("Peshawar", "Peshawar") };
-                vm.ProductPriceLevels = new List<SelectListItem> { new("Standard", "Standard"), new("Premium", "Premium"), new("Discount", "Discount") };
-                vm.AccountManagers = new List<SelectListItem> { new("Ali", "Ali"), new("Ahmed", "Ahmed"), new("Sara", "Sara") };
-                vm.Areas = new List<SelectListItem> { new("North", "North"), new("South", "South"), new("East", "East"), new("West", "West") };
-                vm.CreditTermsOptions = new List<SelectListItem> { new("Cash", "Cash"), new("Net 30", "Net 30"), new("Net 60", "Net 60") };
-                return RedirectToAction("Customer");
 
+                model.Customers.ForEach(c => c.Prn = GetProvinceName(c.City ?? 0));
+                model.CustomerTypes = new List<SelectListItem> { new("Retail", "Retail"), new("Wholesale", "Wholesale"), new("Corporate", "Corporate") };
+                model.BusinessSectors = new List<SelectListItem> { new("IT", "IT"), new("Finance", "Finance"), new("Manufacturing", "Manufacturing"), new("Agriculture", "Agriculture") };
+                model.Countries = new List<SelectListItem> { new("Pakistan", "Pakistan"), new("USA", "USA"), new("UK", "UK") };
+                model.States = new List<SelectListItem> { new("Punjab", "Punjab"), new("Sindh", "Sindh"), new("KPK", "KPK"), new("Balochistan", "Balochistan") };
+                model.Cities = new List<SelectListItem> { new("Lahore", "Lahore"), new("Karachi", "Karachi"), new("Islamabad", "Islamabad"), new("Peshawar", "Peshawar") };
+                model.ProductPriceLevels = new List<SelectListItem> { new("Standard", "Standard"), new("Premium", "Premium"), new("Discount", "Discount") };
+                model.AccountManagers = new List<SelectListItem> { new("Ali", "Ali"), new("Ahmed", "Ahmed"), new("Sara", "Sara") };
+                model.Areas = new List<SelectListItem> { new("North", "North"), new("South", "South"), new("East", "East"), new("West", "West") };
+                model.CreditTermsOptions = new List<SelectListItem> { new("Cash", "Cash"), new("Net 30", "Net 30"), new("Net 60", "Net 60") };
+
+                if (ModelState.IsValid)
+                {
+                    customer.CompanyId = CompanyId ?? 0;
+                    if (customer.CustomerID > 0)
+                        await _master.UpdateCustomerAsync(customer);
+                    else
+                        await _master.AddCustomerAsync(customer);
+                    return RedirectToAction(nameof(Customer)); // Redirect after save
+                }
+                return View(model); // Show validation errors
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -126,6 +122,8 @@ namespace EfPractice.Controllers
         {
             ItemsViewModel model = new ItemsViewModel();
             model.Items = await _master.GetAllItemsAsync();
+            model.Item = item; // This ensures validation errors and user input are shown
+
             if (ModelState.IsValid)
             {
                 item.CompanyId = CompanyId ?? 0;
@@ -133,8 +131,9 @@ namespace EfPractice.Controllers
                     await _master.UpdateItemAsync(item);
                 else
                     await _master.AddItemAsync(item);
+                return RedirectToAction(nameof(Items)); // Redirect after save
             }
-            return View(model);
+            return View(model); // Show validation errors
         }
 
         public async Task<IActionResult> ItemsDelete(int id)
@@ -373,84 +372,95 @@ namespace EfPractice.Controllers
 
         public async Task<IActionResult> Users()
         {
+            UserListEditViewModel vm = new UserListEditViewModel();
             var cid = CompanyId ?? 0;
-            var users = _userManager.Users.Where(u => u.CompanyId == cid).ToList();
-            return View(users);
-        }
-
-        [HttpGet]
-        public IActionResult AddUser()
-        {
-            return View("UserEdit", new UserEditViewModel());
+            vm.Users = _userManager.Users.Where(u => u.CompanyId == cid).ToList();
+            return View(vm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddUser(UserEditViewModel vm)
+        public async Task<IActionResult> Users(UserListEditViewModel vm)
         {
-            if (!ModelState.IsValid) return View("UserEdit", vm);
-            if (string.IsNullOrWhiteSpace(vm.Password))
+            // Ensure model state validity first
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("Password", "Password required");
-                return View("UserEdit", vm);
+                // Reload the user list before returning (so the table displays correctly)
+                vm.Users = await _userManager.Users.ToListAsync();
+                ViewData["ShowValidationSummary"] = true;
+                return View("Users", vm);
             }
-            var user = new ApplicationUser
-            {
-                UserName = vm.UserName,
-                Email = vm.Email,
-                CompanyId = CompanyId ?? 0,
-                // Force normal User role for users created from user screen
-                UserRoleId = GetUserRoleId("User")
-            };
-            var result = await _userManager.CreateAsync(user, vm.Password!);
-            if (!result.Succeeded)
-            {
-                foreach (var e in result.Errors) ModelState.AddModelError(string.Empty, e.Description);
-                return View("UserEdit", vm);
-            }
-            return RedirectToAction(nameof(Users));
-        }
 
-        [HttpGet]
-        public async Task<IActionResult> EditUser(string id)
-        {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null || user.CompanyId != (CompanyId ?? 0)) return NotFound();
-            var vm = new UserEditViewModel
-            {
-                Id = user.Id,
-                Email = user.Email ?? string.Empty,
-                UserName = user.UserName ?? string.Empty,
-                RoleName = user.UserRoleId switch { 1 => "Admin", 2 => "Manager", 3 => "Staff", _ => "User" }
-            };
-            return View("UserEdit", vm);
-        }
+            int companyId = CompanyId ?? 0;
+            var input = vm.User; // shorthand
 
-        [HttpPost]
-        public async Task<IActionResult> EditUser(UserEditViewModel vm)
-        {
-            if (!ModelState.IsValid) return View("UserEdit", vm);
-            if (vm.Id == null) return NotFound();
-            var user = await _userManager.FindByIdAsync(vm.Id);
-            if (user == null || user.CompanyId != (CompanyId ?? 0)) return NotFound();
-            user.Email = vm.Email;
-            user.UserName = vm.UserName;
-            user.UserRoleId = GetUserRoleId(vm.RoleName);
-            var update = await _userManager.UpdateAsync(user);
-            if (!update.Succeeded)
+            ApplicationUser user;
+
+            // ---- Update existing user ----
+            if (!string.IsNullOrEmpty(input.Id))
             {
-                foreach (var e in update.Errors) ModelState.AddModelError(string.Empty, e.Description);
-                return View("UserEdit", vm);
-            }
-            if (!string.IsNullOrWhiteSpace(vm.Password))
-            {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var passRes = await _userManager.ResetPasswordAsync(user, token, vm.Password);
-                if (!passRes.Succeeded)
+                user = await _userManager.FindByIdAsync(input.Id);
+                if (user == null)
                 {
-                    foreach (var e in passRes.Errors) ModelState.AddModelError(string.Empty, e.Description);
-                    return View("UserEdit", vm);
+                    ModelState.AddModelError("", "User not found.");
+                    vm.Users = await _userManager.Users.ToListAsync();
+                    return View("Users", vm);
+                }
+
+                user.Email = input.Email;
+                user.UserName = input.UserName;
+                user.UserRoleId = GetUserRoleId(input.RoleName);
+
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded)
+                {
+                    foreach (var e in updateResult.Errors)
+                        ModelState.AddModelError(string.Empty, e.Description);
+
+                    vm.Users = await _userManager.Users.ToListAsync();
+                    ViewData["ShowValidationSummary"] = true;
+                    return View("Users", vm);
+                }
+
+                // If password entered, reset it
+                if (!string.IsNullOrWhiteSpace(input.Password))
+                {
+                    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    var passResult = await _userManager.ResetPasswordAsync(user, token, input.Password);
+                    if (!passResult.Succeeded)
+                    {
+                        foreach (var e in passResult.Errors)
+                            ModelState.AddModelError(string.Empty, e.Description);
+
+                        vm.Users = await _userManager.Users.ToListAsync();
+                        ViewData["ShowValidationSummary"] = true;
+                        return View("Users", vm);
+                    }
                 }
             }
+            // ---- Add new user ----
+            else
+            {
+                user = new ApplicationUser
+                {
+                    UserName = input.UserName,
+                    Email = input.Email,
+                    CompanyId = companyId,
+                    UserRoleId = GetUserRoleId(input.RoleName ?? "User")
+                };
+
+                var createResult = await _userManager.CreateAsync(user, input.Password);
+                if (!createResult.Succeeded)
+                {
+                    foreach (var e in createResult.Errors)
+                        ModelState.AddModelError(string.Empty, e.Description);
+
+                    vm.Users = await _userManager.Users.ToListAsync();
+                    ViewData["ShowValidationSummary"] = true;
+                    return View("Users", vm);
+                }
+            }
+
+            // After add or update, reload users and redirect
             return RedirectToAction(nameof(Users));
         }
 
