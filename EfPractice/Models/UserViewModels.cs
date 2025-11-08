@@ -13,11 +13,12 @@ namespace EfPractice.Models
         public string UserName { get; set; } = string.Empty;
         [Required]
         public string RoleName { get; set; } = "User"; // Admin, Manager, Staff, User
-        [Display(Name="Password")]
-        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        [Required, DataType(DataType.Password)]
         public string? Password { get; set; }
-        [DataType(DataType.Password)]
-        [Compare("Password")] public string? ConfirmPassword { get; set; }
+        [DataType(DataType.Password), Compare("Password")]
+        public string ConfirmPassword { get; set; } = string.Empty;
+
     }
 
     public class ResetPasswordViewModel

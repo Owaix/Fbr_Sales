@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering; // added for SelectListItem
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Text.Json;
 
 namespace EfPractice.Controllers
@@ -370,9 +371,17 @@ namespace EfPractice.Controllers
             return Json(result);
         }
 
-        public async Task<IActionResult> Users()
+        public async Task<IActionResult> Users(string id = "0")
         {
             UserListEditViewModel vm = new UserListEditViewModel();
+            if (id != "0")
+            {
+                var user = await _userManager.FindByIdAsync(id);
+                vm.User.Email = user.Email;
+                vm.User.Id = user.Id;
+                vm.User.UserName = user.UserName;
+                //vm.User.i = user.UserRoleId;
+            }
             var cid = CompanyId ?? 0;
             vm.Users = _userManager.Users.Where(u => u.CompanyId == cid).ToList();
             return View(vm);
@@ -381,11 +390,10 @@ namespace EfPractice.Controllers
         [HttpPost]
         public async Task<IActionResult> Users(UserListEditViewModel vm)
         {
-            // Ensure model state validity first
+            var cid = CompanyId ?? 0;
             if (!ModelState.IsValid)
             {
-                // Reload the user list before returning (so the table displays correctly)
-                vm.Users = await _userManager.Users.ToListAsync();
+                vm.Users = _userManager.Users.Where(u => u.CompanyId == cid).ToList();
                 ViewData["ShowValidationSummary"] = true;
                 return View("Users", vm);
             }
@@ -399,10 +407,21 @@ namespace EfPractice.Controllers
             if (!string.IsNullOrEmpty(input.Id))
             {
                 user = await _userManager.FindByIdAsync(input.Id);
+
+                // --- Duplicate checks ---
+                var existingUserName = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == input.Email && u.CompanyId == cid && u.Id != input.Id);
+                if (existingUserName != null)
+                {
+                    ModelState.AddModelError("User.Email", "Email is already taken.");
+                    vm.Users = await _userManager.Users.ToListAsync();
+                    ViewData["ShowValidationSummary"] = true;
+                    return View("Users", vm);
+                }
+
                 if (user == null)
                 {
                     ModelState.AddModelError("", "User not found.");
-                    vm.Users = await _userManager.Users.ToListAsync();
+                    vm.Users = _userManager.Users.Where(u => u.CompanyId == cid).ToList();
                     return View("Users", vm);
                 }
 
@@ -416,7 +435,7 @@ namespace EfPractice.Controllers
                     foreach (var e in updateResult.Errors)
                         ModelState.AddModelError(string.Empty, e.Description);
 
-                    vm.Users = await _userManager.Users.ToListAsync();
+                    vm.Users = _userManager.Users.Where(u => u.CompanyId == cid).ToList();
                     ViewData["ShowValidationSummary"] = true;
                     return View("Users", vm);
                 }
@@ -431,7 +450,7 @@ namespace EfPractice.Controllers
                         foreach (var e in passResult.Errors)
                             ModelState.AddModelError(string.Empty, e.Description);
 
-                        vm.Users = await _userManager.Users.ToListAsync();
+                        vm.Users = _userManager.Users.Where(u => u.CompanyId == cid).ToList();
                         ViewData["ShowValidationSummary"] = true;
                         return View("Users", vm);
                     }
@@ -454,17 +473,16 @@ namespace EfPractice.Controllers
                     foreach (var e in createResult.Errors)
                         ModelState.AddModelError(string.Empty, e.Description);
 
-                    vm.Users = await _userManager.Users.ToListAsync();
+                    vm.Users = _userManager.Users.Where(u => u.CompanyId == cid).ToList();
                     ViewData["ShowValidationSummary"] = true;
                     return View("Users", vm);
                 }
             }
 
-            // After add or update, reload users and redirect
             return RedirectToAction(nameof(Users));
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await _userManager.FindByIdAsync(id);

@@ -2,9 +2,6 @@
 using EfPractice.Models.CustomerModel;
 using Microsoft.EntityFrameworkCore.Storage;
 using EfPractice.Areas.Identity.Data;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-
 
 namespace EfPractice.Repository.Interface
 {
@@ -28,6 +25,13 @@ namespace EfPractice.Repository.Interface
         Task<List<Cate>> GETItemCatergoryRegistrarionAsync();
         Task<ItemRegistrarion> GetCategoryListAsync();
         #endregion
+
+        // SubCategory CRUD
+        Task<SubCategory?> GetSubCategoryByIdAsync(int id);
+        Task<List<SubCategory>> GetSubCategoriesByCategoryAsync(int categoryId);
+        Task<int> AddSubCategoryAsync(SubCategory subCategory);
+        Task<int> UpdateSubCategoryAsync(SubCategory subCategory);
+        Task<int> DeleteSubCategoryAsync(int id);
 
         #region Item
 

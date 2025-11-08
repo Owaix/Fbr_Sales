@@ -678,6 +678,41 @@ namespace EfPractice.Repository.Class
             return await _studentDB.SaveChangesAsync();
         }
 
+        // SubCategory CRUD implementation
+        public async Task<SubCategory?> GetSubCategoryByIdAsync(int id)
+        {
+            return await _studentDB.SubCategories.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id && s.CompanyId == _companyId);
+        }
+        public async Task<List<SubCategory>> GetSubCategoriesByCategoryAsync(int categoryId)
+        {
+            return await _studentDB.SubCategories.AsNoTracking()
+                .Where(s => s.CategoryId == categoryId && s.CompanyId == _companyId)
+                .OrderBy(s => s.Name)
+                .ToListAsync();
+        }
+        public async Task<int> AddSubCategoryAsync(SubCategory subCategory)
+        {
+            subCategory.CompanyId = _companyId ?? subCategory.CompanyId;
+            _studentDB.SubCategories.Add(subCategory);
+            return await _studentDB.SaveChangesAsync();
+        }
+        public async Task<int> UpdateSubCategoryAsync(SubCategory subCategory)
+        {
+            var existing = await _studentDB.SubCategories.FirstOrDefaultAsync(s => s.Id == subCategory.Id && s.CompanyId == _companyId);
+            if (existing == null) return 0;
+            existing.Name = subCategory.Name;
+            existing.Active = subCategory.Active;
+            existing.CategoryId = subCategory.CategoryId;
+            return await _studentDB.SaveChangesAsync();
+        }
+        public async Task<int> DeleteSubCategoryAsync(int id)
+        {
+            var existing = await _studentDB.SubCategories.FirstOrDefaultAsync(s => s.Id == id && s.CompanyId == _companyId);
+            if (existing == null) return 0;
+            _studentDB.SubCategories.Remove(existing);
+            return await _studentDB.SaveChangesAsync();
+        }
+
         #endregion
 
         #region Company

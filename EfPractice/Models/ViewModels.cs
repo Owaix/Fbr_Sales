@@ -162,4 +162,19 @@ namespace EfPractice.Models
         public Account Account { get; set; } = new Account();
         public List<Account> Accounts { get; set; } = new List<Account>();
     }
+
+    public class CategoryViewModel
+    {
+        public Cate Category { get; set; } = new();
+        public List<Cate> Categories { get; set; } = new();
+        public List<SelectListItem> Headers { get; set; } = new();
+    }
+
+    public class SubCategoryViewModel
+    {
+        public SubCategory SubCategory { get; set; } = new();
+        public List<SubCategory> SubCategories { get; set; } = new();
+        public int SelectedCategoryId { get; set; }
+        public List<SelectListItem> Categories { get; set; } = new();
+    }
 }
