@@ -46,7 +46,11 @@
 					</div>
 					<div class="col-md-3">
 						<label asp-for="Item.UOM">Unit</label>
-						<select asp-for="Item.UOM" asp-items="Model.Units" class="form-select"></select>
+						<select asp-for="Item.UOM" asp-items="Model.Units" class="form-select">
+							<option value="1">Numbers</option>
+							<option value="2">Pieces</option>
+							<option value="3">Units</option>
+						</select>
 						<span asp-validation-for="Item.UOM" class="text-danger"></span>
 					</div>
 					<div class="col-md-3">
@@ -91,7 +95,7 @@
 				</div>
 				<br>
 				<br>
-					<h4 class="mb-4">Product Barcode</h4>
+				<h4 class="mb-4">Product Barcode</h4>
 				<div class="row g-3">
 					<div class="col-md-3">
 						<label asp-for="Item.BarcodeNo">Barcode No</label>
@@ -114,9 +118,9 @@
 						<span asp-validation-for="Item.Label" class="text-danger"></span>
 					</div>
 				</div>
-					<br>
 				<br>
-									<h4 class="mb-4">Product Taxes</h4>
+				<br>
+				<h4 class="mb-4">Product Taxes</h4>
 				<div class="row g-3">
 					<div class="col-md-3">
 						<label asp-for="Item.TaxId">Tax</label>
@@ -130,7 +134,11 @@
 					</div>
 					<div class="col-md-3">
 						<label asp-for="Item.TaxType">Tax Type</label>
-						<select asp-for="Item.TaxType" asp-items="Model.TaxTypes" class="form-select"></select>
+						<select asp-for="Item.TaxType" class="form-select">
+							<option value="GST">GST</option>
+							<option value="VAT">VAT</option>
+							<option value="SalesTax">Sales Tax</option>
+						</select>
 						<span asp-validation-for="Item.TaxType" class="text-danger"></span>
 					</div>
 				</div>
@@ -188,3 +196,32 @@
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<partial name="_ValidationScriptsPartial" />
 }
+
+<script>
+	$('#Item_TaxId').change(function () {
+		var id = $(this).val();
+		if (!id) return;
+
+		$.getJSON('/Home/GetTaxRate', { id: id }, function (d) {
+			$('#Item_TaxRate').val(d.rate);
+			$('#Item_TaxType').val(d.type);
+			console.log(d);
+		});
+	});
+
+	$('#Item_Category').change(function () {
+		var id = $(this).val();
+		if (!id) return;
+
+		$.getJSON('/Home/SubCategory', { id: id }, function (d) {
+			var $ddl = $('#Item_SubCategory');
+			$ddl.empty(); // clear old options
+			$ddl.append($('<option>').val('').text('-- Select -- '));			
+			$.each(d, function (i, item) {
+				console.log(item);
+				$ddl.append($('<option>').val(item.id).text(item.name));
+			});
+		});
+	});
+
+</script>

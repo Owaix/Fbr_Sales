@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EfPractice.Models
 {
@@ -11,6 +12,8 @@ namespace EfPractice.Models
         [Required]
         [MaxLength(100)]
         public string Name { get; set; } = string.Empty;
+        [NotMapped]
+        public string Category { get; set; } = string.Empty;
         public bool Active { get; set; } = true;
         public int CompanyId { get; set; }
     }

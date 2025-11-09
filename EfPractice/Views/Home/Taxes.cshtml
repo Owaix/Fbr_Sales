@@ -64,11 +64,7 @@
 			<tr>
 				<th>Code</th>
 				<th>Name</th>
-				<th>Rate</th>
-				<th>Type</th>
-				<th>Tax Type</th>
-				<th>Sales Head</th>
-				<th>Purchase Head</th>
+				<th>Default Rate</th>
 				<th>Active</th>
 				<th>Created By</th>
 				<th>Created Date</th>
@@ -84,10 +80,6 @@
 					<td>@t.Code</td>
 					<td>@t.Name</td>
 					<td>@t.DefaultRate</td>
-					<td>@t.DefaultRateType</td>
-					<td>@t.TaxType</td>
-					<td>@t.SalesAccountHeadId</td>
-					<td>@t.PurchaseAccountHeadId</td>
 					<td>@(t.Active ? "Yes" : "No")</td>
 					<td>@t.CreatedBy</td>
 					<td>@t.CreatedDate.ToString("yyyy-MM-dd")</td>
@@ -96,7 +88,7 @@
 					<td class="text-nowrap">
 						<a asp-action="Taxes" asp-route-id="@t.Id" class="btn btn-sm btn-primary">Edit</a>
 						<form asp-action="DeleteTax" asp-route-id="@t.Id" method="post" class="d-inline" onsubmit="return confirm('Delete tax?');">
-							<button class="btn btn-sm btn-danger">Del</button>
+							<button class="btn btn-sm btn-danger">Delete</button>
 						</form>
 					</td>
 				</tr>

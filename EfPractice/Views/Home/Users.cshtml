@@ -26,8 +26,6 @@
 						<label asp-for="User.RoleName" class="form-label">Role</label>
 						<select asp-for="User.RoleName" class="form-select">
 							<option value="User">User</option>
-							<option value="Staff">Staff</option>
-							<option value="Manager">Manager</option>
 						</select>
 					</div>
 					<div class="col-md-4">
@@ -55,8 +53,7 @@
 				<tr>
 					<th>UserName</th>
 					<th>Email</th>
-					<th>UserRoleId</th>
-					<th>Lockout</th>
+					<th>User Role</th>					
 					<th style="width:120px;">Actions</th>
 				</tr>
 			</thead>
@@ -67,7 +64,6 @@
 						<td>@u.UserName</td>
 						<td>@u.Email</td>
 						<td>@Common.GetUserRoleById(u.UserRoleId)</td>
-						<td>@(u.LockoutEnd.HasValue ? "Locked" : "-")</td>
 						<td>
 							<a asp-action="Users" asp-route-id="@u.Id" class="btn btn-sm btn-warning">Edit</a>
 							<a asp-action="DeleteUser" asp-route-id="@u.Id" class="btn btn-sm btn-danger">Delete</a>

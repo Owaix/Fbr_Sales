@@ -185,17 +185,10 @@ namespace EfPractice.Repository.Class
 
         public async Task<List<Cate>> GETItemCatergoryRegistrarionAsync()
         {
-            return await (from category in _studentDB.Cates.AsNoTracking().Where(c => c.CompanyId == _companyId)
-                          join header in _studentDB.Imhs.AsNoTracking().Where(h => h.CompanyId == _companyId)
-                          on category.Mid equals header.Mid
-                          select new Cate
-                          {
-                              Cid = category.Cid,
-                              Name = category.Name,
-                              Mid = header.Mid,
-                              Mn = header.Mname,
-                              CompanyId = category.CompanyId
-                          }).ToListAsync();
+            return await _studentDB.Cates
+              .AsNoTracking()
+              .Where(c => c.CompanyId == _companyId)
+              .ToListAsync();
         }
 
         public async Task<ItemRegistrarion> GetCategoryListAsync()
@@ -681,15 +674,41 @@ namespace EfPractice.Repository.Class
         // SubCategory CRUD implementation
         public async Task<SubCategory?> GetSubCategoryByIdAsync(int id)
         {
-            return await _studentDB.SubCategories.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id && s.CompanyId == _companyId);
+            return await (from subCat in _studentDB.SubCategories
+                          join cat in _studentDB.Cates
+                          on subCat.CategoryId equals cat.Cid
+                          where subCat.Id == id && subCat.CompanyId == _companyId
+                          select new SubCategory
+                          {
+                              Id = subCat.Id,
+                              CategoryId = subCat.CategoryId,
+                              Name = subCat.Name,
+                              Active = subCat.Active,
+                              CompanyId = subCat.CompanyId,
+                              Category = cat.Name
+                          })
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
         }
         public async Task<List<SubCategory>> GetSubCategoriesByCategoryAsync(int categoryId)
         {
-            return await _studentDB.SubCategories.AsNoTracking()
-                .Where(s => s.CategoryId == categoryId && s.CompanyId == _companyId)
-                .OrderBy(s => s.Name)
-                .ToListAsync();
+            return await (from subCat in _studentDB.SubCategories
+                          join cat in _studentDB.Cates
+                          on subCat.CategoryId equals cat.Cid
+                          where  cat.CompanyId == _companyId
+                          select new SubCategory
+                          {
+                              Id = subCat.Id,
+                              CategoryId = subCat.CategoryId,
+                              Name = subCat.Name,
+                              Active = subCat.Active,
+                              CompanyId = subCat.CompanyId,
+                              Category = cat.Name
+                          })
+             .AsNoTracking()
+             .ToListAsync();
         }
+
         public async Task<int> AddSubCategoryAsync(SubCategory subCategory)
         {
             subCategory.CompanyId = _companyId ?? subCategory.CompanyId;
@@ -740,9 +759,9 @@ namespace EfPractice.Repository.Class
         public async Task<List<Company>> GetAllCompaniesAsync()
         {
             if (_httpContextAccessor.HttpContext.User.HasClaim("CompanyId", "0"))
-                return await _studentDB.Companies.AsNoTracking().ToListAsync();
+                return await _studentDB.Companies.AsNoTracking().Where(x => x.Id != 0).ToListAsync();
             else
-                return await _studentDB.Companies.AsNoTracking().Where(x => x.Id == _companyId).ToListAsync();
+                return await _studentDB.Companies.AsNoTracking().Where(x => x.Id == _companyId && x.Id != 0).ToListAsync();
         }
         public async Task<List<Company>> GetCompanyAsync(Company filter)
         {

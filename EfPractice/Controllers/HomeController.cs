@@ -107,6 +107,31 @@ namespace EfPractice.Controllers
             return RedirectToAction("Customer", "Home");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetTaxRate(int id)
+        {
+            var tax = await _master.GetTaxByIdAsync(id);
+            if (tax == null) return NotFound();
+            return Json(new
+            {
+                rate = tax.DefaultRate,
+                type = tax.TaxType
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SubCategory(int id)
+        {
+            var tax = await _master.GetSubCategoriesByCategoryAsync(id);
+            if (tax == null) return NotFound();
+            return Json(
+                tax.Select(sc => new
+                {
+                    id = sc.Id,
+                    name = sc.Name
+                }));
+        }
+
         public async Task<IActionResult> Items(int id = 0)
         {
             ItemsViewModel model = new ItemsViewModel();
@@ -115,6 +140,11 @@ namespace EfPractice.Controllers
 
             var items = await _master.GetAllItemsAsync();
             model.Items = items;
+            model.Taxes = (await _master.GetTaxesAsync(CompanyId ?? 0))
+                .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name }).ToList();
+
+            model.Categories = (await _master.GETItemCatergoryRegistrarionAsync())
+                .Select(c => new SelectListItem { Value = c.Cid.ToString(), Text = c.Name }).ToList();
             return View(model);
         }
 
@@ -124,6 +154,11 @@ namespace EfPractice.Controllers
             ItemsViewModel model = new ItemsViewModel();
             model.Items = await _master.GetAllItemsAsync();
             model.Item = item; // This ensures validation errors and user input are shown
+            model.Taxes = (await _master.GetTaxesAsync(CompanyId ?? 0))
+              .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name }).ToList();
+
+            model.Categories = (await _master.GETItemCatergoryRegistrarionAsync())
+                .Select(c => new SelectListItem { Value = c.Cid.ToString(), Text = c.Name }).ToList();
 
             if (ModelState.IsValid)
             {
@@ -224,8 +259,7 @@ namespace EfPractice.Controllers
             return userRole switch
             {
                 "Admin" => 1,
-                "Manager" => 2,
-                "Staff" => 3,
+                "User" => 2,
                 _ => 0
             };
         }
@@ -599,5 +633,91 @@ namespace EfPractice.Controllers
             return RedirectToAction(nameof(Accounts));
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Categories(int id = 0)
+        {
+            var vm = new CategoryViewModel
+            {
+                Category = id > 0 ? await _master.GetCateByIdAsync(id) ?? new Cate() : new Cate(),
+                Categories = await _master.GETItemCatergoryRegistrarionAsync()
+            }; return View(vm);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Categories(Cate category)
+        {
+            if (ModelState.IsValid)
+            {
+                if (category.Cid > 0)
+                    await _master.UpdateCateAsync(category);
+                else
+                    await _master.AddCateAsync(category);
+                return RedirectToAction(nameof(Categories));
+            }
+            var vm = new CategoryViewModel
+            {
+                Category = category,
+                Categories = await _master.GETItemCatergoryRegistrarionAsync()
+            }; return View(vm);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            await _master.DeleteCateAsync(id); return RedirectToAction(nameof(Categories));
+        }
+        [HttpGet]
+        public async Task<IActionResult> SubCategories(int categoryId = 0, int id = 0)
+        {
+            var vm = new SubCategoryViewModel();
+            vm.Categories = (await _master.GETItemCatergoryRegistrarionAsync()).Select(c => new SelectListItem(c.Name, c.Cid.ToString())).ToList();
+            vm.SelectedCategoryId = categoryId;
+            vm.SubCategories = await _master.GetSubCategoriesByCategoryAsync(vm.SelectedCategoryId);
+
+            if (id > 0)
+            {
+                vm.SubCategory = await _master.GetSubCategoryByIdAsync(id);
+            }
+
+            return View(vm);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubCategories(SubCategory subCategory)
+        {
+            if (ModelState.IsValid)
+            {
+                if (subCategory.Id > 0)
+                    await _master.UpdateSubCategoryAsync(subCategory);
+                else await _master.AddSubCategoryAsync(subCategory);
+                return RedirectToAction(nameof(SubCategories), new
+                {
+                    categoryId = subCategory.CategoryId
+                });
+            }
+            var vm = new SubCategoryViewModel
+            {
+                SubCategory = subCategory,
+                Categories = (await _master.GETItemCatergoryRegistrarionAsync()).Select(c => new SelectListItem(c.Name, c.Cid.ToString())).ToList(),
+                SelectedCategoryId = subCategory.CategoryId,
+                SubCategories = subCategory.CategoryId > 0 ? await _master.GetSubCategoriesByCategoryAsync(subCategory.CategoryId) : new List<SubCategory>()
+            }; return View(vm);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteSubCategory(int id, int categoryId)
+        {
+            await _master.DeleteSubCategoryAsync(id);
+            return RedirectToAction(nameof(SubCategories), new
+            {
+                categoryId
+            });
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetSubCategories(int categoryId)
+        {
+            var subs = await _master.GetSubCategoriesByCategoryAsync(categoryId);
+            return Json(subs.Select(s => new { id = s.Id, name = s.Name }));
+        }
     }
 }

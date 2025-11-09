@@ -7,8 +7,7 @@
             return userRole switch
             {
                 1 => "Admin",
-                2 => "Manager",
-                3 => "Staff",
+                2 => "User",
                 _ => "No"
             };
         }

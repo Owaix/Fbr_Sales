@@ -1,0 +1,51 @@
+﻿@model SubCategoryViewModel
+
+<h2>Sub Categories</h2>
+<form asp-action="SubCategories" method="post">
+	<input type="hidden" asp-for="SubCategory.Id" />
+	<div class="row g-3">
+		<div class="col-md-4">
+			<label asp-for="SubCategory.CategoryId" class="form-label">Category</label>
+			<select asp-for="SubCategory.CategoryId" asp-items="Model.Categories" class="form-select" id="catSelect"></select>
+		</div> <div class="col-md-4">
+			<label asp-for="SubCategory.Name" class="form-label">Name</label>
+			<input asp-for="SubCategory.Name" class="form-control" />
+			<span asp-validation-for="SubCategory.Name" class="text-danger"></span>
+		</div> <div class="col-md-2 form-check pt-4">
+			<input asp-for="SubCategory.Active" class="form-check-input" />
+			<label asp-for="SubCategory.Active" class="form-check-label">Active</label>
+		</div> <div class="col-md-2 d-flex align-items-end gap-2">
+			<button class="btn btn-primary" type="submit">Save</button>
+			<a asp-action="SubCategories" asp-route-categoryId="@Model.SelectedCategoryId" class="btn btn-secondary">Reset</a>
+		</div>
+	</div>
+</form>
+<br />
+<table class="table table-sm table-bordered">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Category</th>
+			<th>Name</th>
+			<th>Active</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var s in Model.SubCategories)
+		{
+			<tr>
+				<td>@s.Id</td>
+				<td>@s.Category</td>
+				<td>@s.Name</td>
+				<td>@(s.Active ? "Yes" : "No")</td>
+				<td>
+					<a asp-action="SubCategories" asp-route-categoryId="@Model.SelectedCategoryId" asp-route-id="@s.Id" class="btn btn-sm btn-warning">Edit</a> <form asp-action="DeleteSubCategory" asp-route-id="@s.Id" asp-route-categoryId="@Model.SelectedCategoryId" method="post" class="d-inline" onsubmit="return confirm('Delete sub category?');">
+						<button class="btn btn-sm btn-danger">Delete</button>
+					</form>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+<partial name="_ValidationScriptsPartial" />

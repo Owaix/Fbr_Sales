@@ -2,19 +2,21 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using EfPractice.Areas.Identity.Data;
+using EfPractice.Repository.Class;
+using EfPractice.Repository.Interface;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EfPractice.Areas.Identity.Pages.Account
 {
@@ -22,11 +24,13 @@ namespace EfPractice.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly IMaster _master;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger, IMaster master)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _master = master;
         }
 
         /// <summary>
@@ -106,7 +110,7 @@ namespace EfPractice.Areas.Identity.Pages.Account
             returnUrl ??= Url.Content("~/Home/Index");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
-            {              
+            {
                 var user = await _signInManager.UserManager.FindByNameAsync(Input.Email)
                          ?? await _signInManager.UserManager.FindByEmailAsync(Input.Email);
                 if (user != null)
@@ -114,11 +118,13 @@ namespace EfPractice.Areas.Identity.Pages.Account
                     var result = await _signInManager.CheckPasswordSignInAsync(user, Input.Password, lockoutOnFailure: false);
                     if (result.Succeeded)
                     {
+                        var company = await _master.GetCompanyByIdAsync(user.CompanyId);
                         var claims = new List<System.Security.Claims.Claim>
                         {
                             new System.Security.Claims.Claim("UserName", user.UserName.ToString()),
                             new System.Security.Claims.Claim("CompanyId", user.CompanyId.ToString()),
-                            new System.Security.Claims.Claim("UserRoleId", user.UserRoleId.ToString()),                            
+                            new System.Security.Claims.Claim("UserRoleId", user.UserRoleId.ToString()),
+                            new System.Security.Claims.Claim("BusinessName", company.BusinessName),
                         };
                         await _signInManager.SignInWithClaimsAsync(user, Input.RememberMe, claims);
 

@@ -8,6 +8,7 @@ namespace EfPractice.Models
     {
         [Key]
         public int Cid { get; set; }
+        [Required]
         public string? Name { get; set; }
         public string? Aid { get; set; }
         public string? Aname { get; set; }
