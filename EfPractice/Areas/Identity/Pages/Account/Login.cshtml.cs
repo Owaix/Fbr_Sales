@@ -124,7 +124,7 @@ namespace EfPractice.Areas.Identity.Pages.Account
                             new System.Security.Claims.Claim("UserName", user.UserName.ToString()),
                             new System.Security.Claims.Claim("CompanyId", user.CompanyId.ToString()),
                             new System.Security.Claims.Claim("UserRoleId", user.UserRoleId.ToString()),
-                            new System.Security.Claims.Claim("BusinessName", company.BusinessName),
+                            new System.Security.Claims.Claim("BusinessName", company == null ? "Super Admin" : company.BusinessName),
                         };
                         await _signInManager.SignInWithClaimsAsync(user, Input.RememberMe, claims);
 

@@ -1,0 +1,46 @@
+@model BrandViewModel
+<h2>Brands</h2>
+<div class="card mb-3">
+	<div class="card-body">
+		<form asp-action="Brands" method="post" class="row g-3" autocomplete="off">
+			<input type="hidden" asp-for="Brand.Id" />
+			<div class="col-md-4">
+				<label asp-for="Brand.Name" class="form-label">Name</label>
+				<input asp-for="Brand.Name" class="form-control" />
+				<span asp-validation-for="Brand.Name" class="text-danger"></span>
+			</div>
+			<div class="col-md-2 form-check pt-4">
+				<input asp-for="Brand.Active" class="form-check-input" />
+				<label asp-for="Brand.Active" class="form-check-label">Active</label>
+			</div>
+			<div class="col-md-6 d-flex align-items-end gap-2">
+				<button class="btn btn-primary" type="submit">@(Model.Brand.Id == 0 ? "Add" : "Update")</button>
+				<a asp-action="Brands" class="btn btn-secondary">Clear</a>
+			</div>
+		</form>
+	</div>
+</div>
+<br />
+@if (Model.Brands?.Any() == true)
+{
+	<table class="table table-sm table-bordered table-striped">
+		<thead><tr><th>Id</th><th>Name</th><th>Active</th><th style="width:120px;">Actions</th></tr></thead>
+		<tbody>
+			@foreach (var b in Model.Brands)
+			{
+				<tr>
+					<td>@b.Id</td>
+					<td>@b.Name</td>
+					<td>@(b.Active ? "Yes" : "No")</td>
+					<td class="text-nowrap">
+						<a asp-action="Brands" asp-route-id="@b.Id" class="btn btn-sm btn-warning">Edit</a>
+						<form asp-action="DeleteBrand" asp-route-id="@b.Id" method="post" class="d-inline" onsubmit="return confirm('Delete brand?');">
+							<button class="btn btn-sm btn-danger">Delete</button>
+						</form>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+<partial name="_ValidationScriptsPartial" />

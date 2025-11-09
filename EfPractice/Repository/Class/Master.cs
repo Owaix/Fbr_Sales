@@ -950,5 +950,37 @@ namespace EfPractice.Repository.Class
             return await _studentDB.SaveChangesAsync();
         }
         #endregion
+
+        #region Brands
+        public async Task<Brand?> GetBrandByIdAsync(int id)
+        {
+            return await _studentDB.Brands.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id && b.CompanyId == _companyId);
+        }
+        public async Task<List<Brand>> GetBrandsAsync(int companyId)
+        {
+            return await _studentDB.Brands.AsNoTracking().Where(b => b.CompanyId == companyId).OrderBy(b => b.Name).ToListAsync();
+        }
+        public async Task<int> AddBrandAsync(Brand brand)
+        {
+            brand.CompanyId = _companyId ?? brand.CompanyId;
+            _studentDB.Brands.Add(brand);
+            return await _studentDB.SaveChangesAsync();
+        }
+        public async Task<int> UpdateBrandAsync(Brand brand)
+        {
+            var existing = await _studentDB.Brands.FirstOrDefaultAsync(b => b.Id == brand.Id && b.CompanyId == _companyId);
+            if (existing == null) return 0;
+            existing.Name = brand.Name;
+            existing.Active = brand.Active;
+            return await _studentDB.SaveChangesAsync();
+        }
+        public async Task<int> DeleteBrandAsync(int id)
+        {
+            var existing = await _studentDB.Brands.FirstOrDefaultAsync(b => b.Id == id && b.CompanyId == _companyId);
+            if (existing == null) return 0;
+            _studentDB.Brands.Remove(existing);
+            return await _studentDB.SaveChangesAsync();
+        }
+        #endregion
     }
 }

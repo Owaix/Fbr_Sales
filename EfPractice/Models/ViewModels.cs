@@ -177,4 +177,10 @@ namespace EfPractice.Models
         public int SelectedCategoryId { get; set; }
         public List<SelectListItem> Categories { get; set; } = new();
     }
+
+    public class BrandViewModel
+    {
+        public Brand Brand { get; set; } = new();
+        public List<Brand> Brands { get; set; } = new();
+    }
 }

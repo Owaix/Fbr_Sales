@@ -142,9 +142,10 @@ namespace EfPractice.Controllers
             model.Items = items;
             model.Taxes = (await _master.GetTaxesAsync(CompanyId ?? 0))
                 .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name }).ToList();
-
+            model.Brands = (await _master.GetBrandsAsync(CompanyId ?? 0)).Select(b => new SelectListItem { Value = b.Name, Text = b.Name }).ToList();
             model.Categories = (await _master.GETItemCatergoryRegistrarionAsync())
                 .Select(c => new SelectListItem { Value = c.Cid.ToString(), Text = c.Name }).ToList();
+
             return View(model);
         }
 
@@ -156,7 +157,7 @@ namespace EfPractice.Controllers
             model.Item = item; // This ensures validation errors and user input are shown
             model.Taxes = (await _master.GetTaxesAsync(CompanyId ?? 0))
               .Select(t => new SelectListItem { Value = t.Id.ToString(), Text = t.Name }).ToList();
-
+            model.Brands = (await _master.GetBrandsAsync(CompanyId ?? 0)).Select(b => new SelectListItem { Value = b.Name, Text = b.Name }).ToList();
             model.Categories = (await _master.GETItemCatergoryRegistrarionAsync())
                 .Select(c => new SelectListItem { Value = c.Cid.ToString(), Text = c.Name }).ToList();
 
@@ -719,5 +720,10 @@ namespace EfPractice.Controllers
             var subs = await _master.GetSubCategoriesByCategoryAsync(categoryId);
             return Json(subs.Select(s => new { id = s.Id, name = s.Name }));
         }
+
+        [HttpGet] public async Task<IActionResult> Brands(int id = 0) { var vm = new BrandViewModel { Brand = id > 0 ? await _master.GetBrandByIdAsync(id) ?? new Brand() : new Brand(), Brands = await _master.GetBrandsAsync(CompanyId ?? 0) }; return View(vm); }
+        [HttpPost][ValidateAntiForgeryToken] public async Task<IActionResult> Brands(Brand brand) { if (ModelState.IsValid) { if (brand.Id > 0) await _master.UpdateBrandAsync(brand); else await _master.AddBrandAsync(brand); return RedirectToAction(nameof(Brands)); } var vm = new BrandViewModel { Brand = brand, Brands = await _master.GetBrandsAsync(CompanyId ?? 0) }; return View(vm); }
+        [HttpPost][ValidateAntiForgeryToken] public async Task<IActionResult> DeleteBrand(int id) { await _master.DeleteBrandAsync(id); return RedirectToAction(nameof(Brands)); }
+
     }
 }
