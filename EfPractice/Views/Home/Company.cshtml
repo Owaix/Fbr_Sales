@@ -85,10 +85,17 @@
 					</div>
 				</div>
 				<div class="row g-3 mt-1">
-					<div class="col-md-12">
+					<div class="col-md-8">
 						<label asp-for="Company.FbrBearerToken" class="form-label">FBR Bearer Token</label>
 						<input asp-for="Company.FbrBearerToken" type="password" class="form-control" placeholder="Paste API token here" />
 						<span asp-validation-for="Company.FbrBearerToken" class="text-danger"></span>
+					</div>
+					<div class="col-md-4">
+						<label asp-for="Company.isActive" class="form-label">Is Active</label>
+						<select asp-for="Company.isActive" class="form-select">
+							<option value="true">Active</option>
+							<option value="false">In Active</option>
+						</select>
 					</div>
 				</div>
 				<div class="row g-3 mt-1">
@@ -127,7 +134,7 @@
 					<th>Cell No</th>
 					<th>User Name</th>
 					<th>Email</th>
-					<th>Password</th>
+					<th>IsActive</th>
 					<th>Actions</th>
 				</tr>
 			</thead>
@@ -141,7 +148,7 @@
 						<td>@company.CellNo</td>
 						<td>@company.UserName</td>
 						<td>@company.Email</td>
-						<td>**********</td>
+						<td>@company.isActive</td>
 						<td>
 							<a asp-action="Company" asp-route-id="@company.Id" class="btn btn-sm btn-warning">Edit</a>
 							<a asp-action="CompanyDelete" asp-route-id="@company.Id" class="btn btn-sm btn-danger">Delete</a>

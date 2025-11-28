@@ -119,6 +119,13 @@ namespace EfPractice.Areas.Identity.Pages.Account
                     if (result.Succeeded)
                     {
                         var company = await _master.GetCompanyByIdAsync(user.CompanyId);
+
+                        if (company != null && company.isActive == false)
+                        {
+                            ModelState.AddModelError(string.Empty, "Company is InActive Please contact administrator.");
+                            return Page();
+                        }
+
                         var claims = new List<System.Security.Claims.Claim>
                         {
                             new System.Security.Claims.Claim("UserName", user.UserName.ToString()),
