@@ -2,11 +2,12 @@
 @{
 	ViewData["Title"] = "Users";
 }
-<div class="container mt-5">
-	<h2 class="mb-4">User Profile</h2>
-	<!-- Form -->
+<div class="container">
 	<div class="card card-add mb-3">
 		<div class="card-body">
+			<div class="d-sm-flex align-items-center mb-4">
+				<h4 class="card-title mb-sm-0">User Profile</h4>
+			</div>
 			<form asp-action="Users" asp-controller="Home" method="post" novalidate>
 				@Html.ValidationSummary(true, "", new { @class = "text-danger" })
 				<input type="hidden" asp-for="User.Id" />
@@ -46,32 +47,38 @@
 			</form>
 		</div>
 	</div>
-	<!-- Table -->
-	<div class="table-container">
-		<table id="usersTable" class="table table-sm table-bordered table-striped align-middle">
-			<thead class="table-light">
-				<tr>
-					<th>UserName</th>
-					<th>Email</th>
-					<th>User Role</th>					
-					<th style="width:120px;">Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var u in Model.Users)
-				{
-					<tr>
-						<td>@u.UserName</td>
-						<td>@u.Email</td>
-						<td>@Common.GetUserRoleById(u.UserRoleId)</td>
-						<td>
-							<a asp-action="Users" asp-route-id="@u.Id" class="btn btn-sm btn-warning">Edit</a>
-							<a asp-action="DeleteUser" asp-route-id="@u.Id" class="btn btn-sm btn-danger">Delete</a>
-						</td>
-					</tr>
-				}
-			</tbody>
-		</table>
+	<div class="card">
+		<div class="card-body">
+			<div class="d-sm-flex align-items-center mb-4">
+				<h4 class="card-title mb-sm-0">Users List</h4>
+			</div>
+			<div class="">
+				<table id="usersTable" class="table">
+					<thead class="table-light">
+						<tr>
+							<th>UserName</th>
+							<th>Email</th>
+							<th>User Role</th>
+							<th style="width:120px;">Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var u in Model.Users)
+						{
+							<tr>
+								<td>@u.UserName</td>
+								<td>@u.Email</td>
+								<td>@Common.GetUserRoleById(u.UserRoleId)</td>
+								<td>
+									<a asp-action="Users" asp-route-id="@u.Id" class="btn btn-sm btn-warning">Edit</a>
+									<a asp-action="DeleteUser" asp-route-id="@u.Id" class="btn btn-sm btn-danger">Delete</a>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
 	</div>
 </div>
 @section Scripts {
