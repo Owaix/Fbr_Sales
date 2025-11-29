@@ -27,179 +27,190 @@
 </style>
 
 <div class="container mt-4">
-	<h2 class="mb-3">Customer Profile</h2>
-
-	<form asp-action="Customer" asp-controller="Home" method="post" novalidate>
-		@Html.ValidationSummary(true, "", new { @class = "text-danger" })
-		<input type="hidden" asp-for="Customer.CustomerID" />
-		<ul class="nav nav-tabs" role="tablist">
-			<li class="nav-item">
-				<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab">
-					General Information
-				</button>
-			</li>
-			<li class="nav-item">
-				<button class="nav-link" data-bs-toggle="tab" data-bs-target="#additional" type="button" role="tab">
-					Additional Information
-				</button>
-			</li>
-		</ul>
-		<div class="tab-content border border-top-0 p-3 bg-white">
-			<div class="tab-pane fade show active" id="general" role="tabpanel">
-				<div class="row g-3">
-					<div class="col-md-3">
-						<label asp-for="Customer.Code"></label>
-						<input asp-for="Customer.Code" class="form-control" />
-						<span asp-validation-for="Customer.Code" class="text-danger"></span>
+	<div class="card card-add mb-3">
+		<div class="card-body">
+			<div class="d-sm-flex align-items-center mb-4">
+				<h4 class="card-title mb-sm-0">Customer</h4>
+			</div>
+			<form asp-action="Customer" asp-controller="Home" method="post" novalidate>
+				@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+				<input type="hidden" asp-for="Customer.CustomerID" />
+				<ul class="nav nav-tabs" role="tablist">
+					<li class="nav-item">
+						<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab">
+							General
+						</button>
+					</li>
+					<li class="nav-item">
+						<button class="nav-link" data-bs-toggle="tab" data-bs-target="#additional" type="button" role="tab">
+							Additional
+						</button>
+					</li>
+				</ul>
+				<div class="tab-content border border-top-0 p-3 bg-white">
+					<div class="tab-pane fade show active" id="general" role="tabpanel">
+						<div class="row g-3">
+							<div class="col-md-3">
+								<label asp-for="Customer.Code"></label>
+								<input asp-for="Customer.Code" class="form-control" />
+								<span asp-validation-for="Customer.Code" class="text-danger"></span>
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.Name">Customer Name</label>
+								<input asp-for="Customer.Name" class="form-control" required />
+								<span asp-validation-for="Customer.Name" class="text-danger"></span>
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.CustomerType">Customer Type</label>
+								<select asp-for="Customer.CustomerType" asp-items="Model.CustomerTypes" class="form-select"></select>
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.Telephone">Telephone</label>
+								<input asp-for="Customer.Telephone" class="form-control" />
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.BusinessSector">Business Sector</label>
+								<select asp-for="Customer.BusinessSector" asp-items="Model.BusinessSectors" class="form-select"></select>
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.Country">Country</label>
+								<select asp-for="Customer.Country" asp-items="Model.Countries" class="form-select"></select>
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.State">State</label>
+								<select asp-for="Customer.State" asp-items="Model.States" class="form-select"></select>
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.CityName">City</label>
+								<select asp-for="Customer.CityName" asp-items="Model.Cities" class="form-select"></select>
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.ProductPriceLevel">Price Level</label>
+								<select asp-for="Customer.ProductPriceLevel" asp-items="Model.ProductPriceLevels" class="form-select"></select>
+							</div>
+							<div class="col-md-3 form-check pt-4">
+								<input asp-for="Customer.Active" class="form-check-input" />
+								<label asp-for="Customer.Active" class="form-check-label">Active</label>
+							</div>
+							<div class="col-md-3 form-check pt-4">
+								<input asp-for="Customer.ATL" class="form-check-input" />
+								<label asp-for="Customer.ATL" class="form-check-label">ATL</label>
+							</div>
+							<div class="col-md-3 form-check pt-4">
+								<input asp-for="Customer.ShouldBeSupplier" class="form-check-input" />
+								<label asp-for="Customer.ShouldBeSupplier" class="form-check-label">Should Be Supplier?</label>
+							</div>
+							<div class="col-md-6">
+								<label asp-for="Customer.Address">Address</label>
+								<textarea asp-for="Customer.Address" class="form-control" rows="2"></textarea>
+							</div>
+						</div>
 					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.Name">Customer Name</label>
-						<input asp-for="Customer.Name" class="form-control" required />
-						<span asp-validation-for="Customer.Name" class="text-danger"></span>
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.CustomerType">Customer Type</label>
-						<select asp-for="Customer.CustomerType" asp-items="Model.CustomerTypes" class="form-select"></select>
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.Telephone">Telephone</label>
-						<input asp-for="Customer.Telephone" class="form-control" />
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.BusinessSector">Business Sector</label>
-						<select asp-for="Customer.BusinessSector" asp-items="Model.BusinessSectors" class="form-select"></select>
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.Country">Country</label>
-						<select asp-for="Customer.Country" asp-items="Model.Countries" class="form-select"></select>
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.State">State</label>
-						<select asp-for="Customer.State" asp-items="Model.States" class="form-select"></select>
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.CityName">City</label>
-						<select asp-for="Customer.CityName" asp-items="Model.Cities" class="form-select"></select>
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.ProductPriceLevel">Product Price Level</label>
-						<select asp-for="Customer.ProductPriceLevel" asp-items="Model.ProductPriceLevels" class="form-select"></select>
-					</div>
-					<div class="col-md-3 form-check pt-4">
-						<input asp-for="Customer.Active" class="form-check-input" />
-						<label asp-for="Customer.Active" class="form-check-label">Active</label>
-					</div>
-					<div class="col-md-3 form-check pt-4">
-						<input asp-for="Customer.ATL" class="form-check-input" />
-						<label asp-for="Customer.ATL" class="form-check-label">ATL</label>
-					</div>
-					<div class="col-md-3 form-check pt-4">
-						<input asp-for="Customer.ShouldBeSupplier" class="form-check-input" />
-						<label asp-for="Customer.ShouldBeSupplier" class="form-check-label">Should Be Supplier?</label>
-					</div>
-					<div class="col-md-6">
-						<label asp-for="Customer.Address">Address</label>
-						<textarea asp-for="Customer.Address" class="form-control" rows="2"></textarea>
+					<div class="tab-pane fade" id="additional" role="tabpanel">
+						<div class="row g-3">
+							<div class="col-md-3">
+								<label asp-for="Customer.AccountManager">Account Manager</label>
+								<select asp-for="Customer.AccountManager" asp-items="Model.AccountManagers" class="form-select"></select>
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.ContactPerson">Contact Person</label>
+								<input asp-for="Customer.ContactPerson" class="form-control" />
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.Mobile">Mobile</label>
+								<input asp-for="Customer.Mobile" class="form-control" />
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.Email">Email</label>
+								<input asp-for="Customer.Email" class="form-control" />
+								<span asp-validation-for="Customer.Email" class="text-danger"></span>
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.Area">Area</label>
+								<select asp-for="Customer.Area" asp-items="Model.Areas" class="form-select"></select>
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.Fax">Fax</label>
+								<input asp-for="Customer.Fax" class="form-control" />
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.CreditLimit">Credit Limit</label>
+								<input asp-for="Customer.CreditLimit" class="form-control" />
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.CreditPeriod">Credit Period (Days)</label>
+								<input asp-for="Customer.CreditPeriod" class="form-control" />
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.CreditTerms">Credit Terms</label>
+								<select asp-for="Customer.CreditTerms" asp-items="Model.CreditTermsOptions" class="form-select"></select>
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.Website">Website</label>
+								<input asp-for="Customer.Website" class="form-control" />
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.STRegionNo">S.T Region No</label>
+								<input asp-for="Customer.STRegionNo" class="form-control" />
+							</div>
+							<div class="col-md-3">
+								<label asp-for="Customer.NtnCnic">N.T.N / CNIC</label>
+								<input asp-for="Customer.NtnCnic" class="form-control" />
+								<span asp-validation-for="Customer.NtnCnic" class="text-danger"></span>
+							</div>
+							<div class="col-md-6">
+								<label asp-for="Customer.Remarks">Remarks</label>
+								<textarea asp-for="Customer.Remarks" class="form-control" rows="2"></textarea>
+							</div>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="tab-pane fade" id="additional" role="tabpanel">
-				<div class="row g-3">
-					<div class="col-md-3">
-						<label asp-for="Customer.AccountManager">Account Manager</label>
-						<select asp-for="Customer.AccountManager" asp-items="Model.AccountManagers" class="form-select"></select>
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.ContactPerson">Contact Person</label>
-						<input asp-for="Customer.ContactPerson" class="form-control" />
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.Mobile">Mobile</label>
-						<input asp-for="Customer.Mobile" class="form-control" />
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.Email">Email</label>
-						<input asp-for="Customer.Email" class="form-control" />
-						<span asp-validation-for="Customer.Email" class="text-danger"></span>
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.Area">Area</label>
-						<select asp-for="Customer.Area" asp-items="Model.Areas" class="form-select"></select>
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.Fax">Fax</label>
-						<input asp-for="Customer.Fax" class="form-control" />
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.CreditLimit">Credit Limit</label>
-						<input asp-for="Customer.CreditLimit" class="form-control" />
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.CreditPeriod">Credit Period (Days)</label>
-						<input asp-for="Customer.CreditPeriod" class="form-control" />
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.CreditTerms">Credit Terms</label>
-						<select asp-for="Customer.CreditTerms" asp-items="Model.CreditTermsOptions" class="form-select"></select>
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.Website">Website</label>
-						<input asp-for="Customer.Website" class="form-control" />
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.STRegionNo">S.T Region No</label>
-						<input asp-for="Customer.STRegionNo" class="form-control" />
-					</div>
-					<div class="col-md-3">
-						<label asp-for="Customer.NtnCnic">N.T.N / CNIC</label>
-						<input asp-for="Customer.NtnCnic" class="form-control" />
-						<span asp-validation-for="Customer.NtnCnic" class="text-danger"></span>
-					</div>
-					<div class="col-md-6">
-						<label asp-for="Customer.Remarks">Remarks</label>
-						<textarea asp-for="Customer.Remarks" class="form-control" rows="2"></textarea>
-					</div>
+				<div class="mt-3 d-flex gap-2">
+					<button type="submit" class="btn btn-primary">Save</button>
+					<a asp-action="Customer" class="btn btn-secondary">Reset</a>
 				</div>
+			</form>
+		</div>
+	</div>
+	<div class="card">
+		<div class="card-body">
+			<div class="d-sm-flex align-items-center mb-4">
+				<h4 class="card-title mb-sm-0">Customer List</h4>
 			</div>
-		</div>
-		<div class="mt-3 d-flex gap-2">
-			<button type="submit" class="btn btn-primary">Save</button>
-			<button type="reset" class="btn btn-secondary">Reset</button>
-		</div>
-	</form>
-	<hr />
-	<div class="table-container">
-		<table class="table table-bordered table-striped align-middle" id="customerTable">
-			<thead>
-				<tr>
-					<th>ID</th>
-					<th>Name</th>
-					<th>Type</th>
-					<th>Telephone</th>
-					<th>City</th>
-					<th>Active</th>
-					<th>Credit Limit</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var c in Model.Customers)
-				{
+			<table class="table" id="customerTable">
+				<thead>
 					<tr>
-						<td>@c.CustomerID</td>
-						<td>@c.Name</td>
-						<td>@c.CustomerType</td>
-						<td>@c.Telephone</td>
-						<td>@c.CityName</td>
-						<td>@(c.Active ? "Yes" : "No")</td>
-						<td>@c.CreditLimit</td>
-						<td>
-							<a asp-action="Customer" asp-route-id="@c.CustomerID" class="btn btn-sm btn-warning">Edit</a>
-							<a asp-action="CustomerDelete" asp-route-id="@c.CustomerID" class="btn btn-sm btn-danger">Delete</a>
-						</td>
+						<th>ID</th>
+						<th>Name</th>
+						<th>Type</th>
+						<th>Telephone</th>
+						<th>City</th>
+						<th>Active</th>
+						<th>Credit Limit</th>
+						<th>Actions</th>
 					</tr>
-				}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					@foreach (var c in Model.Customers)
+					{
+						<tr>
+							<td>@c.CustomerID</td>
+							<td>@c.Name</td>
+							<td>@c.CustomerType</td>
+							<td>@c.Telephone</td>
+							<td>@c.CityName</td>
+							<td>@(c.Active ? "Yes" : "No")</td>
+							<td>@c.CreditLimit</td>
+							<td class="text-nowrap">
+								<a asp-action="Customer" asp-route-id="@c.CustomerID" class="btn btn-sm btn-warning">Edit</a>
+								<a asp-action="CustomerDelete" asp-route-id="@c.CustomerID" class="btn btn-sm btn-danger">Delete</a>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>
+
+<partial name="_ValidationScriptsPartial" />
