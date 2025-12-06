@@ -1,46 +1,50 @@
 @model EfPractice.Models.AccountViewModel
 <div class="container">
-	<div class="card card-add mb-3">
-		<div class="card-body">
-			<div class="d-sm-flex align-items-center mb-4"><h4 class="card-title mb-sm-0">Account</h4></div>
-			<form asp-action="Accounts" method="post" class="row g-3" autocomplete="off">
-				<input type="hidden" asp-for="Account.Id" />
-				<div class="col-md-3">
-					<label asp-for="Account.AccountId" class="form-label">Account Code</label>
-					<input asp-for="Account.AccountId" class="form-control" />
-					<span asp-validation-for="Account.AccountId" class="text-danger"></span>
-				</div>
-				<div class="col-md-6">
-					<label asp-for="Account.AccountTitle" class="form-label">Account Title</label>
-					<input asp-for="Account.AccountTitle" class="form-control" />
-					<span asp-validation-for="Account.AccountTitle" class="text-danger"></span>
-				</div>
-				<div class="col-md-3 d-flex align-items-end gap-2">
-					<button type="submit" class="btn btn-primary">@(Model.Account.Id == 0 ? "Add" : "Update")</button>
-					<a asp-action="Accounts" class="btn btn-secondary">Clear</a>
-				</div>
-			</form>
-		</div>
-	</div>
-	<div class="card">
-		<div class="card-body">
-			<div class="d-sm-flex align-items-center mb-4"><h4 class="card-title mb-sm-0">Account List</h4></div>
-			@if (Model.Accounts?.Any() == true)
-			{
-				<table class="table">
-					<thead class="table-light"><tr><th>Id</th><th>Account Code</th><th>Account Title</th><th>Actions</th></tr></thead>
-					<tbody>
-						@foreach (var a in Model.Accounts)
-						{
-							<tr>
-								<td>@a.Id</td><td>@a.AccountId</td><td>@a.AccountTitle</td>
-								<td class="text-nowrap"><a asp-action="Accounts" asp-route-id="@a.Id" class="btn btn-sm btn-primary">Edit</a><form asp-action="DeleteAccount" asp-route-id="@a.Id" method="post" class="d-inline" onsubmit="return confirm('Delete account?');"><button class="btn btn-sm btn-danger">Delete</button></form></td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			}
-		</div>
-	</div>
+    <div class="card card-add mb-3">
+        <div class="card-body">
+            <div class="d-sm-flex align-items-center mb-4"><h4 class="card-title mb-sm-0">Account</h4></div>
+            <form asp-action="Accounts" method="post" class="row g-3" autocomplete="off">
+                <input type="hidden" asp-for="Account.Id" />
+                <div class="col-md-3">
+                    <label asp-for="Account.AccountId" class="form-label">Account Code</label>
+                    <input asp-for="Account.AccountId" class="form-control" />
+                    <span asp-validation-for="Account.AccountId" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Account.AccountTitle" class="form-label">Account Title</label>
+                    <input asp-for="Account.AccountTitle" class="form-control" />
+                    <span asp-validation-for="Account.AccountTitle" class="text-danger"></span>
+                </div>
+                <div class="col-md-3 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary">@(Model.Account.Id == 0 ? "Add" : "Update")</button>
+                    <a asp-action="Accounts" class="btn btn-secondary">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="d-sm-flex align-items-center mb-4"><h4 class="card-title mb-sm-0">Account List</h4></div>
+            @if (Model.Accounts?.Any() == true)
+            {
+                <table class="table">
+                    <thead >
+                        <tr><th>Id</th><th>Account Code</th><th>Account Title</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var a in Model.Accounts)
+                        {
+                            <tr>
+                                <td>@a.Id</td>
+                                <td>@a.AccountId</td>
+                                <td>@a.AccountTitle</td>
+                                <td class="text-nowrap"><a asp-action="Accounts" asp-route-id="@a.Id" class="btn btn-sm btn-warning">Edit</a><form asp-action="DeleteAccount" asp-route-id="@a.Id" method="post" class="d-inline" onsubmit="return confirm('Delete account?');"><button class="btn btn-sm btn-danger">Delete</button></form></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
 </div>
 <partial name="_ValidationScriptsPartial" />

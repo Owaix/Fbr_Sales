@@ -52,32 +52,30 @@
 			<div class="d-sm-flex align-items-center mb-4">
 				<h4 class="card-title mb-sm-0">Users List</h4>
 			</div>
-			<div class="">
-				<table id="usersTable" class="table">
-					<thead class="table-light">
+			<table id="usersTable" class="table">
+				<thead>
+					<tr>
+						<th>UserName</th>
+						<th>Email</th>
+						<th>User Role</th>
+						<th style="width:120px;">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var u in Model.Users)
+					{
 						<tr>
-							<th>UserName</th>
-							<th>Email</th>
-							<th>User Role</th>
-							<th style="width:120px;">Actions</th>
+							<td>@u.UserName</td>
+							<td>@u.Email</td>
+							<td>@Common.GetUserRoleById(u.UserRoleId)</td>
+							<td class="text-nowrap">
+								<a asp-action="Users" asp-route-id="@u.Id" class="btn btn-sm btn-warning">Edit</a>
+								<a asp-action="DeleteUser" asp-route-id="@u.Id" class="btn btn-sm btn-danger">Delete</a>
+							</td>
 						</tr>
-					</thead>
-					<tbody>
-						@foreach (var u in Model.Users)
-						{
-							<tr>
-								<td>@u.UserName</td>
-								<td>@u.Email</td>
-								<td>@Common.GetUserRoleById(u.UserRoleId)</td>
-								<td>
-									<a asp-action="Users" asp-route-id="@u.Id" class="btn btn-sm btn-warning">Edit</a>
-									<a asp-action="DeleteUser" asp-route-id="@u.Id" class="btn btn-sm btn-danger">Delete</a>
-								</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			</div>
+					}
+				</tbody>
+			</table>
 		</div>
 	</div>
 </div>

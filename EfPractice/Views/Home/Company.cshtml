@@ -35,11 +35,11 @@
 </style>
 
 <div class="container mt-5">
-	<h2 class="mb-4">Company Profile</h2>
-
-	<!-- Form -->
-	<div class="card card-add">
-		<div class="card-body">
+    <div class="card card-add mb-3">
+        <div class="card-body">
+            <div class="d-sm-flex align-items-center mb-4">
+                <h4 class="card-title mb-sm-0">Company</h4>
+            </div>
 
 			<form asp-action="Company" asp-controller="Home" method="post">
 				<div class="row g-3">
@@ -121,43 +121,49 @@
 				</div>
 			</form>
 		</div>
-	</div>
+    </div>
 
-	<!-- Table -->
-	<div class="table-container">
-		<table id="companyTable" class="table table-bordered">
-			<thead class="table-primary">
-				<tr>
-					<th>ID</th>
-					<th>Company Name</th>
-					<th>Address</th>
-					<th>Cell No</th>
-					<th>User Name</th>
-					<th>Email</th>
-					<th>IsActive</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var company in Model.Companies)
-				{
-					<tr>
-						<td>@company.Id</td>
-						<td>@company.BusinessName</td>
-						<td>@company.Address</td>
-						<td>@company.CellNo</td>
-						<td>@company.UserName</td>
-						<td>@company.Email</td>
-						<td>@company.isActive</td>
-						<td>
-							<a asp-action="Company" asp-route-id="@company.Id" class="btn btn-sm btn-warning">Edit</a>
-							<a asp-action="CompanyDelete" asp-route-id="@company.Id" class="btn btn-sm btn-danger">Delete</a>
-						</td>
-					</tr>
-				}
-			</tbody>
-		</table>
-	</div>
+    <div class="card">
+        <div class="card-body">
+            <div class="d-sm-flex align-items-center mb-4">
+                <h4 class="card-title mb-sm-0">Company List</h4>
+            </div>
+            <div class="table-container">
+                <table id="companyTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Company Name</th>
+                            <th>Address</th>
+                            <th>Cell No</th>
+                            <th>User Name</th>
+                            <th>Email</th>
+                            <th>IsActive</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var company in Model.Companies)
+                        {
+                            <tr>
+                                <td>@company.Id</td>
+                                <td>@company.BusinessName</td>
+                                <td>@company.Address</td>
+                                <td>@company.CellNo</td>
+                                <td>@company.UserName</td>
+                                <td>@company.Email</td>
+                                <td>@company.isActive</td>
+                                <td class="text-nowrap">
+                                    <a asp-action="Company" asp-route-id="@company.Id" class="btn btn-sm btn-warning">Edit</a>
+                                    <a asp-action="CompanyDelete" asp-route-id="@company.Id" class="btn btn-sm btn-danger">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
