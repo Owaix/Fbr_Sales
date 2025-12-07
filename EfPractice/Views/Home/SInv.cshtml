@@ -42,8 +42,7 @@
         }
 </style>
 <!-- Removed extra jQuery include to avoid overwriting select2 registration. Assume layout already loads jQuery. -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 
 <div class="container">
     <form asp-action="SInv" method="post" autocomplete="off">
@@ -66,8 +65,8 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Customer</label>
-                        <select id="customerSelector" class="form-select select2" name="Customer">
-                            <option selected>0002 - Unique Point</option>
+                        <select id="customerSelector" class="form-select select2" asp-for="CustomerId" asp-items="@(new SelectList(ViewBag.Customers, "Value", "Text"))">
+                            <option value="">-- Select Customer --</option>
                         </select>
                     </div>
                     <div class="col-md-4">
@@ -90,8 +89,8 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Account</label>
-                        <select class="form-select select2" name="Account">
-                            <option selected>04010101-Net Revenue</option>
+                        <select id="accountSelector" class="form-select select2" asp-for="AccountId" asp-items="@(new SelectList(ViewBag.Accounts, "Value", "Text"))">
+                            <option value="">-- Select Account --</option>
                         </select>
                     </div>
                     <div class="col-md-4 d-flex align-items-center">
@@ -249,6 +248,8 @@
 </div>
 
 @section Scripts {
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
         let buyersCache = [];
@@ -293,6 +294,8 @@
             const raw = await loadBuyersOnce();
             const enriched = raw.map(r=>({ id: r.text, text: r.text, ntn: r.ntn, address: r.address, province: r.province, regType: r.regType }));
             initBuyerSelect(enriched);
+            $('#customerSelector').select2();
+            $('#accountSelector').select2();
         }
 
         if(!window.jQuery){ console.error('jQuery not found'); }

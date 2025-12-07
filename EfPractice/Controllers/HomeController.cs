@@ -284,6 +284,17 @@ namespace EfPractice.Controllers
             {
                 model = new SaleInvoice { InvoiceDate = DateTime.Now, Items = new List<SaleInvoiceItem>() };
             }
+
+            // Bind customers and accounts to model for dropdowns
+            var cid = CompanyId ?? 0;
+            var customers = await _master.GetAllCustomersAsync(cid);
+            ViewBag.Customers = customers
+                .Select(c => new SelectListItem { Value = c.CustomerID.ToString(), Text = c.Name ?? c.CusName ?? string.Empty })
+                .ToList();
+            var accounts = await _master.GetAccountsAsync(cid);
+            ViewBag.Accounts = accounts
+                .Select(a => new SelectListItem { Value = a.Id.ToString(), Text = string.Concat(a.AccountId, " - ", a.AccountTitle) })
+                .ToList();
             return View(model);
         }
 

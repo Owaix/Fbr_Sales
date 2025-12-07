@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,7 +20,9 @@ namespace EfPractice.Models
         public string ScenarioId { get; set; }
         public int CompanyId { get; set; }
         public string? invoiceNumber { get; set; }
-        public DateTime? dated { get; set; }    
+        public DateTime? dated { get; set; }
+        public int CustomerId { get; set; }
+        public int AccountId { get; set; }
         public List<SaleInvoiceItem> Items { get; set; } = new List<SaleInvoiceItem>();
     }
 
