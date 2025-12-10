@@ -28,8 +28,13 @@
             @if (Model.Accounts?.Any() == true)
             {
                 <table class="table">
-                    <thead >
-                        <tr><th>Id</th><th>Account Code</th><th>Account Title</th><th>Actions</th></tr>
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Account Code</th>
+                            <th>Account Title</th>
+                            <th>Actions</th>
+                        </tr>
                     </thead>
                     <tbody>
                         @foreach (var a in Model.Accounts)
@@ -38,7 +43,9 @@
                                 <td>@a.Id</td>
                                 <td>@a.AccountId</td>
                                 <td>@a.AccountTitle</td>
-                                <td class="text-nowrap"><a asp-action="Accounts" asp-route-id="@a.Id" class="btn btn-sm btn-warning">Edit</a><form asp-action="DeleteAccount" asp-route-id="@a.Id" method="post" class="d-inline" onsubmit="return confirm('Delete account?');"><button class="btn btn-sm btn-danger">Delete</button></form></td>
+                                <td class="text-nowrap">
+                                    <a asp-action="Accounts" asp-route-id="@a.Id" class="btn btn-sm btn-warning">Edit</a><form asp-action="DeleteAccount" asp-route-id="@a.Id" method="post" class="d-inline" onsubmit="return confirm('Delete account?');"><button class="btn btn-sm btn-danger">Delete</button></form>
+                                </td>
                             </tr>
                         }
                     </tbody>

@@ -50,7 +50,16 @@
 								<td>@s.Id</td>
 								<td>@s.Category</td>
 								<td>@s.Name</td>
-								<td>@(s.Active ? "Yes" : "No")</td>
+                                <td>
+                                    @if (s.Active)
+                                    {
+                                        <span class="text-success" title="Active">&#10003;</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger" title="Inactive">&#10007;</span>
+                                    }
+                                </td>
 								<td>
 									<a asp-action="SubCategories" asp-route-categoryId="@Model.SelectedCategoryId" asp-route-id="@s.Id" class="btn btn-sm btn-warning">Edit</a> <form asp-action="DeleteSubCategory" asp-route-id="@s.Id" asp-route-categoryId="@Model.SelectedCategoryId" method="post" class="d-inline" onsubmit="return confirm('Delete sub category?');">
 										<button class="btn btn-sm btn-danger">Delete</button>

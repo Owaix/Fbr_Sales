@@ -145,6 +145,8 @@ namespace EfPractice.Controllers
             model.Brands = (await _master.GetBrandsAsync(CompanyId ?? 0)).Select(b => new SelectListItem { Value = b.Name, Text = b.Name }).ToList();
             model.Categories = (await _master.GETItemCatergoryRegistrarionAsync())
                 .Select(c => new SelectListItem { Value = c.Cid.ToString(), Text = c.Name }).ToList();
+            // Expose category id→name lookup for the view
+            ViewBag.CategoryLookup = model.Categories.ToDictionary(c => c.Value, c => c.Text);
 
             return View(model);
         }
@@ -160,6 +162,8 @@ namespace EfPractice.Controllers
             model.Brands = (await _master.GetBrandsAsync(CompanyId ?? 0)).Select(b => new SelectListItem { Value = b.Name, Text = b.Name }).ToList();
             model.Categories = (await _master.GETItemCatergoryRegistrarionAsync())
                 .Select(c => new SelectListItem { Value = c.Cid.ToString(), Text = c.Name }).ToList();
+            // Expose category id→name lookup for the view
+            ViewBag.CategoryLookup = model.Categories.ToDictionary(c => c.Value, c => c.Text);
 
             if (ModelState.IsValid)
             {
@@ -679,12 +683,12 @@ namespace EfPractice.Controllers
             await _master.DeleteCateAsync(id); return RedirectToAction(nameof(Categories));
         }
         [HttpGet]
-        public async Task<IActionResult> SubCategories(int categoryId = 0, int id = 0)
+        public async Task<IActionResult> SubCategories(int id = 0, int categoryId = 0)
         {
             var vm = new SubCategoryViewModel();
             vm.Categories = (await _master.GETItemCatergoryRegistrarionAsync()).Select(c => new SelectListItem(c.Name, c.Cid.ToString())).ToList();
             vm.SelectedCategoryId = categoryId;
-            vm.SubCategories = await _master.GetSubCategoriesByCategoryAsync(vm.SelectedCategoryId);
+            vm.SubCategories = await _master.GetSubCategoryAsync();
 
             if (id > 0)
             {

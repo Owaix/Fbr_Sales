@@ -42,7 +42,7 @@
         }
 </style>
 <!-- Removed extra jQuery include to avoid overwriting select2 registration. Assume layout already loads jQuery. -->
-
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 <div class="container">
     <form asp-action="SInv" method="post" autocomplete="off">
@@ -94,7 +94,7 @@
                         </select>
                     </div>
                     <div class="col-md-4 d-flex align-items-center">
-                        <div class="form-check form-switch">
+                        <div class="form-check">
                             <input class="form-check-input" type="checkbox" role="switch" id="creditToggle" name="Credit" />
                             <label class="form-check-label" for="creditToggle">Credit</label>
                         </div>
@@ -114,24 +114,22 @@
         <div class="card">
             <div class="card-body">
                 <div class="d-sm-flex align-items-center mb-4">
-                    <h4 class="card-title mb-sm-0">Users List</h4>
+                    <h4 class="card-title mb-sm-0">
+                        Invoice Items
+                    </h4>
                 </div>
-
-
-                <h4>Invoice Items</h4>
                 <table class="table table-bordered" id="itemsTable">
                     <thead>
                         <tr>
-                            <th>HS Code</th>
-                            <th>Description</th>
+                            <th>Item Code / Name</th>
+                            <th>Qty</th>
+                            <th>Unit</th>
+                            <th>List Price</th>
                             <th>Rate</th>
-                            <th>UoM</th>
-                            <th>Quantity</th>
-                            <th>Value Excl. ST</th>
-                            <th>Sales Tax</th>
-                            <th>Further Tax</th>
-                            <th>Discount</th>
-                            <th>Total</th>
+                            <th>Disc Rate</th>
+                            <th>Value Excl. Tax</th>
+                            <th>S.T Amount</th>
+                            <th>Value Incl. Tax</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -139,18 +137,17 @@
                         @for (int i = 0; i < Model.Items.Count; i++)
                         {
                             <tr>
-                                <td><input asp-for="Items[@i].HsCode" class="form-control narrow-cell" /></td>
                                 <td style="position:relative;">
                                     <input asp-for="Items[@i].ProductDescription" class="form-control wide-desc product-desc-autocomplete" autocomplete="off" />
                                     <div class="autocomplete-table-container"></div>
                                 </td>
-                                <td><input asp-for="Items[@i].Rate" class="form-control narrow-cell" /></td>
+                                <td><input asp-for="Items[@i].Quantity" class="form-control item-calc narrow-cell" type="number" step="1" /></td>
                                 <td><input asp-for="Items[@i].UoM" class="form-control narrow-cell" /></td>
-                                <td><input asp-for="Items[@i].Quantity" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
+                                <td><input name="Items[@i].ListPrice" class="form-control narrow-cell" type="text" /></td>
+                                <td><input asp-for="Items[@i].Rate" class="form-control narrow-cell" /></td>
+                                <td><input asp-for="Items[@i].Discount" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
                                 <td><input asp-for="Items[@i].ValueSalesExcludingST" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
                                 <td><input asp-for="Items[@i].SalesTaxApplicable" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
-                                <td><input asp-for="Items[@i].FurtherTax" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
-                                <td><input asp-for="Items[@i].Discount" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
                                 <td><input asp-for="Items[@i].TotalValues" class="form-control total-value narrow-cell" type="text" step="0.01" readonly tabindex="0" /></td>
                                 <td class="text-nowrap">
                                     <button type="button" class="btn btn-success btn-sm me-1" onclick="addRow()">+</button>
@@ -159,81 +156,72 @@
                             </tr>
                         }
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="5"></td>
+                            <td class="text-end fw-bold">Totals:</td>
+                            <td>
+                                <label id="TotalValueExclTax" class="text-end">0.00</label>
+                            </td>
+                            <td>
+                                <label id="TotalSTAmount" class="text-end">0.00</label>
+                            </td>
+                            <td>
+                                <label id="TotalInclTax" class="text-end">0.00</label>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
                 </table>
-
-
-                <div class="row mb-3">
-                    <div class="col-md-3 ms-auto">
-                        <label class="form-label fw-bold">Grand Total</label>
-                        <input id="GrandTotal" class="form-control text-end" readonly value="0.00" />
+                <br />
+                <div class="row">
+                    <div class="col-3">
+                        <label class="form-label mb-0">Tax</label>
+                        <select class="form-select select2" id="Summary_TaxId" style="min-width:180px;" asp-items="@(new SelectList(ViewBag.Taxes ?? new List<SelectListItem>(), "Value", "Text"))">
+                            <option value="">-- Select Tax --</option>
+                        </select>
+                    </div>
+                    <div class="col-2">
+                        <label class="form-label mb-0">Rate</label>
+                        <input class="form-control text-end" id="Summary_TaxRate" style="width:120px;" />
+                    </div>
+                    <div class="col-2">
+                        <label class="form-label mb-0">Tax Type</label>
+                        <select class="form-select" id="Summary_TaxType" style="min-width:160px;">
+                            <option value="GST">
+                                GST
+                            </option>
+                            <option value="VAT">VAT</option>
+                            <option value="SalesTax">Sales Tax</option>
+                        </select>
                     </div>
                 </div>
 
-                <div class="row mb-2 justify-content-end">
-                    <div class="col-md-4 col-lg-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <label for="GrossAmount" class="form-label mb-0">Gross Amount</label>
-                            <input class="form-control text-end" id="GrossAmount" name="GrossAmount" value="107730" />
+                <div class="row justify-content-end">
+                    <div class="col-md-4 ms-auto">
+                        <div class="mb-3">
+                            <label for="GrossAmount" class="form-label fw-bold">Gross Amount</label>
+                            <input class="form-control text-end" id="GrossAmount" name="GrossAmount" />
                         </div>
-                    </div>
-                </div>
-                <div class="row mb-2 justify-content-end">
-                    <div class="col-md-4 col-lg-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <label for="CarriageFreight" class="form-label mb-0">Carriage and Freight</label>
-                            <input class="form-control text-end" id="CarriageFreight" name="CarriageFreight" value="0" />
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Grand Total</label>
+                            <input id="GrandTotal" class="form-control text-end" readonly />
                         </div>
-                    </div>
-                </div>
-                <div class="row mb-2 justify-content-end">
-                    <div class="col-md-4 col-lg-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <label for="TotalAdditionalTax" class="form-label mb-0">Total Additional Tax</label>
-                            <input class="form-control text-end" id="TotalAdditionalTax" name="TotalAdditionalTax" value="1077" />
+                        <div class="mb-3">
+                            <label for="CarriageFreight" class="form-label">Carriage and Freight</label>
+                            <input class="form-control text-end" id="CarriageFreight" name="CarriageFreight" />
                         </div>
-                    </div>
-                </div>
-                <div class="row mb-5 justify-content-end">
-                    <div class="col-md-4 col-lg-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <label for="NetTotal" class="form-label mb-0">Net Total</label>
-                            <input class="form-control text-end" id="NetTotal" name="NetTotal" value="108807" />
+                        <div class="mb-3">
+                            <label for="TotalAdditionalTax" class="form-label">Total Additional Tax</label>
+                            <input class="form-control text-end" id="TotalAdditionalTax" name="TotalAdditionalTax" />
                         </div>
-                    </div>
-                </div>
-                <div class="row mb-5 justify-content-end">
-                    <div class="col-md-4 col-lg-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <label for="AmountReceived" class="form-label mb-0">Amount Received</label>
+                        <div class="mb-3">
+                            <label for="NetTotal" class="form-label">Net Total</label>
+                            <input class="form-control text-end" id="NetTotal" name="NetTotal" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="AmountReceived" class="form-label">Amount Received</label>
                             <input class="form-control text-end" id="AmountReceived" name="AmountReceived" />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-auto ms-auto">
-                        <div class="d-flex align-items-end gap-2 flex-wrap justify-content-end">
-                            <div class="form-group">
-                                <label class="form-label me-2">Tax</label>
-                                <select class="form-select select2" name="Tax" id="SInv_TaxId" style="min-width:180px;">
-                                    <option value="">-- Select Tax --</option>
-                                    <option value="NewLevy" selected>New Levy</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label me-2">Rate</label>
-                                <input class="form-control" name="TaxRate" id="SInv_TaxRate" style="width:120px;" />
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label me-2">Tax Type</label>
-                                <div class="input-group" style="min-width:180px;">
-                                    <select class="form-select" name="TaxType" id="SInv_TaxType">
-                                        <option value="Percent" selected>Percent</option>
-                                        <option value="Fixed">Fixed</option>
-                                    </select>
-                                    <button type="button" class="btn btn-success">+</button>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -248,8 +236,7 @@
 </div>
 
 @section Scripts {
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
         let buyersCache = [];
@@ -313,6 +300,16 @@
             $(document).ready(function () {
                 addRow();
                 fetchItems();
+
+                $('#Summary_TaxId').change(function(){
+                    var id = $(this).val();
+                    if(!id) { $('#Summary_TaxRate').val(''); $('#Summary_TaxType').val('Percent'); return; }
+                    $.getJSON('/Home/GetTaxRate', { id: id }, function (d) {
+                        $('#Summary_TaxRate').val(d.rate);
+                        $('#Summary_TaxType').val(d.type);
+                    });
+                });
+
                 $('#SInv_TaxId').change(function(){
                     var id = $(this).val();
                     if(!id) { $('#SInv_TaxRate').val(''); return; }
@@ -321,6 +318,7 @@
                         $('#SInv_TaxType').val(d.type);
                     });
                 });
+
             });
 
             function renderAutocompleteTable(filtered, $container, selectedIdx) {
@@ -329,11 +327,19 @@
                     return;
                 }
                 let table = '<table class="autocomplete-table"><thead><tr>' +
-                    '<th>HS Code</th><th>Description</th><th>Rate</th><th>UoM</th><th>Value Excl. ST</th><th>Sales Tax</th><th>Further Tax</th><th>Discount</th>' +
+                    '<th>HS Code</th><th>Description</th><th>List Price</th><th>POS Rate</th><th>UoM</th><th>Value Excl. ST</th><th>Sales Tax</th><th>Further Tax</th><th>Discount</th>' +
                     '</tr></thead><tbody>';
                 filtered.forEach((item, idx) => {
                     table += `<tr class="${selectedIdx === idx ? 'selected' : ''}" data-idx="${idx}">` +
-                        `<td>${item.hsCode}</td><td>${item.productDescription}</td><td>${item.rate}</td><td>${item.uoM}</td><td>${item.valueSalesExcludingST}</td><td>${item.salesTaxApplicable}</td><td>${item.furtherTax}</td><td>${item.discount}</td>` +
+                        `<td>${item.hsCode ?? ''}</td>`+
+                        `<td>${item.productDescription ?? ''}</td>`+
+                        `<td>${item.price1 ?? item.listPrice ?? ''}</td>`+
+                        `<td>${item.posRate ?? item.rate ?? ''}</td>`+
+                        `<td>${item.uoM ?? ''}</td>`+
+                        `<td>${item.valueSalesExcludingST ?? ''}</td>`+
+                        `<td>${item.salesTaxApplicable ?? ''}</td>`+
+                        `<td>${item.furtherTax ?? ''}</td>`+
+                        `<td>${item.discount ?? ''}</td>` +
                         '</tr>';
                 });
                 table += '</tbody></table>';
@@ -380,6 +386,7 @@
                     e.preventDefault();
                     if (filtered.length > 0) {
                         const item = filtered[selected];
+                        console.log(item);
                         const $row = $input.closest('tr');
                         const productDesc = item.productDescription ? item.productDescription.toLowerCase() : '';
                         let duplicateRow = null;
@@ -401,7 +408,8 @@
                         } else {
                             $row.find('input[name*="HsCode"]').val(item.hsCode);
                             $row.find('input[name*="ProductDescription"]').val(item.productDescription);
-                            $row.find('input[name*="Rate"]').val(item.rate);
+                            $row.find('input[name*="Rate"]').val(item.posRate ?? item.rate ?? '');
+                            $row.find('input[name*="ListPrice"]').val(item.price1 ?? item.listPrice ?? '');
                             $row.find('input[name*="UoM"]').val(item.uoM);
                             $row.find('input[name*="Quantity"]').val(1);
                             $row.find('input[name*="ValueSalesExcludingST"]').val(item.valueSalesExcludingST);
@@ -437,14 +445,15 @@
                 const $row = $input.closest('tr');
                 $row.find('input[name*="HsCode"]').val(item.hsCode);
                 $row.find('input[name*="ProductDescription"]').val(item.productDescription);
-                $row.find('input[name*="Rate"]').val(item.rate);
+                $row.find('input[name*="Rate"]').val(item.posRate ?? item.rate ?? '');
+                $row.find('input[name*="ListPrice"]').val(item.price1 ?? item.listPrice ?? '');
                 $row.find('input[name*="UoM"]').val(item.uoM);
                 $row.find('input[name*="Quantity"]').val(1);
                 $row.find('input[name*="ValueSalesExcludingST"]').val(item.valueSalesExcludingST);
                 $row.find('input[name*="SalesTaxApplicable"]').val(item.salesTaxApplicable);
                 $row.find('input[name*="FurtherTax"]').val(item.furtherTax);
                 $row.find('input[name*="Discount"]').val(item.discount);
-                calculateRowTotal($row);
+                calculateRowTotals($row);
                 $container.hide();
                 $row.find('input[name*="Quantity"]').focus().select();
             });
@@ -458,15 +467,14 @@
             function addRow() {
                 var rowCount = $('#itemsTable tbody tr').length;
                 var row = `<tr>
-                    <td><input name="Items[${rowCount}].HsCode" class="form-control narrow-cell" value="" /></td>
                     <td style="position:relative;"><input name="Items[${rowCount}].ProductDescription" class="form-control wide-desc product-desc-autocomplete" value="" autocomplete="off" /><div class="autocomplete-table-container"></div></td>
-                    <td><input name="Items[${rowCount}].Rate" class="form-control narrow-cell" value="" /></td>
+                    <td><input name="Items[${rowCount}].Quantity" class="form-control item-calc narrow-cell" type="number" step="1" value="1" /></td>
                     <td><input name="Items[${rowCount}].UoM" class="form-control narrow-cell" value="" /></td>
-                    <td><input name="Items[${rowCount}].Quantity" class="form-control item-calc narrow-cell" type="text" step="0.01" value="1" /></td>
+                    <td><input name="Items[${rowCount}].ListPrice" class="form-control narrow-cell" type="text" value="" /></td>
+                    <td><input name="Items[${rowCount}].Rate" class="form-control narrow-cell" value="" /></td>
+                    <td><input name="Items[${rowCount}].Discount" class="form-control item-calc narrow-cell" type="text" step="0.01" value="0" /></td>
                     <td><input name="Items[${rowCount}].ValueSalesExcludingST" class="form-control item-calc narrow-cell" type="text" step="0.01" value="0" /></td>
                     <td><input name="Items[${rowCount}].SalesTaxApplicable" class="form-control item-calc narrow-cell" type="text" step="0.01" value="0" /></td>
-                    <td><input name="Items[${rowCount}].FurtherTax" class="form-control item-calc narrow-cell" type="text" step="0.01" value="0" /></td>
-                    <td><input name="Items[${rowCount}].Discount" class="form-control item-calc narrow-cell" type="text" step="0.01" value="0" /></td>
                     <td><input name="Items[${rowCount}].TotalValues" class="form-control total-value narrow-cell" type="text" step="0.01" readonly tabindex="0" value="0.00" /></td>
                     <td class="text-nowrap"><button type="button" class="btn btn-success btn-sm me-1" onclick="addRow()">+</button><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">-</button></td>
                 </tr>`;
@@ -478,24 +486,43 @@
             function updateInvoiceGrandTotal() { }
 
             function CalcInvoiceGrandTotal() {
-                let sum = 0;
+                let totalIncl = 0, totalExcl = 0, totalST = 0;
                 $('#itemsTable tbody .total-value').each(function () {
-                    const v = parseFloat($(this).val()) || 0;
-                    sum += v;
+                    const v = parseFloat($(this).val()) || 0; totalIncl += v;
                 });
-                $('#GrandTotal').val(sum.toFixed(2));
+                $('#itemsTable tbody input[name*="ValueSalesExcludingST"]').each(function(){
+                    const v = parseFloat($(this).val()) || 0; totalExcl += v;
+                });
+                $('#itemsTable tbody input[name*="SalesTaxApplicable"]').each(function(){
+                    const v = parseFloat($(this).val()) || 0; totalST += v;
+                });
+                $('#GrandTotal').val(totalIncl.toFixed(2));
+                $('#TotalInclTax').text(totalIncl.toFixed(2));
+                $('#TotalValueExclTax').text(totalExcl.toFixed(2));
+                $('#TotalSTAmount').text(totalST.toFixed(2));
+                updateSummaryTotals();
             }
 
-            function calculateRowTotal($row){}
+            function calculateRowTotal($row){
+                // Delegate to totals calculator to ensure all dependent fields update
+                calculateRowTotals($row);
+                CalcInvoiceGrandTotal();
+            }
 
             function calculateRowTotals($row) {
                 var rate = parseFloat($row.find('input[name*="Rate"]').val()) || 0;
                 var qty = parseFloat($row.find('input[name*="Quantity"]').val()) || 0;
-                var valueExclST = parseFloat($row.find('input[name*="ValueSalesExcludingST"]').val()) || 0;
+                var valueExclSTField = $row.find('input[name*="ValueSalesExcludingST"]');
+                var valueExclST = parseFloat(valueExclSTField.val());
+
+                var discountTmp = parseFloat($row.find('input[name*="Discount"]').val()) || 0;
+                valueExclST = Math.max((rate * qty) - discountTmp, 0);
+                valueExclSTField.val(valueExclST.toFixed(2));
+
                 var salesTax = parseFloat($row.find('input[name*="SalesTaxApplicable"]').val()) || 0;
                 var furtherTax = parseFloat($row.find('input[name*="FurtherTax"]').val()) || 0;
                 var discount = parseFloat($row.find('input[name*="Discount"]').val()) || 0;
-                var total = ((rate * qty) + valueExclST + salesTax + furtherTax) - discount;
+                var total = ((rate * qty) + salesTax ) - discount;
                 $row.find('.total-value').val(total.toFixed(2));
                 updateInvoiceGrandTotal();
             }
@@ -524,6 +551,7 @@
                     calculateRowTotal($(this));
                 });
                 updateInvoiceGrandTotal();
+                bindSummaryAutoCalc();
             });
 
             // Delete row on Escape (unless autocomplete just closed). Pressing Esc in description first closes popup; second Esc removes row.
@@ -590,6 +618,27 @@
             if(!$input.hasClass('product-desc-autocomplete')) return false;
             const $c=$input.closest('td').find('.autocomplete-table-container');
             return $c.is(':visible') && $c.find('table tr').length>0;
+        }
+
+        function parseNum(id){ const v = parseFloat($(id).val()); return isNaN(v)?0:v; }
+        function updateSummaryTotals(){
+            const grand = parseNum('#GrandTotal');
+            const carriage = parseNum('#CarriageFreight');
+            const addTax = parseNum('#TotalAdditionalTax');
+            const gross = parseNum('#GrossAmount');
+            // If GrossAmount provided, prefer gross + carriage + addTax; else use GrandTotal
+            const base = gross>0?gross:grand;
+            const net = base + carriage + addTax;
+            $('#NetTotal').val(net.toFixed(2));
+        }
+        function bindSummaryAutoCalc(){
+            $('#GrandTotal, #CarriageFreight, #TotalAdditionalTax, #GrossAmount').on('input change', function(){
+                updateSummaryTotals();
+            });
+            // Also recompute when tax rate/type changes if you later apply tax adjustments
+            $('#Summary_TaxRate, #Summary_TaxType').on('input change', function(){
+                updateSummaryTotals();
+            });
         }
 
         // Lightweight Excel-style navigation for #itemsTable (dynamic rows supported)

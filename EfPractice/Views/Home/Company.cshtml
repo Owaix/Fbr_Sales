@@ -35,6 +35,9 @@
 </style>
 
 <div class="container mt-5">
+    @{
+        var isSuperAdmin = User.HasClaim("CompanyId", "0");
+    }
     <div class="card card-add mb-3">
         <div class="card-body">
             <div class="d-sm-flex align-items-center mb-4">
@@ -114,10 +117,17 @@
 						<input asp-for="Company.Password" class="form-control" />
 						<span asp-validation-for="Company.Password" class="text-danger"></span>
 					</div>
-					<div class="col-md-4 d-flex align-items-end gap-2 mt-2">
-						<button type="submit" class="btn btn-primary w-50">Save</button>
-						<button type="reset" class="btn btn-secondary w-50">Reset</button>
-					</div>
+                    <div class="col-md-4 d-flex align-items-end gap-2 mt-2">
+                        @if (isSuperAdmin || (Model.Company?.Id ?? 0) > 0)
+                        {
+                            <button type="submit" class="btn btn-primary w-50">Save</button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-secondary w-50" disabled title="Only SuperAdmin can create companies">Save</button>
+                        }
+                        <button type="reset" class="btn btn-outline-secondary w-50">Reset</button>
+                    </div>
 				</div>
 			</form>
 		</div>

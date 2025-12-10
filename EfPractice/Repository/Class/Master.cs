@@ -690,12 +690,29 @@ namespace EfPractice.Repository.Class
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
         }
+        public async Task<List<SubCategory>> GetSubCategoryAsync()
+        {
+            return await (from subCat in _studentDB.SubCategories
+                          join cat in _studentDB.Cates
+                          on subCat.CategoryId equals cat.Cid
+                          where subCat.CompanyId == _companyId
+                          select new SubCategory
+                          {
+                              Id = subCat.Id,
+                              Name = subCat.Name,
+                              Active = subCat.Active,
+                              Category = cat.Name
+                          })
+             .AsNoTracking()
+             .ToListAsync();
+        }
         public async Task<List<SubCategory>> GetSubCategoriesByCategoryAsync(int categoryId)
         {
             return await (from subCat in _studentDB.SubCategories
                           join cat in _studentDB.Cates
                           on subCat.CategoryId equals cat.Cid
-                          where  cat.CompanyId == _companyId
+                          where cat.CompanyId == _companyId
+                          && subCat.CategoryId == categoryId
                           select new SubCategory
                           {
                               Id = subCat.Id,

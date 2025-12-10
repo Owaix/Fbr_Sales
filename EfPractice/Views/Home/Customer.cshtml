@@ -199,7 +199,16 @@
 							<td>@c.CustomerType</td>
 							<td>@c.Telephone</td>
 							<td>@c.CityName</td>
-							<td>@(c.Active ? "Yes" : "No")</td>
+                                <td>
+                                    @if (c.Active)
+                                    {
+                                        <span class="text-success" title="Active">&#10003;</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger" title="Inactive">&#10007;</span>
+                                    }
+                                </td>
 							<td>@c.CreditLimit</td>
 							<td class="text-nowrap">
 								<a asp-action="Customer" asp-route-id="@c.CustomerID" class="btn btn-sm btn-warning">Edit</a>

@@ -414,7 +414,7 @@
 
 
 
-        if ($.cookie('stellar-pro-banner')!="true") {
+        if ($.cookie('Sam Digital Invoice-pro-banner')!="true") {
           document.querySelector('#proBanner').classList.add('d-flex');
           document.querySelector('.navbar').classList.remove('fixed-top');
         }
@@ -442,7 +442,7 @@
           document.querySelector('.navbar').classList.remove('proBanner-padding-top');
           var date = new Date();
           date.setTime(date.getTime() + 24 * 60 * 60 * 1000); 
-          $.cookie('stellar-pro-banner', "true", { expires: date });
+          $.cookie('Sam Digital Invoice-pro-banner', "true", { expires: date });
         });
   });
 })(jQuery);

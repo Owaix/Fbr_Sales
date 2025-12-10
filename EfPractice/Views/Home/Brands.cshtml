@@ -38,7 +38,16 @@
 							<tr>
 								<td>@b.Id</td>
 								<td>@b.Name</td>
-								<td>@(b.Active ? "Yes" : "No")</td>
+                                <td>
+                                    @if (b.Active)
+                                    {
+                                        <span class="text-success" title="Active">&#10003;</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger" title="Inactive">&#10007;</span>
+                                    }
+                                </td>
 								<td class="text-nowrap">
 									<a asp-action="Brands" asp-route-id="@b.Id" class="btn btn-sm btn-warning">Edit</a>
 									<form asp-action="DeleteBrand" asp-route-id="@b.Id" method="post" class="d-inline" onsubmit="return confirm('Delete brand?');">

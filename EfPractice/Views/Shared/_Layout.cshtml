@@ -5,7 +5,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Stellar Admin</title>
+    <title>Sam Digital Invoice</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="~/vendors/simple-line-icons/css/simple-line-icons.css">
     <link rel="stylesheet" href="~/vendors/flag-icon-css/css/flag-icons.min.css">
@@ -24,6 +24,71 @@
     <link rel="stylesheet" href="~/css/vertical-light-layout/style.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="~/images/favicon.png" />
+    <style>
+        .form-check .form-check-input {
+            float: left;
+            margin-left: 0em;
+        }
+
+        .form-select {
+            color: #7d7d7d !important;
+        }
+        /* Enhanced checkbox styling */
+        .form-check-input {
+            width: 1.25rem;
+            height: 1.25rem;
+            cursor: pointer;
+            border: 2px solid #adb5bd;
+            transition: all .15s ease-in-out;
+        }
+
+            .form-check-input:focus {
+                outline: none;
+                box-shadow: 0 0 0 .2rem rgba(25, 135, 84, .25);
+                border-color: #198754;
+            }
+
+            .form-check-input:checked {
+                background-color: #198754;
+                border-color: #198754;
+            }
+
+        .form-check-label {
+            margin-left: .25rem;
+            user-select: none;
+        }
+        /* Nice switches */
+        .form-check.form-switch .form-check-input {
+            width: 2.5rem;
+            height: 1.4rem;
+            background-color: #dee2e6;
+            border-radius: 1rem;
+            border: none;
+            position: relative;
+            appearance: none;
+        }
+
+            .form-check.form-switch .form-check-input::after {
+                content: "";
+                position: absolute;
+                top: 0.15rem;
+                left: 0.15rem;
+                width: 1.1rem;
+                height: 1.1rem;
+                background: #fff;
+                border-radius: 50%;
+                box-shadow: 0 1px 3px rgba(0,0,0,.2);
+                transition: left .15s ease-in-out;
+            }
+
+            .form-check.form-switch .form-check-input:checked {
+                background-color: #0d6efd;
+            }
+
+                .form-check.form-switch .form-check-input:checked::after {
+                    left: 1.25rem;
+                }
+    </style>
 </head>
 <script src="~/js/jquery-2.2.0.js"></script>
 
@@ -45,7 +110,7 @@
                 </button>
             </div>
             <div class="navbar-menu-wrapper d-flex align-items-center">
-                <h5 class="mb-0 font-weight-medium d-none d-lg-flex">Welcome stellar dashboard!</h5>
+                <h5 class="mb-0 font-weight-medium d-none d-lg-flex">Welcome Sam Digital Invoice dashboard!</h5>
                 <ul class="navbar-nav navbar-nav-right">
                     <form class="search-form d-none d-md-block" action="#">
                         <i class="icon-magnifier"></i>
@@ -129,7 +194,7 @@
                                 <p class="mb-1 mt-3">@User.FindFirst("UserName")?.Value</p>
                                 <p class="font-weight-light text-muted mb-0">@User.FindFirst("email")?.Value</p>
                             </div>
-                            <a class="dropdown-item">
+                            <a href="/Home/company" class="dropdown-item">
                                 <i class="dropdown-item-icon icon-user text-primary"></i> My Profile <span class="badge badge-pill badge-danger">1</span>
                             </a>
                             <a href="/Account/Logout" class="dropdown-item"><i class="dropdown-item-icon icon-power text-primary"></i>Sign Out</a>
@@ -171,6 +236,13 @@
                     </li>
 
                     @{
+                        var businessName = User.FindFirst("BusinessName")?.Value;
+                        if (string.IsNullOrEmpty(businessName))
+                        {
+                            <script>
+                                window.location.href = "/Identity/Account/Login";
+                            </script>
+                        }
                         var isSuperAdmin = User.HasClaim("CompanyId", "0");
                     }
                     @if (!User.Identity.IsAuthenticated)
@@ -269,7 +341,7 @@
                 <footer class="footer">
                     <div class="d-sm-flex justify-content-center justify-content-sm-between">
                         <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
-                            Copyright © 2024 Stellar. All
+                            Copyright © 2024 Sam Digital Invoice. All
                             rights reserved. <a href="#"> Terms of use</a><a href="#">Privacy Policy</a>
                         </span>
                         <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
@@ -309,7 +381,6 @@
     <script src="~/js/dashboard.js"></script>
     <!-- End custom js for this page -->
     @await RenderSectionAsync("Scripts", required: false)
-
 </body>
 
 </html>

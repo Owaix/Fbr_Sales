@@ -132,5 +132,6 @@ namespace EfPractice.Repository.Interface
         Task<int> AddBrandAsync(Brand brand);
         Task<int> UpdateBrandAsync(Brand brand);
         Task<int> DeleteBrandAsync(int id);
+        Task<List<SubCategory>> GetSubCategoryAsync();
     }
 }
