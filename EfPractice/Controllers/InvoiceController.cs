@@ -60,49 +60,51 @@ namespace EfPractice.Controllers
         [HttpPost]
         public async Task<IActionResult> SInv(SaleInvoice model)
         {
-            if (!ModelState.IsValid)
-            {
-                // Ensure Items is non-null for the view's for-loop
-                model.Items ??= new List<SaleInvoiceItem>();
+            //if (!ModelState.IsValid)
+            //{
+            //    // Ensure Items is non-null for the view's for-loop
+            //    model.Items ??= new List<SaleInvoiceItem>();
 
-                // Repopulate dropdowns used by the view
-                var cid = CompanyId ?? 0;
-                var customers = await _master.GetAllCustomersAsync(cid);
-                ViewBag.Customers = customers
-                    .Select(c => new SelectListItem { Value = c.CustomerID.ToString(), Text = c.Name ?? c.CusName ?? string.Empty })
-                    .ToList();
+            //    // Repopulate dropdowns used by the view
+            //    var cid = CompanyId ?? 0;
+            //    var customers = await _master.GetAllCustomersAsync(cid);
+            //    ViewBag.Customers = customers
+            //        .Select(c => new SelectListItem { Value = c.CustomerID.ToString(), Text = c.Name ?? c.CusName ?? string.Empty })
+            //        .ToList();
 
-                var accounts = await _master.GetAccountsAsync(cid);
-                ViewBag.Accounts = accounts
-                    .Select(a => new SelectListItem { Value = a.Id.ToString(), Text = string.Concat(a.AccountId, " - ", a.AccountTitle) })
-                    .ToList();
+            //    var accounts = await _master.GetAccountsAsync(cid);
+            //    ViewBag.Accounts = accounts
+            //        .Select(a => new SelectListItem { Value = a.Id.ToString(), Text = string.Concat(a.AccountId, " - ", a.AccountTitle) })
+            //        .ToList();
 
-                return View(model);
-            }
+            //    return View(model);
+            //}
 
             try
             {
                 if (model.Id == 0)
                 {
-                    var resp = await _master.SendInvoiceToFbrAsync(model);
-                    var content = await resp.Content.ReadAsStringAsync();
-                    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                    var fbrResponse = JsonSerializer.Deserialize<FbrResponse>(content, options);
+                    //model.CompanyId = CompanyId ?? 0;
+                    //var resp = await _master.SendInvoiceToFbrAsync(model);
+                    //var content = await resp.Content.ReadAsStringAsync();
+                    //var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                    //var fbrResponse = JsonSerializer.Deserialize<FbrResponse>(content, options);
 
-                    if (fbrResponse?.validationResponse?.statusCode == "01")
-                    {
-                        model.invoiceNumber = fbrResponse.invoiceNumber;
-                        model.dated = fbrResponse.dated;
-                        var id = await _master.AddSaleInvoiceAsync(model);
-                        TempData["Message"] = $"Invoice sent successfully. FBR Invoice#: {fbrResponse.invoiceNumber}";
-                        return RedirectToAction("PrintInvoice", new { id });
-                    }
-                    else
-                    {
-                        FBRErrorCodes fBRErrorCodes = new FBRErrorCodes();
-                        var Error = fBRErrorCodes.GetErrorByCode(fbrResponse?.validationResponse?.errorCode);
-                        ModelState.AddModelError(string.Empty, Error ?? "Unknown FBR error");
-                    }
+                    //if (fbrResponse?.validationResponse?.statusCode == "01")
+                    //{
+                    //    model.invoiceNumber = fbrResponse.invoiceNumber;
+                    //    model.dated = fbrResponse.dated;
+                    var id = await _master.AddSaleInvoiceAsync(model);
+                    //    TempData["Message"] = $"Invoice sent successfully. FBR Invoice#: {fbrResponse.invoiceNumber}";
+                    //    TempData["Message"] = $"Invoice sent successfully. FBR Invoice#: {fbrResponse.invoiceNumber}";
+                    return RedirectToAction("PrintInvoice", new { id });
+                    //}
+                    //else
+                    //{
+                    //    FBRErrorCodes fBRErrorCodes = new FBRErrorCodes();
+                    //    var Error = fBRErrorCodes.GetErrorByCode(fbrResponse?.validationResponse?.errorCode);
+                    //    ModelState.AddModelError(string.Empty, Error ?? "Unknown FBR error");
+                    //}
                 }
                 else
                 {

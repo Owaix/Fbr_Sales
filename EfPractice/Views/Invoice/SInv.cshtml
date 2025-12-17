@@ -46,7 +46,7 @@
 
 <div class="container">
     <form asp-action="SInv" method="post" autocomplete="off" id="sInvForm">
-        <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+        <div asp-validation-summary="None" class="text-danger mb-2"></div>
 
         <div class="card card-add mb-3">
             <div class="card-body">
@@ -154,7 +154,7 @@
                                 <td><input asp-for="Items[@i].ValueSalesExcludingST" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
                                 <td><input asp-for="Items[@i].SalesTaxApplicable" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
                                 <td><input asp-for="Items[@i].TotalValues" class="form-control total-value narrow-cell" type="text" step="0.01" readonly tabindex="0" /></td>
-                                <td style="display:none"><input asp-for="Items[@i].Id" class="form-control id narrow-cell" type="text" readonly tabindex="0" /></td>
+                                <td style="display:none"><input asp-for="Items[@i].itemId" class="form-control id narrow-cell" type="text" readonly tabindex="0" /></td>
                                 <td class="text-nowrap">
                                     <button type="button" class="btn btn-success btn-sm me-1" onclick="addRow()">+</button>
                                     <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">-</button>
@@ -423,7 +423,7 @@
                             $row.find('input[name*="SalesTaxApplicable"]').val(item.salesTaxApplicable);
                             $row.find('input[name*="FurtherTax"]').val(item.furtherTax);
                             $row.find('input[name*="Discount"]').val(item.discount);
-                            $row.find('input[name*="Id"]').val(item.id);
+                            $row.find('input[name*="itemId"]').val(item.id);
                             calculateRowTotals($row);
                         }
 
@@ -461,7 +461,7 @@
                 $row.find('input[name*="SalesTaxApplicable"]').val(item.salesTaxApplicable);
                 $row.find('input[name*="FurtherTax"]').val(item.furtherTax);
                 $row.find('input[name*="Discount"]').val(item.discount);
-                $row.find('input[name*="Id"]').val(item.id);
+                $row.find('input[name*="itemId"]').val(item.id);
                 calculateRowTotals($row);
                 $container.hide();
                 $row.find('input[name*="Quantity"]').focus().select();
@@ -485,7 +485,7 @@
                     <td><input name="Items[${rowCount}].ValueSalesExcludingST" class="form-control item-calc narrow-cell" type="text" step="0.01" value="0" /></td>
                     <td><input name="Items[${rowCount}].SalesTaxApplicable" class="form-control item-calc narrow-cell" type="text" step="0.01" value="0" /></td>
                     <td><input name="Items[${rowCount}].TotalValues" class="form-control total-value narrow-cell" type="text" step="0.01" readonly tabindex="0" value="0.00" /></td>
-                    <td style="display:none"><input name="Items[${rowCount}].Id" class="form-control id narrow-cell" type="text" readonly tabindex="0" /></td>
+                    <td style="display:none"><input name="Items[${rowCount}].itemId" class="form-control id narrow-cell" type="text" readonly tabindex="0" /></td>
                     <td class="text-nowrap"><button type="button" class="btn btn-success btn-sm me-1" onclick="addRow()">+</button><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">-</button></td>
                 </tr>`;
                 $('#itemsTable tbody').append(row);

@@ -421,6 +421,11 @@ namespace EfPractice.Controllers
         {
             var invoices = await _master.GetSaleInvoices();
 
+            // Build customer lookup for Buyer column
+            var cid = CompanyId ?? 0;
+            var customers = await _master.GetAllCustomersAsync(cid);
+            ViewBag.CustomerLookup = customers.ToDictionary(c => c.CustomerID, c => c.CusName ?? c.Name ?? "-");
+
             //if (!string.IsNullOrWhiteSpace(invoiceNo))
             //    invoices = invoices.Where(i => (i.invoiceNumber ?? "").Contains(invoiceNo, StringComparison.OrdinalIgnoreCase)
             //                                 || (i.InvoiceRefNo ?? "").Contains(invoiceNo, StringComparison.OrdinalIgnoreCase))

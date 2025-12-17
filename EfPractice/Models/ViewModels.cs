@@ -183,4 +183,59 @@ namespace EfPractice.Models
         public Brand Brand { get; set; } = new();
         public List<Brand> Brands { get; set; } = new();
     }
+    public class InvoiceModel
+    {
+        public string InvoiceType { get; set; }          // "Sale Invoice"
+
+        public DateTime InvoiceDate { get; set; }       // YYYY-MM-DD
+
+        public string SellerNTNCNIC { get; set; }       // 7- or 13-digit
+
+        public string SellerBusinessName { get; set; }
+
+        public string SellerProvince { get; set; }
+
+        public string SellerAddress { get; set; }
+
+        public string BuyerNTNCNIC { get; set; }
+
+        public string BuyerBusinessName { get; set; }
+
+        public string BuyerProvince { get; set; }
+
+        public string BuyerAddress { get; set; }
+
+        public string BuyerRegistrationType { get; set; }   // "Registered" / "Unregistered"
+
+        public string InvoiceRefNo { get; set; }             // optional
+
+        public string ScenarioId { get; set; }              // e.g., "SN001"
+
+        public List<InvoiceItem> Items { get; set; } = new List<InvoiceItem>();
+    }
+
+    public class InvoiceItem
+    {
+        public string HSCode { get; set; }                  // e.g., "0101.2100"
+
+        public string ProductDescription { get; set; }
+
+        public string UoM { get; set; }                     // unit of measure
+
+        public decimal Quantity { get; set; }
+
+        public string Rate { get; set; }                    // e.g., "18%" (keep as string if API expects it)
+
+        public decimal? ListPrice { get; set; }             // optional
+
+        public decimal ValueSalesExcludingST { get; set; }
+
+        public decimal SalesTaxApplicable { get; set; }
+
+        public decimal? FixedNotifiedValueOrRetailPrice { get; set; }
+        public decimal? SalesTaxWithheldAtSource { get; set; }
+        public decimal? ExtraTax { get; set; }
+
+        public decimal TotalValues { get; set; }            // total including tax
+    }
 }

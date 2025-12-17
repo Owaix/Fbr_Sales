@@ -815,9 +815,53 @@ namespace EfPractice.Repository.Class
         }
         public async Task<HttpResponseMessage> SendInvoiceToFbrAsync(SaleInvoice invoice)
         {
+            InvoiceModel invoiceModel = MapToInvoiceModel(invoice);
             var json = JsonConvert.SerializeObject(invoice);
             return await _fbrApiClient.PostAsync("postinvoicedata_sb", json);
         }
+
+        public InvoiceModel MapToInvoiceModel(SaleInvoice saleInvoice)
+        {
+            if (saleInvoice == null)
+                return null;
+
+            var company = _studentDB.Companies.Where(x => x.Id == saleInvoice.CompanyId).FirstOrDefault();
+            var customer = _studentDB.Customers.Where(x => x.CustomerID == saleInvoice.CustomerId).FirstOrDefault();
+            var invoiceModel = new InvoiceModel
+            {
+                InvoiceType = saleInvoice.InvoiceType,
+                InvoiceDate = saleInvoice.InvoiceDate,
+                InvoiceRefNo = saleInvoice.invoiceNumber,
+                SellerNTNCNIC = company.NTNCNIC,
+                SellerBusinessName = company.BusinessName,
+                SellerProvince = company.Province,
+                SellerAddress = company.Address,
+                BuyerNTNCNIC = customer.NtnCnic,
+                BuyerBusinessName = customer.CusName,
+                BuyerProvince = "",
+                BuyerAddress = customer.Address,
+                BuyerRegistrationType = true ? "Registered" : "Unregistered",
+                ScenarioId = "SN001", // example
+                Items = saleInvoice.Items?.Select(item => new InvoiceItem
+                {
+                    HSCode = item.HsCode,
+                    ProductDescription = item.ProductDescription,
+                    UoM = item.UoM,
+                    Quantity = item.Quantity,
+                    Rate = item.Rate.ToString("0.##"), // convert decimal to string
+                    ListPrice = item.ListPrice,
+                    ValueSalesExcludingST = item.ValueSalesExcludingST,
+                    SalesTaxApplicable = item.SalesTaxApplicable,
+                    FixedNotifiedValueOrRetailPrice = null,
+                    SalesTaxWithheldAtSource = item.FurtherTax,
+                    ExtraTax = saleInvoice.TotalAdditionalTax,
+                    TotalValues = item.TotalValues
+                }).ToList()
+            };
+
+            return invoiceModel;
+        }
+
 
         public async Task<int> AddSaleInvoiceDetailAsync(List<SaleInvoiceItem> invoice)
         {

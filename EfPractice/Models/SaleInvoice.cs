@@ -41,15 +41,15 @@ namespace EfPractice.Models
         public decimal AmountReceived { get; set; }
 
         // Tax summary
-        public int? TaxId { get; set; }
-        public decimal? TaxRate { get; set; }
-        public string TaxType { get; set; }
+        public int? TaxId { get; set; } = 0;
+        public decimal? TaxRate { get; set; } 
+        public string TaxType { get; set; } = "";
 
         // Navigation properties
         public List<SaleInvoiceItem> Items { get; set; } = new List<SaleInvoiceItem>();
         public int CompanyId { get; set; }
-        public string invoiceNumber { get; set; }
-        public string dated { get; set; }
+        public string invoiceNumber { get; set; } = "";
+        public string dated { get; set; } = "";
     }
 
     public class SaleInvoiceItem
@@ -57,13 +57,13 @@ namespace EfPractice.Models
         [Key]
         public int Id { get; set; }
 
-        public string HsCode { get; set; }
+        public string HsCode { get; set; } = "";
         public int SaleInvoiceId { get; set; }
 
         [Required]
         public string ProductDescription { get; set; }
 
-        public decimal Quantity { get; set; }
+        public int Quantity { get; set; }
 
         public string UoM { get; set; }
 
@@ -80,5 +80,6 @@ namespace EfPractice.Models
         public decimal FurtherTax { get; set; }
 
         public decimal TotalValues { get; set; }
+        public int? itemId { get; set; } = 0;
     }
 }
