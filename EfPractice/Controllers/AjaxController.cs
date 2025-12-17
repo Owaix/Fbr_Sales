@@ -32,7 +32,8 @@ namespace EfPractice.Controllers
                 ValueSalesExcludingST = 0,
                 SalesTaxApplicable = 0,
                 FurtherTax = 0,
-                Discount = 0
+                Discount = 0,
+                Id = x.Id
             }).ToList();
             return Ok(result);
         }

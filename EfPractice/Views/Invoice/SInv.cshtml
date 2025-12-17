@@ -45,7 +45,8 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 <div class="container">
-    <form asp-action="SInv" method="post" autocomplete="off">
+    <form asp-action="SInv" method="post" autocomplete="off" id="sInvForm">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
 
         <div class="card card-add mb-3">
             <div class="card-body">
@@ -57,17 +58,20 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label class="form-label">Code</label>
-                        <input asp-for="BuyerBusinessName" type="text" class="form-control" />
+                        <input asp-for="Code" type="text" class="form-control" />
+                        <span asp-validation-for="Code" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Sales Invoice Date</label>
                         <input asp-for="InvoiceDate" type="date" class="form-control" />
+                        <span asp-validation-for="InvoiceDate" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Customer</label>
                         <select id="customerSelector" class="form-select select2" asp-for="CustomerId" asp-items="@(new SelectList(ViewBag.Customers, "Value", "Text"))">
                             <option value="">-- Select Customer --</option>
                         </select>
+                        <span asp-validation-for="CustomerId" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Employee Refer</label>
@@ -92,6 +96,7 @@
                         <select id="accountSelector" class="form-select select2" asp-for="AccountId" asp-items="@(new SelectList(ViewBag.Accounts, "Value", "Text"))">
                             <option value="">-- Select Account --</option>
                         </select>
+                        <span asp-validation-for="AccountId" class="text-danger"></span>
                     </div>
                     <div class="col-md-4 d-flex align-items-center">
                         <div class="form-check">
@@ -149,6 +154,7 @@
                                 <td><input asp-for="Items[@i].ValueSalesExcludingST" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
                                 <td><input asp-for="Items[@i].SalesTaxApplicable" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
                                 <td><input asp-for="Items[@i].TotalValues" class="form-control total-value narrow-cell" type="text" step="0.01" readonly tabindex="0" /></td>
+                                <td style="display:none"><input asp-for="Items[@i].Id" class="form-control id narrow-cell" type="text" readonly tabindex="0" /></td>
                                 <td class="text-nowrap">
                                     <button type="button" class="btn btn-success btn-sm me-1" onclick="addRow()">+</button>
                                     <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">-</button>
@@ -236,6 +242,7 @@
 </div>
 
 @section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
@@ -330,7 +337,7 @@
                     '<th>HS Code</th><th>Description</th><th>List Price</th><th>POS Rate</th><th>UoM</th><th>Value Excl. ST</th><th>Sales Tax</th><th>Further Tax</th><th>Discount</th>' +
                     '</tr></thead><tbody>';
                 filtered.forEach((item, idx) => {
-                    table += `<tr class="${selectedIdx === idx ? 'selected' : ''}" data-idx="${idx}">` +
+                    table += `<tr class="${selectedIdx === idx ? 'selected' : ''}" data-iid="${item.id}" data-idx="${idx}">` +
                         `<td>${item.hsCode ?? ''}</td>`+
                         `<td>${item.productDescription ?? ''}</td>`+
                         `<td>${item.price1 ?? item.listPrice ?? ''}</td>`+
@@ -356,8 +363,8 @@
                     $container.hide();
                     return;
                 }
-
                 let filtered = itemData.filter(x => x.productDescription && x.productDescription.toLowerCase().includes(val));
+                debugger;
                 $input.data('autocomplete-filtered', filtered);
                 $input.data('autocomplete-selected', 0);
                 renderAutocompleteTable(filtered, $container, 0);
@@ -416,6 +423,7 @@
                             $row.find('input[name*="SalesTaxApplicable"]').val(item.salesTaxApplicable);
                             $row.find('input[name*="FurtherTax"]').val(item.furtherTax);
                             $row.find('input[name*="Discount"]').val(item.discount);
+                            $row.find('input[name*="Id"]').val(item.id);
                             calculateRowTotals($row);
                         }
 
@@ -453,6 +461,7 @@
                 $row.find('input[name*="SalesTaxApplicable"]').val(item.salesTaxApplicable);
                 $row.find('input[name*="FurtherTax"]').val(item.furtherTax);
                 $row.find('input[name*="Discount"]').val(item.discount);
+                $row.find('input[name*="Id"]').val(item.id);
                 calculateRowTotals($row);
                 $container.hide();
                 $row.find('input[name*="Quantity"]').focus().select();
@@ -476,6 +485,7 @@
                     <td><input name="Items[${rowCount}].ValueSalesExcludingST" class="form-control item-calc narrow-cell" type="text" step="0.01" value="0" /></td>
                     <td><input name="Items[${rowCount}].SalesTaxApplicable" class="form-control item-calc narrow-cell" type="text" step="0.01" value="0" /></td>
                     <td><input name="Items[${rowCount}].TotalValues" class="form-control total-value narrow-cell" type="text" step="0.01" readonly tabindex="0" value="0.00" /></td>
+                    <td style="display:none"><input name="Items[${rowCount}].Id" class="form-control id narrow-cell" type="text" readonly tabindex="0" /></td>
                     <td class="text-nowrap"><button type="button" class="btn btn-success btn-sm me-1" onclick="addRow()">+</button><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">-</button></td>
                 </tr>`;
                 $('#itemsTable tbody').append(row);
@@ -681,5 +691,53 @@
             }
         });
     </script>
+
+    <script>
+        // Renumber item rows and remove empties before submit so MVC binds all rows
+        function renumberItemRows() {
+            const $rows = $('#itemsTable tbody tr');
+            let newIndex = 0;
+
+            $rows.each(function () {
+                const $row = $(this);
+
+                // Treat row as empty if ProductDescription has no value
+                const desc = $row.find('input[name*="ProductDescription"]').val();
+                if (!desc || !desc.trim()) {
+                    $row.remove();
+                    return;
+                }
+
+                // Update all named inputs in row to contiguous indices Items[newIndex].Field
+                $row.find('input, select, textarea').each(function () {
+                    const name = $(this).attr('name');
+                    if (!name) return;
+
+                    // Replace Items[old].Field -> Items[newIndex].Field
+                    const updated = name.replace(/Items\[\d+\]\./, `Items[${newIndex}].`);
+                    $(this).attr('name', updated);
+
+                    // Also update id attributes generated by tag helpers if present
+                    const id = $(this).attr('id');
+                    if (id) {
+                        const updatedId = id.replace(/_Items_\d+_/g, `_Items_${newIndex}_`);
+                        $(this).attr('id', updatedId);
+                    }
+                });
+
+                newIndex++;
+            });
+        }
+
+        // Bind submit to ensure contiguous indices and no empty rows
+        $(document).ready(function () {
+            $('#sInvForm').on('submit', function () {
+                renumberItemRows();
+                // Recompute totals just in case
+                CalcInvoiceGrandTotal();
+            });
+        });
+    </script>
+
 }
 

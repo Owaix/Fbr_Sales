@@ -26,7 +26,7 @@
                 <button class="btn btn-primary">Server Filter</button>
             </div>
             <div class="col-md-2 d-grid">
-                <a asp-action="SInv" class="btn btn-success">New Invoice</a>
+                <a href="/Invoice/SInv" class="btn btn-success">New Invoice</a>
             </div>
         </form>
         <small class="text-muted">Tip: Use the global search box below (client-side) or the form above (server-side).</small>
@@ -62,9 +62,9 @@ else
                     <tr>
                         <td>@inv.Id</td>
                         <td>@(inv.invoiceNumber ?? "-")</td>
-                        <td>@(inv.InvoiceRefNo ?? "-")</td>
+                      @*   <td>@(inv.InvoiceRefNo ?? "-")</td> *@
                         <td>@inv.InvoiceDate.ToString("yyyy-MM-dd")</td>
-                        <td>@inv.BuyerBusinessName</td>
+                        @* <td>@inv.BuyerBusinessName</td> *@
                         <td>@(inv.Items?.Count ?? 0)</td>
                         <td class="text-end">@total.ToString("N2")</td>
                         <td>@(string.IsNullOrEmpty(inv.invoiceNumber) ? "Draft" : "Sent")</td>

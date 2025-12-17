@@ -52,3 +52,40 @@ public class FbrApiClient
         return await _httpClient.SendAsync(request);
     }
 }
+
+
+//{
+//    "invoiceType": "Sale Invoice",
+//  "invoiceDate": "2025-04-21",                // string, YYYY-MM-DD
+//  "sellerNTNCNIC": "0786909",                 // string: 7- or 13-digit NTN or CNIC
+//  "sellerBusinessName": "Your Company Name",
+//  "sellerProvince": "Sindh",
+//  "sellerAddress": "Karachi, Street / Address",
+
+//  "buyerNTNCNIC": "1000000000000",            // string: buyer's NTN/CNIC (if registered) or placeholder if unregistered
+//  "buyerBusinessName": "Buyer Name",
+//  "buyerProvince": "Sindh",
+//  "buyerAddress": "Buyer Address",
+//  "buyerRegistrationType": "Registered",      // or "Unregistered"
+
+//  "invoiceRefNo": "",                         // optional or empty string
+//  "scenarioId": "SN001",                      // scenario identifier (as per FBR sandbox/production)
+  
+//  "items": [
+//    {
+//        "hsCode": "0101.2100",                  // string: HS code of product
+//      "productDescription": "Product Name",
+//      "uoM": "Numbers, pieces, units",       // unit of measure
+//      "quantity": 1.0000,                     // number
+//      "rate": "18%",                          // or numeric? doc shows string; but review sample carefully
+//      "listPrice": 1000.00,                   // (optional / if required)
+//      "valueSalesExcludingST": 1000.00,       // decimal
+//      "salesTaxApplicable": 180.00,           // decimal
+//      "fixedNotifiedValueOrRetailPrice": 0.00, // decimal, maybe optional
+//      "salesTaxWithheldAtSource": 0.00,       // decimal, maybe optional
+//      "extraTax": 0.00,                       // decimal, maybe optional
+//      "totalValues": 1180.00                  // decimal: total including tax
+//    }
+//    // ... more items if necessary
+//  ]
+//}
