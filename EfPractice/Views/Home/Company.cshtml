@@ -44,7 +44,7 @@
                 <h4 class="card-title mb-sm-0">Company</h4>
             </div>
 
-			<form asp-action="Company" asp-controller="Home" method="post">
+            <form asp-action="Company" asp-controller="Home" method="post" enctype="multipart/form-data">
 				<div class="row g-3">
 					<div class="col-md-4">
 						<label asp-for="Company.NTNCNIC" class="form-label">NTN/CNIC</label>
@@ -88,6 +88,13 @@
 					</div>
 				</div>
 				<div class="row g-3 mt-1">
+                    <div class="col-md-4">
+                        <label class="form-label">Logo</label>
+                        <input type="file" name="logoFile" accept="image/*" class="form-control" />
+                        <div class="mt-2">
+                            <img id="logoPreview" src="@(Model.Company?.LogoPath ?? Url.Content("~/images/company-logo.png"))" alt="Logo" style="max-height:80px; border:1px solid #ddd; padding:2px;" />
+                        </div>
+                    </div>
 					<div class="col-md-8">
 						<label asp-for="Company.FbrBearerToken" class="form-label">FBR Bearer Token</label>
 						<input asp-for="Company.FbrBearerToken" type="password" class="form-control" placeholder="Paste API token here" />
@@ -180,6 +187,14 @@
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script>
+        // Show thumbnail preview when a logo is selected
+        $(document).on('change','input[name="logoFile"]', function(){
+            const file = this.files && this.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e){ $('#logoPreview').attr('src', e.target.result); };
+            reader.readAsDataURL(file);
+        });
 		var editingRow = null;
 		var companyId = 1; // auto increment ID
 

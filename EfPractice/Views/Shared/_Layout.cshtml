@@ -194,7 +194,7 @@
                                 <p class="mb-1 mt-3">@User.FindFirst("UserName")?.Value</p>
                                 <p class="font-weight-light text-muted mb-0">@User.FindFirst("email")?.Value</p>
                             </div>
-                            <a href="/Home/company" class="dropdown-item">
+                            <a href="/Home/company/@User.FindFirst("CompanyId")?.Value" class="dropdown-item">
                                 <i class="dropdown-item-icon icon-user text-primary"></i> My Profile <span class="badge badge-pill badge-danger">1</span>
                             </a>
                             <a href="/Account/Logout" class="dropdown-item"><i class="dropdown-item-icon icon-power text-primary"></i>Sign Out</a>

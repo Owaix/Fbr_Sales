@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 
 namespace EfPractice.Models
 {
@@ -50,7 +51,7 @@ namespace EfPractice.Models
         public int? CompanyID { get; set; }
         public int? SaleTax { get; set; }
     }
-     
+
     public class SalesMaster
     {
         public int RID { get; set; }
@@ -192,11 +193,16 @@ namespace EfPractice.Models
         public string SellerNTNCNIC { get; set; }       // 7- or 13-digit
 
         public string SellerBusinessName { get; set; }
+        [JsonIgnore]
+        public string? SellerLogoPath { get; set; }
 
         public string SellerProvince { get; set; }
 
         public string SellerAddress { get; set; }
-
+        [JsonIgnore]
+        public string SellerPhone { get; set; }
+        [JsonIgnore]
+        public string SellerEmail { get; set; }
         public string BuyerNTNCNIC { get; set; }
 
         public string BuyerBusinessName { get; set; }
@@ -204,12 +210,15 @@ namespace EfPractice.Models
         public string BuyerProvince { get; set; }
 
         public string BuyerAddress { get; set; }
-
+        [JsonIgnore]
+        public string BuyerPhone { get; set; }
         public string BuyerRegistrationType { get; set; }   // "Registered" / "Unregistered"
-
         public string InvoiceRefNo { get; set; }             // optional
-
         public string ScenarioId { get; set; }              // e.g., "SN001"
+        [JsonIgnore]
+        public string? invoiceNumber { get; set; } = "";
+        [JsonIgnore]
+        public string? fbrinvoiceNumber { get; set; } = "";
 
         public List<InvoiceItem> Items { get; set; } = new List<InvoiceItem>();
     }

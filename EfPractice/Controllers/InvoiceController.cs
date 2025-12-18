@@ -84,6 +84,18 @@ namespace EfPractice.Controllers
             {
                 if (model.Id == 0)
                 {
+                    // Generate a random invoice number if not provided
+                    if (string.IsNullOrWhiteSpace(model.invoiceNumber))
+                    {
+                        // Pattern: INV-YYYYMMDD-HHMMSS-XXXX (XXXX random alphanumeric)
+                        var ts = DateTime.UtcNow.ToString("yyyyMMdd-HHmm");
+                        var rnd = Convert.ToBase64String(Guid.NewGuid().ToByteArray())
+                            .Replace("/", string.Empty)
+                            .Replace("+", string.Empty)
+                            .Substring(0, 6)
+                            .ToUpperInvariant();
+                        model.invoiceNumber = $"INV-{ts}-{rnd}";
+                    }
                     //model.CompanyId = CompanyId ?? 0;
                     //var resp = await _master.SendInvoiceToFbrAsync(model);
                     //var content = await resp.Content.ReadAsStringAsync();
@@ -92,7 +104,7 @@ namespace EfPractice.Controllers
 
                     //if (fbrResponse?.validationResponse?.statusCode == "01")
                     //{
-                    //    model.invoiceNumber = fbrResponse.invoiceNumber;
+                    //model.fbrinvoiceNumber = fbrResponse.invoiceNumber;
                     //    model.dated = fbrResponse.dated;
                     var id = await _master.AddSaleInvoiceAsync(model);
                     //    TempData["Message"] = $"Invoice sent successfully. FBR Invoice#: {fbrResponse.invoiceNumber}";

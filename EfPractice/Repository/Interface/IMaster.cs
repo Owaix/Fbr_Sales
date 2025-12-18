@@ -27,6 +27,7 @@ namespace EfPractice.Repository.Interface
         #endregion
 
         // SubCategory CRUD
+        InvoiceModel MapToInvoiceModel(SaleInvoice saleInvoice);
         Task<SubCategory?> GetSubCategoryByIdAsync(int id);
         Task<List<SubCategory>> GetSubCategoriesByCategoryAsync(int categoryId);
         Task<int> AddSubCategoryAsync(SubCategory subCategory);

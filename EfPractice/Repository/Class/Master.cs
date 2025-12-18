@@ -832,16 +832,20 @@ namespace EfPractice.Repository.Class
                 InvoiceType = saleInvoice.InvoiceType,
                 InvoiceDate = saleInvoice.InvoiceDate,
                 InvoiceRefNo = saleInvoice.invoiceNumber,
+                fbrinvoiceNumber = saleInvoice.fbrinvoiceNumber,
                 SellerNTNCNIC = company.NTNCNIC,
                 SellerBusinessName = company.BusinessName,
                 SellerProvince = company.Province,
                 SellerAddress = company.Address,
+                SellerPhone = company.CellNo,
                 BuyerNTNCNIC = customer.NtnCnic,
                 BuyerBusinessName = customer.CusName,
                 BuyerProvince = "",
                 BuyerAddress = customer.Address,
+                BuyerPhone = customer.Telephone,
                 BuyerRegistrationType = true ? "Registered" : "Unregistered",
                 ScenarioId = "SN001", // example
+                SellerLogoPath = company.LogoPath,
                 Items = saleInvoice.Items?.Select(item => new InvoiceItem
                 {
                     HSCode = item.HsCode,

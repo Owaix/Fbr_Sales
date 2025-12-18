@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -10,7 +11,7 @@ namespace EfPractice.Models
     {
         [Key]
         public int Id { get; set; }
-    
+
         [Required(ErrorMessage = "Address is required")]
         [MaxLength(200)]
         public string Address { get; set; } = string.Empty;
@@ -32,19 +33,24 @@ namespace EfPractice.Models
         [MaxLength(100)]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Password is required")]        
+        [Required(ErrorMessage = "Password is required")]
         [MinLength(6, ErrorMessage = "Password must be at least 6 characters long")]
         public string Password { get; set; } = string.Empty;
         public string NTNCNIC { get; set; }
 
         [Required(ErrorMessage = "Business name is required")]
         [MaxLength(100)]
-        public string BusinessName { get; set; }
+        [DisplayName("Business Name")]
+        public string BusinessName { get; set; } = string.Empty;
         public string Province { get; set; }
         public bool isActive { get; set; } = true;
 
         // New: per-company FBR bearer token
         [MaxLength(500)]
         public string? FbrBearerToken { get; set; }
+
+        // Path to company logo under wwwroot (e.g., /uploads/company-logos/{id}/logo.jpg)
+        [MaxLength(500)]
+        public string? LogoPath { get; set; }
     }
 }

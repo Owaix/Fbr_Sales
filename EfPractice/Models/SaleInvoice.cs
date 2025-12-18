@@ -42,14 +42,15 @@ namespace EfPractice.Models
 
         // Tax summary
         public int? TaxId { get; set; } = 0;
-        public decimal? TaxRate { get; set; } 
-        public string TaxType { get; set; } = "";
+        public decimal? TaxRate { get; set; }
+        public string? TaxType { get; set; } = "";
 
         // Navigation properties
         public List<SaleInvoiceItem> Items { get; set; } = new List<SaleInvoiceItem>();
         public int CompanyId { get; set; }
-        public string invoiceNumber { get; set; } = "";
-        public string dated { get; set; } = "";
+        public string? invoiceNumber { get; set; } = "";
+        public string? fbrinvoiceNumber { get; set; } = "";
+        public string? dated { get; set; } = "";
     }
 
     public class SaleInvoiceItem

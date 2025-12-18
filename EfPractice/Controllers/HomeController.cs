@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering; // added for SelectListItem
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Security.Cryptography;
+using System.IO;
 using System.Text.Json;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace EfPractice.Controllers
 {
@@ -195,7 +197,7 @@ namespace EfPractice.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Company(Company company)
+        public async Task<IActionResult> Company(Company company, IFormFile? logoFile)
         {
             CompanyViewModel model = new CompanyViewModel();
 
@@ -213,6 +215,26 @@ namespace EfPractice.Controllers
                     await _master.UpdateCompanyAsync(company);
                 else
                     await _master.AddCompanyAsync(company);
+
+                // If a logo file uploaded, save and resize/compress to target path
+                if (logoFile != null && logoFile.Length > 0)
+                {
+                    var webRoot = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                    var destFolder = Path.Combine(webRoot, "uploads", "company-logos", company.Id.ToString());
+                    Directory.CreateDirectory(destFolder);
+                    var ext = Path.GetExtension(logoFile.FileName);
+                    var fileName = "logo" + (string.IsNullOrWhiteSpace(ext) ? ".jpg" : ext);
+                    var destPath = Path.Combine(destFolder, fileName);
+
+                    await using (var fs = new FileStream(destPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        await logoFile.CopyToAsync(fs);
+                    }
+
+                    // Save relative path for web
+                    company.LogoPath = $"/uploads/company-logos/{company.Id}/{fileName}";
+                    await _master.UpdateCompanyAsync(company);
+                }
 
                 var user = new ApplicationUser
                 {
@@ -301,7 +323,7 @@ namespace EfPractice.Controllers
                 .ToList();
             return View(model);
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> SInv(SaleInvoice model)
         {
@@ -426,12 +448,11 @@ namespace EfPractice.Controllers
             var customers = await _master.GetAllCustomersAsync(cid);
             ViewBag.CustomerLookup = customers.ToDictionary(c => c.CustomerID, c => c.CusName ?? c.Name ?? "-");
 
-            //if (!string.IsNullOrWhiteSpace(invoiceNo))
-            //    invoices = invoices.Where(i => (i.invoiceNumber ?? "").Contains(invoiceNo, StringComparison.OrdinalIgnoreCase)
-            //                                 || (i.InvoiceRefNo ?? "").Contains(invoiceNo, StringComparison.OrdinalIgnoreCase))
-            //                   .ToList();
+            if (!string.IsNullOrWhiteSpace(invoiceNo))
+                invoices = invoices.Where(i => (i.invoiceNumber ?? "").Contains(invoiceNo, StringComparison.OrdinalIgnoreCase))
+                               .ToList();
             //if (!string.IsNullOrWhiteSpace(buyer))
-            //    invoices = invoices.Where(i => (i.BuyerBusinessName ?? "").Contains(buyer, StringComparison.OrdinalIgnoreCase)).ToList();
+            //    invoices = invoices.Where(i => (i.CustomerId ?? "").Contains(buyer, StringComparison.OrdinalIgnoreCase)).ToList();
             if (from.HasValue)
                 invoices = invoices.Where(i => i.InvoiceDate.Date >= from.Value.Date).ToList();
             if (to.HasValue)
@@ -451,17 +472,7 @@ namespace EfPractice.Controllers
         {
             var inv = await _master.GetSaleInvoiceByIdAsync(id);
             if (inv == null) return NotFound();
-            Company? comp = null;
-            try
-            {
-                comp = await _master.GetCompanyByIdAsync(inv.CompanyId);
-            }
-            catch { }
-            var vm = new PrintInvoiceViewModel
-            {
-                Invoice = inv,
-                Company = comp
-            };
+            var vm = _master.MapToInvoiceModel(inv);
             return View(vm);
         }
 
