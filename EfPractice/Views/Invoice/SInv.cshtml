@@ -205,28 +205,28 @@
 
                 <div class="row justify-content-end">
                     <div class="col-md-4 ms-auto">
-                        <div class="mb-3">
-                            <label for="GrossAmount" class="form-label fw-bold">Gross Amount</label>
+                        <div class="mb-2 d-flex align-items-center gap-2">
+                            <label for="GrossAmount" class="form-label fw-bold mb-0" style="min-width:160px;">Gross Amount</label>
                             <input class="form-control text-end" id="GrossAmount" name="GrossAmount" />
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Grand Total</label>
+                        <div class="mb-2 d-flex align-items-center gap-2">
+                            <label for="GrandTotal" class="form-label fw-bold mb-0" style="min-width:160px;">Grand Total</label>
                             <input id="GrandTotal" class="form-control text-end" readonly />
                         </div>
-                        <div class="mb-3">
-                            <label for="CarriageFreight" class="form-label">Carriage and Freight</label>
+                        <div class="mb-2 d-flex align-items-center gap-2">
+                            <label for="CarriageFreight" class="form-label mb-0" style="min-width:160px;">Carriage and Freight</label>
                             <input class="form-control text-end" id="CarriageFreight" name="CarriageFreight" />
                         </div>
-                        <div class="mb-3">
-                            <label for="TotalAdditionalTax" class="form-label">Total Additional Tax</label>
+                        <div class="mb-2 d-flex align-items-center gap-2">
+                            <label for="TotalAdditionalTax" class="form-label mb-0" style="min-width:160px;">Total Additional Tax</label>
                             <input class="form-control text-end" id="TotalAdditionalTax" name="TotalAdditionalTax" />
                         </div>
-                        <div class="mb-3">
-                            <label for="NetTotal" class="form-label">Net Total</label>
+                        <div class="mb-2 d-flex align-items-center gap-2">
+                            <label for="NetTotal" class="form-label mb-0" style="min-width:160px;">Net Total</label>
                             <input class="form-control text-end" id="NetTotal" name="NetTotal" />
                         </div>
-                        <div class="mb-3">
-                            <label for="AmountReceived" class="form-label">Amount Received</label>
+                        <div class="mb-2 d-flex align-items-center gap-2">
+                            <label for="AmountReceived" class="form-label mb-0" style="min-width:160px;">Amount Received</label>
                             <input class="form-control text-end" id="AmountReceived" name="AmountReceived" />
                         </div>
                     </div>
@@ -290,6 +290,8 @@
             initBuyerSelect(enriched);
             $('#customerSelector').select2();
             $('#accountSelector').select2();
+            // Initialize tax select once taxes are loaded
+            await bindTaxesToDropdown();
         }
 
         if(!window.jQuery){ console.error('jQuery not found'); }
@@ -304,17 +306,53 @@
                 itemData = response.ok ? await response.json() : [];
             }
 
+            // Tax binding like items
+            let taxData = [];
+            async function fetchTaxes() {
+                try {
+                    const response = await fetch(`/api/Ajax/GetTaxes`);
+                    taxData = response.ok ? await response.json() : [];
+                } catch {
+                    taxData = [];
+                }
+            }
+            async function bindTaxesToDropdown(){
+                await fetchTaxes();
+                // Expecting taxData elements having { id, text, rate, type }
+                const $tax = $('#Summary_TaxId');
+                if(!$tax.length) return;
+                // Clear and add placeholder
+                $tax.empty().append('<option value="">-- Select Tax --</option>');
+                taxData.forEach(t=>{
+                    const opt = new Option(t.text ?? '', t.id ?? '', false, false);
+                    // store extra on option for quick retrieval
+                    $(opt).data('rate', t.rate).data('type', t.type);
+                    $tax.append(opt);
+                });
+                // re-init/select2 if available
+                if($.fn.select2){ $tax.select2(); }
+            }
+
             $(document).ready(function () {
                 addRow();
                 fetchItems();
+                bindTaxesToDropdown();
 
                 $('#Summary_TaxId').change(function(){
                     var id = $(this).val();
                     if(!id) { $('#Summary_TaxRate').val(''); $('#Summary_TaxType').val('Percent'); return; }
-                    $.getJSON('/Home/GetTaxRate', { id: id }, function (d) {
-                        $('#Summary_TaxRate').val(d.rate);
-                        $('#Summary_TaxType').val(d.type);
-                    });
+                    // Prefer local data first
+                    const found = taxData.find(t=> (t.id ?? '').toString() === (id ?? '').toString());
+                    if(found){
+                        $('#Summary_TaxRate').val(found.rate ?? '');
+                        $('#Summary_TaxType').val(found.type ?? '');
+                    } else {
+                        // fallback to server
+                        $.getJSON('/Home/GetTaxRate', { id: id }, function (d) {
+                            $('#Summary_TaxRate').val(d.rate);
+                            $('#Summary_TaxType').val(d.type);
+                        });
+                    }
                 });
 
                 $('#SInv_TaxId').change(function(){

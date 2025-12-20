@@ -838,6 +838,7 @@ namespace EfPractice.Repository.Class
                 SellerProvince = company.Province,
                 SellerAddress = company.Address,
                 SellerPhone = company.CellNo,
+                SellerEmail = company.Email,
                 BuyerNTNCNIC = customer.NtnCnic,
                 BuyerBusinessName = customer.CusName,
                 BuyerProvince = "",

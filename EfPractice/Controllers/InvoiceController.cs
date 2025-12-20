@@ -60,25 +60,25 @@ namespace EfPractice.Controllers
         [HttpPost]
         public async Task<IActionResult> SInv(SaleInvoice model)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    // Ensure Items is non-null for the view's for-loop
-            //    model.Items ??= new List<SaleInvoiceItem>();
+            if (!ModelState.IsValid)
+            {
+                // Ensure Items is non-null for the view's for-loop
+                model.Items ??= new List<SaleInvoiceItem>();
 
-            //    // Repopulate dropdowns used by the view
-            //    var cid = CompanyId ?? 0;
-            //    var customers = await _master.GetAllCustomersAsync(cid);
-            //    ViewBag.Customers = customers
-            //        .Select(c => new SelectListItem { Value = c.CustomerID.ToString(), Text = c.Name ?? c.CusName ?? string.Empty })
-            //        .ToList();
+                // Repopulate dropdowns used by the view
+                var cid = CompanyId ?? 0;
+                var customers = await _master.GetAllCustomersAsync(cid);
+                ViewBag.Customers = customers
+                    .Select(c => new SelectListItem { Value = c.CustomerID.ToString(), Text = c.Name ?? c.CusName ?? string.Empty })
+                    .ToList();
 
-            //    var accounts = await _master.GetAccountsAsync(cid);
-            //    ViewBag.Accounts = accounts
-            //        .Select(a => new SelectListItem { Value = a.Id.ToString(), Text = string.Concat(a.AccountId, " - ", a.AccountTitle) })
-            //        .ToList();
+                var accounts = await _master.GetAccountsAsync(cid);
+                ViewBag.Accounts = accounts
+                    .Select(a => new SelectListItem { Value = a.Id.ToString(), Text = string.Concat(a.AccountId, " - ", a.AccountTitle) })
+                    .ToList();
 
-            //    return View(model);
-            //}
+                return View(model);
+            }
 
             try
             {

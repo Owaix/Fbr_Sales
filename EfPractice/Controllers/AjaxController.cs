@@ -37,5 +37,22 @@ namespace EfPractice.Controllers
             }).ToList();
             return Ok(result);
         }
+
+        [HttpGet("GetTaxes")]
+        public async Task<IActionResult> GetTaxes()
+        {
+            int companyId = 0;
+            var claim = User?.FindFirst("CompanyId")?.Value;
+            if (!string.IsNullOrEmpty(claim)) int.TryParse(claim, out companyId);
+            var taxes = await _master.GetTaxesAsync(companyId);
+            var result = taxes.Select(t => new
+            {
+                id = t.Id,
+                text = t.Name,
+                rate = t.DefaultRate,
+                type = t.TaxType
+            }).ToList();
+            return Ok(result);
+        }
     }
 }

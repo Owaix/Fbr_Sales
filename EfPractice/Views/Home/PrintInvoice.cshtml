@@ -4,11 +4,75 @@
     var dt = Model.InvoiceDate.ToString("MMM dd, yyyy");
 }
 
+@functions {
+    private static string AmountToWords(decimal amount)
+    {
+        long whole = (long)Math.Floor(amount);
+        int cents = (int)Math.Round((amount - whole) * 100M);
+        var words = NumberToWords(whole);
+        if (cents > 0)
+        {
+            words += $" and {cents:D2}/100";
+        }
+        return words + " only";
+    }
+
+    private static string NumberToWords(long number)
+    {
+        if (number == 0) return "zero";
+        if (number < 0) return "minus " + NumberToWords(Math.Abs(number));
+
+        var unitsMap = new[] { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen" };
+        var tensMap = new[] { "zero", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety" };
+
+        string words = string.Empty;
+
+        if ((number / 1000000000000) > 0)
+        {
+            words += NumberToWords(number / 1000000000000) + " trillion ";
+            number %= 1000000000000;
+        }
+        if ((number / 1000000000) > 0)
+        {
+            words += NumberToWords(number / 1000000000) + " billion ";
+            number %= 1000000000;
+        }
+        if ((number / 1000000) > 0)
+        {
+            words += NumberToWords(number / 1000000) + " million ";
+            number %= 1000000;
+        }
+        if ((number / 1000) > 0)
+        {
+            words += NumberToWords(number / 1000) + " thousand ";
+            number %= 1000;
+        }
+        if ((number / 100) > 0)
+        {
+            words += NumberToWords(number / 100) + " hundred ";
+            number %= 100;
+        }
+        if (number > 0)
+        {
+            if (!string.IsNullOrEmpty(words)) words += "and ";
+
+            if (number < 20) words += unitsMap[number];
+            else
+            {
+                words += tensMap[number / 10];
+                if ((number % 10) > 0) words += "-" + unitsMap[number % 10];
+            }
+        }
+        return words.Trim();
+    }
+}
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <title>Invoice @Model.InvoiceRefNo</title>
+    <link rel="icon" href="@Model.SellerLogoPath" type="image/png">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
@@ -40,7 +104,6 @@
         }
 
         .panel {
-            border: 1px solid #999;
             margin-top: 10px;
             padding: 6px;
             font-size: 11px;
@@ -59,7 +122,6 @@
             }
 
             .panel th {
-                background: #f0f0f0;
             }
 
         .totals {
@@ -88,6 +150,8 @@
             display: flex;
             justify-content: space-between;
             font-size: 11px;
+            padding-left: 10%;
+            padding-right: 10%;
         }
 
             .signatures div {
@@ -123,6 +187,15 @@
             .btn.secondary {
                 background: #6c757d;
             }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .rmlr {
+            border-left-style: hidden !important;
+            border-right-style: hidden !important;
+        }
     </style>
 </head>
 <body>
@@ -131,7 +204,6 @@
         <button class="btn" onclick="window.print()">Print</button>
         <button class="btn secondary" onclick="window.close()">Close</button>
     </div>
-    <br />
     <br />
     <br />
     <div class="header">
@@ -150,24 +222,24 @@
     <div class="invoice-title">SALES RETAIL TAX INVOICE</div>
 
     <div>
-        <div><span>Invoice No :</span><span>@Model.invoiceNumber</span></div>
-        <div><span>FBR Invoice No :</span><span>@Model.fbrinvoiceNumber</span></div>
-        <div><span>Invoice Date :</span><span>@Model.InvoiceDate</span></div>
+        <div><span class="bold">Invoice No :</span><span>@Model.invoiceNumber</span></div>
+        <div><span class="bold">FBR Invoice No :</span><span>@Model.fbrinvoiceNumber</span></div>
+        <div><span class="bold">Invoice Date :</span><span>@Model.InvoiceDate</span></div>
     </div>
     <div class="panel">
         <table>
             <tr>
-                <th><div><strong>Bill To</strong><br /></div></th>
+                <th><div><br /><strong>Bill To</strong><br /></div><br /></th>
                 <th><strong>Other Info</strong><br /></th>
             </tr>
             <tr>
-                <td>
+                <td class="bold">
                     To: @(Model.BuyerBusinessName ?? "Walk-in (Cash) Customer")<br />
                     Address: @(Model.BuyerAddress ?? "N/A")<br />
                     Telephone: @(Model.BuyerPhone ?? "-")<br /> *
                     NTN/CNIC: @(Model.BuyerNTNCNIC ?? "-")
                 </td>
-                <td>
+                <td class="bold">
                     Ship to Address: @(Model.BuyerAddress ?? "-")
                 </td>
             </tr>
@@ -178,7 +250,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>S.No</th>
+                    <th><div><br /><strong>S.No</strong></div><br /></th>
                     <th>Particular</th>
                     <th>QTY</th>
                     <th>List Price</th>
@@ -197,13 +269,13 @@
                     {
                         <tr>
                             <td>@idx</td>
-                            <td>@item.ProductDescription</td>
-                            <td>@item.Quantity</td>
-                            <td>@item.ListPrice</td>
-                            <td>@item.Rate</td>
-                            <td>@item.ValueSalesExcludingST.ToString("0,0")</td>
-                            <td>@item.SalesTaxApplicable.ToString("0,0")</td>
-                            <td>@item.ValueSalesExcludingST.ToString("0,0")</td>
+                            <td class="rmlr">@item.ProductDescription</td>
+                            <td class="rmlr">@item.Quantity</td>
+                            <td class="rmlr">@item.ListPrice</td>
+                            <td class="rmlr">@item.Rate</td>
+                            <td class="rmlr">@item.ValueSalesExcludingST.ToString("0,0")</td>
+                            <td class="rmlr">@item.SalesTaxApplicable.ToString("0,0")</td>
+                            <td class="rmlr">@item.ValueSalesExcludingST.ToString("0,0")</td>
                             <td>@item.TotalValues.ToString("0,0")</td>
                         </tr>
                         idx++;
@@ -214,26 +286,57 @@
                     <tr><td colspan="9" style="text-align:center;">No items</td></tr>
                 }
             </tbody>
+            @{
+                var itemCount = Model.Items?.Count ?? 0;
+                decimal totalRetail = Model.Items?.Sum(i => i.ValueSalesExcludingST) ?? 0M;
+                decimal totalST = Model.Items?.Sum(i => i.SalesTaxApplicable) ?? 0M;
+                decimal totalIncl = Model.Items?.Sum(i => i.TotalValues) ?? 0M;
+                decimal navyLevy = Model.Items?.Sum(i => i.SalesTaxWithheldAtSource ?? 0M) ?? 0M;
+                decimal totalAddTax = Model.Items?.Sum(i => i.ExtraTax ?? 0M) ?? 0M;
+                decimal netTotal = totalIncl + totalAddTax;
+                string fmt(decimal d) => d.ToString("N2");
+            }
+            <tfoot>
+                <tr>
+                    <td colspan="6"><strong>Total Items:</strong> @itemCount</td>
+                    <td class="text-end rmlr"><br /><strong>@fmt(totalRetail)</strong></td>
+                    <td class="text-end rmlr">@fmt(totalST)</></td>
+                    <td class="text-end"><br /><strong>@fmt(totalIncl)</strong></td>
+                </tr>
+                <tr>
+                    <td colspan="7"></td>
+                    <td class="text-end rmlr bold">Navy Levy</td>
+                    <td class="text-end">@fmt(navyLevy)</td>
+                </tr>
+                <tr>
+                    <td colspan="7"></td>
+                    <td class="text-end rmlr bold">Total Additional Tax</td>
+                    <td class="text-end">@fmt(totalAddTax)</td>
+                </tr>
+                <tr>
+                    <td colspan="7"></td>
+                    <td class="text-end rmlr"><strong>Net Total</strong></td>
+                    <td class="text-end"><strong>@fmt(netTotal)</strong></td>
+                </tr>
+                <tr>
+                    <td colspan="9" style="text-align: right;"><strong>Amount in Words:</strong> @AmountToWords(netTotal)</td>
+                </tr>
+                <tr>
+                    <td colspan="9">
+                        <div class="qr-fbr">
+                            <img src="@Url.Content("~/images/download.png")" alt="FBR QR" style="max-width:120px; display:block; margin:0 auto;" />
+                            <img src="@Url.Content("~/images/fbr.png")" style="max-width:120px; display:block; margin:0 auto;" />
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
-    </div>
-
-    <div class="totals">
-        @*       <table>
-            <tr><td>Total</td><td style="text-align:right;">@Model.TotalExclTax.ToString("0,0")</td></tr>
-            <tr><td>Total Sales Tax</td><td style="text-align:right;">@Model.TotalTax.ToString("0,0")</td></tr>
-            <tr><td><strong>Net Total</strong></td><td style="text-align:right;"><strong>@Model.NetTotal.ToString("0,0")</strong></td></tr>
-        </table>
-        <div>Amount In Words: @Model.AmountInWords</div> *@
-    </div>
-
-    <div class="qr-fbr">
-        <img src="@Url.Content("~/images/fbr-qr.png")" alt="FBR QR" style="max-width:120px; display:block; margin:0 auto;" />
     </div>
 
     <div class="signatures">
-        <div>Super Admin<br />Prepared By</div>
-        <div>Received By</div>
-        <div>Approved By</div>
+        <div>Super Admin<br /><span>Prepared By</span></div>
+        <div><span>Received By</span></div>
+        <div><span>Approved By</span></div>
     </div>
 
     <div style="margin-top:20px; font-size:10px; text-align:center;">Generated on @DateTime.Now.ToString("yyyy-MM-dd HH:mm")</div>
