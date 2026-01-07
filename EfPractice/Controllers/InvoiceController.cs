@@ -109,7 +109,7 @@ namespace EfPractice.Controllers
                     var id = await _master.AddSaleInvoiceAsync(model);
                     //    TempData["Message"] = $"Invoice sent successfully. FBR Invoice#: {fbrResponse.invoiceNumber}";
                     //    TempData["Message"] = $"Invoice sent successfully. FBR Invoice#: {fbrResponse.invoiceNumber}";
-                    return RedirectToAction("PrintInvoice", new { id });
+                    return RedirectToAction("PrintInvoice", "Home", new { id });
                     //}
                     //else
                     //{

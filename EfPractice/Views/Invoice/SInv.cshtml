@@ -40,6 +40,14 @@
             color: #fff;
             cursor: pointer;
         }
+
+    .select2-selection__rendered {
+        margin-top: -14px;
+    }
+
+    th {
+        font-weight: bold;
+    }
 </style>
 <!-- Removed extra jQuery include to avoid overwriting select2 registration. Assume layout already loads jQuery. -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -136,7 +144,7 @@
                         Invoice Items
                     </h4>
                 </div>
-                <table class="table table-bordered" id="itemsTable">
+                <table class="table" id="itemsTable">
                     <thead>
                         <tr>
                             <th>Item Code / Name</th>
@@ -417,7 +425,6 @@
                     return;
                 }
                 let filtered = itemData.filter(x => x.productDescription && x.productDescription.toLowerCase().includes(val));
-                debugger;
                 $input.data('autocomplete-filtered', filtered);
                 $input.data('autocomplete-selected', 0);
                 renderAutocompleteTable(filtered, $container, 0);
@@ -573,6 +580,7 @@
             }
 
             function calculateRowTotals($row) {
+                debugger;
                 var rate = parseFloat($row.find('input[name*="Rate"]').val()) || 0;
                 var qty = parseFloat($row.find('input[name*="Quantity"]').val()) || 0;
                 var valueExclSTField = $row.find('input[name*="ValueSalesExcludingST"]');
@@ -606,7 +614,7 @@
 
             $(document).on('blur', '.item-calc', function () {
                 var $row = $(this).closest('tr');
-                calculateRowTotal($row);
+                //calculateRowTotal($row);
             });
 
             $(function () {

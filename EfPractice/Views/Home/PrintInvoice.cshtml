@@ -233,14 +233,14 @@
                 <th><strong>Other Info</strong><br /></th>
             </tr>
             <tr>
-                <td class="bold">
-                    To: @(Model.BuyerBusinessName ?? "Walk-in (Cash) Customer")<br />
-                    Address: @(Model.BuyerAddress ?? "N/A")<br />
-                    Telephone: @(Model.BuyerPhone ?? "-")<br /> *
-                    NTN/CNIC: @(Model.BuyerNTNCNIC ?? "-")
+                <td>
+                    To: <span class="bold">@(Model.BuyerBusinessName ?? "Walk-in (Cash) Customer")</span> <br />
+                    Address: <span class="bold">@(Model.BuyerAddress ?? "N/A")</span> <br />
+                    Telephone:<span class="bold"> @(Model.BuyerPhone ?? "-")</span> <br /> *
+                    NTN/CNIC:<span class="bold"> @(Model.BuyerNTNCNIC ?? "-")</span>
                 </td>
-                <td class="bold">
-                    Ship to Address: @(Model.BuyerAddress ?? "-")
+                <td>
+                    Ship to Address: <span class="bold">@(Model.BuyerAddress ?? "-")</span>
                 </td>
             </tr>
         </table>
