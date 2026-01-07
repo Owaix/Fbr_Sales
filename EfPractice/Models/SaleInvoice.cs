@@ -29,16 +29,16 @@ namespace EfPractice.Models
         [Required]
         public int? AccountId { get; set; }
 
-        public bool Credit { get; set; }
+        public bool? Credit { get; set; } = false;
 
-        public bool Active { get; set; } = true;
+        public bool? Active { get; set; } = true;
 
-        public decimal GrossAmount { get; set; }
+        public decimal? GrossAmount { get; set; }
         public decimal GrandTotal { get; set; }
-        public decimal CarriageFreight { get; set; }
-        public decimal TotalAdditionalTax { get; set; }
+        public decimal? CarriageFreight { get; set; }
+        public decimal? TotalAdditionalTax { get; set; }
         public decimal NetTotal { get; set; }
-        public decimal AmountReceived { get; set; }
+        public decimal? AmountReceived { get; set; }
 
         // Tax summary
         public int? TaxId { get; set; } = 0;
@@ -68,7 +68,7 @@ namespace EfPractice.Models
 
         public string UoM { get; set; }
 
-        public decimal ListPrice { get; set; }
+        public decimal? ListPrice { get; set; }
 
         public decimal Rate { get; set; }
 

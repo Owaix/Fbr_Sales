@@ -121,7 +121,7 @@ namespace EfPractice.Controllers
                 else
                 {
                     await _master.UpdateSaleInvoiceAsync(model);
-                    return RedirectToAction("PrintInvoice", new { id = model.Id });
+                    return RedirectToAction("PrintInvoice", "Home", new { id = model.Id });
                 }
             }
             catch (Exception ex)

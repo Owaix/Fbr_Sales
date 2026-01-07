@@ -100,13 +100,26 @@
                     </div>
                     <div class="col-md-4 d-flex align-items-center">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" role="switch" id="creditToggle" name="Credit" />
+                            <input type="hidden" name="Credit" value="false" />
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   role="switch"
+                                   id="creditToggle"
+                                   name="Credit"
+                                   value="true" />
                             <label class="form-check-label" for="creditToggle">Credit</label>
                         </div>
                     </div>
+
                     <div class="col-md-4 d-flex align-items-center">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="activeCheck" name="Active" checked />
+                            <input type="hidden" name="Active" value="false" />
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   role="switch"
+                                   id="activeCheck"
+                                   name="Active"
+                                   value="true" />
                             <label class="form-check-label" for="activeCheck">Active</label>
                         </div>
                     </div>
@@ -242,7 +255,9 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
