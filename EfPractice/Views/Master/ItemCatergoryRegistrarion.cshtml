@@ -88,14 +88,14 @@
                 <div class="row align-items-end">
                     <div class="col-md-4">
                         <label asp-for="Cid">Select Item Header:</label>
-                        <select asp-for="Cid" asp-items="@(new SelectList(Model.ImhList, "Mid", "Mname", Model.Cid))" class="form-control" id="ItemHead">
+                        <select asp-for="Cid" asp-items="@(new SelectList(Model.ImhList, "Mid", "Mname", Model.Cid))" class="form-control form-control-sm" id="ItemHead">
                             <option disabled>Choose the Header</option>
                         </select>
                     </div>
 
                     <div class="col-md-4">
                         <label for="price">Item Catergory:</label>
-                        <input type="text" id="ItemCatergory" class="form-control" />
+                        <input type="text" id="ItemCatergory" class="form-control form-control-sm" />
                     </div>
 
 

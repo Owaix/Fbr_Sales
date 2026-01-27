@@ -14,7 +14,7 @@
 						<select asp-for="SubCategory.CategoryId" asp-items="Model.Categories" class="form-select" id="catSelect"></select>
 					</div> <div class="col-md-4">
 						<label asp-for="SubCategory.Name" class="form-label">Name</label>
-						<input asp-for="SubCategory.Name" class="form-control" />
+						<input asp-for="SubCategory.Name" class="form-control form-control-sm" />
 						<span asp-validation-for="SubCategory.Name" class="text-danger"></span>
 					</div> <div class="col-md-2 form-check pt-4">
 						<input asp-for="SubCategory.Active" class="form-check-input" />

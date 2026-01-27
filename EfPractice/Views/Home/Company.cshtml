@@ -48,7 +48,7 @@
 				<div class="row g-3">
 					<div class="col-md-4">
 						<label asp-for="Company.NTNCNIC" class="form-label">NTN/CNIC</label>
-						<input asp-for="Company.NTNCNIC" class="form-control" />
+						<input asp-for="Company.NTNCNIC" class="form-control form-control-sm" />
 					</div>
 					<div class="col-md-4">
 						<label asp-for="Company.Province" class="form-label">Province</label>
@@ -71,33 +71,33 @@
 					<div class="col-md-4">
 						<label asp-for="Company.BusinessName"></label>
 						<input asp-for="Company.Id" type="hidden" />
-						<input asp-for="Company.BusinessName" class="form-control" />
+						<input asp-for="Company.BusinessName" class="form-control form-control-sm" />
 						<span asp-validation-for="Company.BusinessName" class="text-danger"></span>
 					</div>
 
 					<div class="col-md-4">
 						<label asp-for="Company.Address"></label>
-						<input asp-for="Company.Address" class="form-control" />
+						<input asp-for="Company.Address" class="form-control form-control-sm" />
 						<span asp-validation-for="Company.Address" class="text-danger"></span>
 					</div>
 
 					<div class="col-md-4">
 						<label asp-for="Company.CellNo"></label>
-						<input asp-for="Company.CellNo" class="form-control" />
+						<input asp-for="Company.CellNo" class="form-control form-control-sm" />
 						<span asp-validation-for="Company.CellNo" class="text-danger"></span>
 					</div>
 				</div>
 				<div class="row g-3 mt-1">
                     <div class="col-md-4">
                         <label class="form-label">Logo</label>
-                        <input type="file" name="logoFile" accept="image/*" class="form-control" />
+                        <input type="file" name="logoFile" accept="image/*" class="form-control form-control-sm" />
                         <div class="mt-2">
                             <img id="logoPreview" src="@(Model.Company?.LogoPath ?? Url.Content("~/images/company-logo.png"))" alt="Logo" style="max-height:80px; border:1px solid #ddd; padding:2px;" />
                         </div>
                     </div>
 					<div class="col-md-8">
 						<label asp-for="Company.FbrBearerToken" class="form-label">FBR Bearer Token</label>
-						<input asp-for="Company.FbrBearerToken" type="password" class="form-control" placeholder="Paste API token here" />
+						<input asp-for="Company.FbrBearerToken" type="password" class="form-control form-control-sm" placeholder="Paste API token here" />
 						<span asp-validation-for="Company.FbrBearerToken" class="text-danger"></span>
 					</div>
 					<div class="col-md-4">
@@ -111,17 +111,17 @@
 				<div class="row g-3 mt-1">
 					<div class="col-md-4">
 						<label asp-for="Company.UserName"></label>
-						<input asp-for="Company.UserName" class="form-control" />
+						<input asp-for="Company.UserName" class="form-control form-control-sm" />
 						<span asp-validation-for="Company.UserName" class="text-danger"></span>
 					</div>
 					<div class="col-md-4">
 						<label asp-for="Company.Email"></label>
-						<input asp-for="Company.Email" class="form-control" />
+						<input asp-for="Company.Email" class="form-control form-control-sm" />
 						<span asp-validation-for="Company.Email" class="text-danger"></span>
 					</div>
 					<div class="col-md-4">
 						<label asp-for="Company.Password"></label>
-						<input asp-for="Company.Password" class="form-control" />
+						<input asp-for="Company.Password" class="form-control form-control-sm" />
 						<span asp-validation-for="Company.Password" class="text-danger"></span>
 					</div>
                     <div class="col-md-4 d-flex align-items-end gap-2 mt-2">

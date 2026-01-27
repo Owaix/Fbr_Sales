@@ -7,7 +7,7 @@
     }
 
     .narrow-cell {
-        max-width: 80px;
+        /* max-width: 80px; */
         width: 100%;
     }
 
@@ -45,8 +45,16 @@
         margin-top: -14px;
     }
 
+    .select2-selection__arrow {
+        margin-top: -6px !important;
+    }
+
     th {
         font-weight: bold;
+    }
+
+    .form-check {
+        padding-top: 15px !important;
     }
 </style>
 <!-- Removed extra jQuery include to avoid overwriting select2 registration. Assume layout already loads jQuery. -->
@@ -66,12 +74,12 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-4">
                         <label class="form-label">Code</label>
-                        <input asp-for="Code" type="text" class="form-control" />
+                        <input asp-for="Code" type="text" class="form-control form-control-sm" />
                         <span asp-validation-for="Code" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Sales Invoice Date</label>
-                        <input asp-for="InvoiceDate" type="date" class="form-control" />
+                        <input asp-for="InvoiceDate" type="date" class="form-control form-control-sm" />
                         <span asp-validation-for="InvoiceDate" class="text-danger"></span>
                     </div>
                     <div class="col-md-4">
@@ -164,18 +172,18 @@
                         {
                             <tr>
                                 <td style="position:relative;">
-                                    <input asp-for="Items[@i].ProductDescription" class="form-control wide-desc product-desc-autocomplete" autocomplete="off" />
+                                    <input asp-for="Items[@i].ProductDescription" class="form-control form-control-sm wide-desc product-desc-autocomplete" autocomplete="off" />
                                     <div class="autocomplete-table-container"></div>
                                 </td>
-                                <td><input asp-for="Items[@i].Quantity" class="form-control item-calc narrow-cell" type="number" step="1" /></td>
-                                <td><input asp-for="Items[@i].UoM" class="form-control narrow-cell" /></td>
-                                <td><input name="Items[@i].ListPrice" class="form-control narrow-cell" type="text" /></td>
-                                <td><input asp-for="Items[@i].Rate" class="form-control narrow-cell" /></td>
-                                <td><input asp-for="Items[@i].Discount" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
-                                <td><input asp-for="Items[@i].ValueSalesExcludingST" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
-                                <td><input asp-for="Items[@i].SalesTaxApplicable" class="form-control item-calc narrow-cell" type="text" step="0.01" /></td>
-                                <td><input asp-for="Items[@i].TotalValues" class="form-control total-value narrow-cell" type="text" step="0.01" readonly tabindex="0" /></td>
-                                <td style="display:none"><input asp-for="Items[@i].itemId" class="form-control id narrow-cell" type="text" readonly tabindex="0" /></td>
+                                <td><input asp-for="Items[@i].Quantity" class="form-control form-control-sm item-calc narrow-cell" type="number" step="1" /></td>
+                                <td><input asp-for="Items[@i].UoM" class="form-control form-control-sm narrow-cell" /></td>
+                                <td><input name="Items[@i].ListPrice" class="form-control form-control-sm narrow-cell" type="text" /></td>
+                                <td><input asp-for="Items[@i].Rate" class="form-control form-control-sm narrow-cell" /></td>
+                                <td><input asp-for="Items[@i].Discount" class="form-control form-control-sm item-calc narrow-cell" type="text" step="0.01" /></td>
+                                <td><input asp-for="Items[@i].ValueSalesExcludingST" class="form-control form-control-sm item-calc narrow-cell" type="text" step="0.01" /></td>
+                                <td><input asp-for="Items[@i].SalesTaxApplicable" class="form-control form-control-sm item-calc narrow-cell" type="text" step="0.01" /></td>
+                                <td><input asp-for="Items[@i].TotalValues" class="form-control form-control-sm total-value narrow-cell" type="text" step="0.01" readonly tabindex="0" /></td>
+                                <td style="display:none"><input asp-for="Items[@i].itemId" class="form-control form-control-sm id narrow-cell" type="text" readonly tabindex="0" /></td>
                                 <td class="text-nowrap">
                                     <button type="button" class="btn btn-success btn-sm me-1" onclick="addRow()">+</button>
                                     <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">-</button>
@@ -201,6 +209,7 @@
                     </tfoot>
                 </table>
                 <br />
+
                 <div class="row">
                     <div class="col-3">
                         <label class="form-label mb-0">Tax</label>
@@ -209,18 +218,16 @@
                         </select>
                     </div>
                     <div class="col-2">
-                        <label class="form-label mb-0">Rate</label>
-                        <input class="form-control text-end" id="Summary_TaxRate" style="width:120px;" />
-                    </div>
-                    <div class="col-2">
                         <label class="form-label mb-0">Tax Type</label>
                         <select class="form-select" id="Summary_TaxType" style="min-width:160px;">
-                            <option value="GST">
-                                GST
-                            </option>
+                            <option value="GST">GST</option>
                             <option value="VAT">VAT</option>
                             <option value="SalesTax">Sales Tax</option>
                         </select>
+                    </div>
+                    <div class="col-2">
+                        <label class="form-label mb-0">Rate</label>
+                        <input class="form-control form-control-sm text-end" id="Summary_TaxRate" style="width:120px;" />
                     </div>
                 </div>
 
@@ -228,27 +235,27 @@
                     <div class="col-md-4 ms-auto">
                         <div class="mb-2 d-flex align-items-center gap-2">
                             <label for="GrossAmount" class="form-label fw-bold mb-0" style="min-width:160px;">Gross Amount</label>
-                            <input class="form-control text-end" id="GrossAmount" name="GrossAmount" />
+                            <input class="form-control form-control-sm text-end" id="GrossAmount" name="GrossAmount" />
                         </div>
                         <div class="mb-2 d-flex align-items-center gap-2">
                             <label for="GrandTotal" class="form-label fw-bold mb-0" style="min-width:160px;">Grand Total</label>
-                            <input id="GrandTotal" class="form-control text-end" readonly />
+                            <input id="GrandTotal" class="form-control form-control-sm text-end" readonly />
                         </div>
                         <div class="mb-2 d-flex align-items-center gap-2">
                             <label for="CarriageFreight" class="form-label mb-0" style="min-width:160px;">Carriage and Freight</label>
-                            <input class="form-control text-end" id="CarriageFreight" name="CarriageFreight" />
+                            <input class="form-control form-control-sm text-end" id="CarriageFreight" name="CarriageFreight" />
                         </div>
                         <div class="mb-2 d-flex align-items-center gap-2">
                             <label for="TotalAdditionalTax" class="form-label mb-0" style="min-width:160px;">Total Additional Tax</label>
-                            <input class="form-control text-end" id="TotalAdditionalTax" name="TotalAdditionalTax" />
+                            <input class="form-control form-control-sm text-end" id="TotalAdditionalTax" name="TotalAdditionalTax" />
                         </div>
                         <div class="mb-2 d-flex align-items-center gap-2">
                             <label for="NetTotal" class="form-label mb-0" style="min-width:160px;">Net Total</label>
-                            <input class="form-control text-end" id="NetTotal" name="NetTotal" />
+                            <input class="form-control form-control-sm text-end" id="NetTotal" name="NetTotal" />
                         </div>
                         <div class="mb-2 d-flex align-items-center gap-2">
                             <label for="AmountReceived" class="form-label mb-0" style="min-width:160px;">Amount Received</label>
-                            <input class="form-control text-end" id="AmountReceived" name="AmountReceived" />
+                            <input class="form-control form-control-sm text-end" id="AmountReceived" name="AmountReceived" />
                         </div>
                     </div>
                 </div>
@@ -270,31 +277,31 @@
 
     <script>
         let buyersCache = [];
-        async function loadBuyersOnce(){
-            if(buyersCache.length) return buyersCache;
-            try{ const resp = await fetch('/Home/CustomerSearch'); if(resp.ok){ buyersCache = await resp.json(); } else { buyersCache=[]; } }catch{ buyersCache=[]; }
+        async function loadBuyersOnce() {
+            if (buyersCache.length) return buyersCache;
+            try { const resp = await fetch('/Home/CustomerSearch'); if (resp.ok) { buyersCache = await resp.json(); } else { buyersCache = []; } } catch { buyersCache = []; }
             return buyersCache;
         }
 
-        function clientMatcher(params, data){
-            if(!params.term) return data; // show all when empty
+        function clientMatcher(params, data) {
+            if (!params.term) return data; // show all when empty
             const term = params.term.toLowerCase();
-            if((data.text||'').toLowerCase().includes(term) || (data.ntn||'').toLowerCase().includes(term) || (data.address||'').toLowerCase().includes(term) || (data.province||'').toLowerCase().includes(term))
+            if ((data.text || '').toLowerCase().includes(term) || (data.ntn || '').toLowerCase().includes(term) || (data.address || '').toLowerCase().includes(term) || (data.province || '').toLowerCase().includes(term))
                 return data;
             return null;
         }
 
-        function initBuyerSelect(enriched){
-            if(!$.fn.select2){ console.warn('Select2 not loaded'); return; }
+        function initBuyerSelect(enriched) {
+            if (!$.fn.select2) { console.warn('Select2 not loaded'); return; }
             $('#buyerSelector').empty();
             $('#buyerSelector').select2({
-                placeholder:'Search buyer...',
-                allowClear:true,
+                placeholder: 'Search buyer...',
+                allowClear: true,
                 data: enriched,
                 matcher: clientMatcher,
-                escapeMarkup: m=>m
+                escapeMarkup: m => m
             });
-            $('#buyerSelector').on('select2:select', function(e){
+            $('#buyerSelector').on('select2:select', function(e) {
                 const d = e.params.data;
                 $('#BuyerBusinessName').val(d.text);
                 $('input[name="BuyerNTNCNIC"]').val(d.ntn);
@@ -302,14 +309,14 @@
                 $('input[name="BuyerProvince"]').val(d.province);
                 $('input[name="BuyerRegistrationType"]').val(d.regType);
             });
-            $('#buyerSelector').on('select2:clear', function(){
+            $('#buyerSelector').on('select2:clear', function() {
                 $('#BuyerBusinessName, input[name="BuyerNTNCNIC"], input[name="BuyerAddress"], input[name="BuyerProvince"], input[name="BuyerRegistrationType"]').val('');
             });
         }
 
-        async function setupBuyerSelect(){
+        async function setupBuyerSelect() {
             const raw = await loadBuyersOnce();
-            const enriched = raw.map(r=>({ id: r.text, text: r.text, ntn: r.ntn, address: r.address, province: r.province, regType: r.regType }));
+            const enriched = raw.map(r => ({ id: r.text, text: r.text, ntn: r.ntn, address: r.address, province: r.province, regType: r.regType }));
             initBuyerSelect(enriched);
             $('#customerSelector').select2();
             $('#accountSelector').select2();
@@ -317,348 +324,348 @@
             await bindTaxesToDropdown();
         }
 
-        if(!window.jQuery){ console.error('jQuery not found'); }
-        else if(!$.fn.select2){
-            const s=document.createElement('script'); s.src='https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'; s.onload=setupBuyerSelect; document.head.appendChild(s);
-        }else{ $(setupBuyerSelect); }
+        if (!window.jQuery) { console.error('jQuery not found'); }
+        else if (!$.fn.select2) {
+            const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'; s.onload = setupBuyerSelect; document.head.appendChild(s);
+        } else { $(setupBuyerSelect); }
     </script>
     <script>
-            let itemData = [];
-            async function fetchItems() {
-                const response = await fetch(`/api/Ajax/GetItems`);
-                itemData = response.ok ? await response.json() : [];
+        let itemData = [];
+        async function fetchItems() {
+            const response = await fetch(`/api/Ajax/GetItems`);
+            itemData = response.ok ? await response.json() : [];
+        }
+
+        // Tax binding like items
+        let taxData = [];
+        async function fetchTaxes() {
+            try {
+                const response = await fetch(`/api/Ajax/GetTaxes`);
+                taxData = response.ok ? await response.json() : [];
+            } catch {
+                taxData = [];
             }
+        }
+        async function bindTaxesToDropdown() {
+            await fetchTaxes();
+            // Expecting taxData elements having { id, text, rate, type }
+            const $tax = $('#Summary_TaxId');
+            if (!$tax.length) return;
+            // Clear and add placeholder
+            $tax.empty().append('<option value="">-- Select Tax --</option>');
+            taxData.forEach(t => {
+                const opt = new Option(t.text ?? '', t.id ?? '', false, false);
+                // store extra on option for quick retrieval
+                $(opt).data('rate', t.rate).data('type', t.type);
+                $tax.append(opt);
+            });
+            // re-init/select2 if available
+            if ($.fn.select2) { $tax.select2(); }
+        }
 
-            // Tax binding like items
-            let taxData = [];
-            async function fetchTaxes() {
-                try {
-                    const response = await fetch(`/api/Ajax/GetTaxes`);
-                    taxData = response.ok ? await response.json() : [];
-                } catch {
-                    taxData = [];
-                }
-            }
-            async function bindTaxesToDropdown(){
-                await fetchTaxes();
-                // Expecting taxData elements having { id, text, rate, type }
-                const $tax = $('#Summary_TaxId');
-                if(!$tax.length) return;
-                // Clear and add placeholder
-                $tax.empty().append('<option value="">-- Select Tax --</option>');
-                taxData.forEach(t=>{
-                    const opt = new Option(t.text ?? '', t.id ?? '', false, false);
-                    // store extra on option for quick retrieval
-                    $(opt).data('rate', t.rate).data('type', t.type);
-                    $tax.append(opt);
-                });
-                // re-init/select2 if available
-                if($.fn.select2){ $tax.select2(); }
-            }
+        $(document).ready(function() {
+            addRow();
+            fetchItems();
+            bindTaxesToDropdown();
 
-            $(document).ready(function () {
-                addRow();
-                fetchItems();
-                bindTaxesToDropdown();
-
-                $('#Summary_TaxId').change(function(){
-                    var id = $(this).val();
-                    if(!id) { $('#Summary_TaxRate').val(''); $('#Summary_TaxType').val('Percent'); return; }
-                    // Prefer local data first
-                    const found = taxData.find(t=> (t.id ?? '').toString() === (id ?? '').toString());
-                    if(found){
-                        $('#Summary_TaxRate').val(found.rate ?? '');
-                        $('#Summary_TaxType').val(found.type ?? '');
-                    } else {
-                        // fallback to server
-                        $.getJSON('/Home/GetTaxRate', { id: id }, function (d) {
-                            $('#Summary_TaxRate').val(d.rate);
-                            $('#Summary_TaxType').val(d.type);
-                        });
-                    }
-                });
-
-                $('#SInv_TaxId').change(function(){
-                    var id = $(this).val();
-                    if(!id) { $('#SInv_TaxRate').val(''); return; }
-                    $.getJSON('/Home/GetTaxRate', { id: id }, function (d) {
-                        $('#SInv_TaxRate').val(d.rate);
-                        $('#SInv_TaxType').val(d.type);
+            $('#Summary_TaxId').change(function() {
+                var id = $(this).val();
+                if (!id) { $('#Summary_TaxRate').val(''); $('#Summary_TaxType').val('Percent'); return; }
+                // Prefer local data first
+                const found = taxData.find(t => (t.id ?? '').toString() === (id ?? '').toString());
+                if (found) {
+                    $('#Summary_TaxRate').val(found.rate ?? '');
+                    $('#Summary_TaxType').val(found.type ?? '');
+                } else {
+                    // fallback to server
+                    $.getJSON('/Home/GetTaxRate', { id: id }, function(d) {
+                        $('#Summary_TaxRate').val(d.rate);
+                        $('#Summary_TaxType').val(d.type);
                     });
+                }
+            });
+
+            $('#SInv_TaxId').change(function() {
+                var id = $(this).val();
+                if (!id) { $('#SInv_TaxRate').val(''); return; }
+                $.getJSON('/Home/GetTaxRate', { id: id }, function(d) {
+                    $('#SInv_TaxRate').val(d.rate);
+                    $('#SInv_TaxType').val(d.type);
                 });
-
             });
 
-            function renderAutocompleteTable(filtered, $container, selectedIdx) {
-                if (filtered.length === 0) {
-                    $container.hide();
-                    return;
-                }
-                let table = '<table class="autocomplete-table"><thead><tr>' +
-                    '<th>HS Code</th><th>Description</th><th>List Price</th><th>POS Rate</th><th>UoM</th><th>Value Excl. ST</th><th>Sales Tax</th><th>Further Tax</th><th>Discount</th>' +
-                    '</tr></thead><tbody>';
-                filtered.forEach((item, idx) => {
-                    table += `<tr class="${selectedIdx === idx ? 'selected' : ''}" data-iid="${item.id}" data-idx="${idx}">` +
-                        `<td>${item.hsCode ?? ''}</td>`+
-                        `<td>${item.productDescription ?? ''}</td>`+
-                        `<td>${item.price1 ?? item.listPrice ?? ''}</td>`+
-                        `<td>${item.posRate ?? item.rate ?? ''}</td>`+
-                        `<td>${item.uoM ?? ''}</td>`+
-                        `<td>${item.valueSalesExcludingST ?? ''}</td>`+
-                        `<td>${item.salesTaxApplicable ?? ''}</td>`+
-                        `<td>${item.furtherTax ?? ''}</td>`+
-                        `<td>${item.discount ?? ''}</td>` +
-                        '</tr>';
-                });
-                table += '</tbody></table>';
-                $container.html(table).show();
-            }
+        });
 
-            $(document).on('input', '.product-desc-autocomplete', function (e) {
-                const $input = $(this);
-                const $td = $input.closest('td');
-                let $container = $td.find('.autocomplete-table-container');
-                let val = $input.val().toLowerCase();
-
-                if (!val) {
-                    $container.hide();
-                    return;
-                }
-                let filtered = itemData.filter(x => x.productDescription && x.productDescription.toLowerCase().includes(val));
-                $input.data('autocomplete-filtered', filtered);
-                $input.data('autocomplete-selected', 0);
-                renderAutocompleteTable(filtered, $container, 0);
-            });
-
-
-            $(document).on('keydown', '.product-desc-autocomplete', function (e) {
-                const $input = $(this);
-                const $td = $input.closest('td');
-                let $container = $td.find('.autocomplete-table-container');
-                let filtered = $input.data('autocomplete-filtered') || [];
-                let selected = $input.data('autocomplete-selected') || 0;
-                if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    selected = Math.min(selected + 1, filtered.length - 1);
-                    $input.data('autocomplete-selected', selected);
-                    renderAutocompleteTable(filtered, $container, selected);
-                    scrollSelectedRowIntoView($container.find('tbody'));
-                } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    selected = Math.max(selected - 1, 0);
-                    $input.data('autocomplete-selected', selected);
-                    renderAutocompleteTable(filtered, $container, selected);
-                    scrollSelectedRowIntoView($container.find('tbody'));
-                } else if (e.key === 'Enter') {
-                    e.preventDefault();
-                    if (filtered.length > 0) {
-                        const item = filtered[selected];
-                        console.log(item);
-                        const $row = $input.closest('tr');
-                        const productDesc = item.productDescription ? item.productDescription.toLowerCase() : '';
-                        let duplicateRow = null;
-                        $('#itemsTable tbody tr').each(function () {
-                            const $descInput = $(this).find('input[name*="ProductDescription"]');
-                            var descVal = ($descInput.val() || '').toLowerCase();
-                            if ($descInput[0] !== $input[0] && descVal && descVal === productDesc) {
-                                duplicateRow = $(this);
-                                return false;
-                            }
-                        });
-
-                        if (duplicateRow) {
-                            // Increment duplicate quantity but keep focus in current row quantity (per requirement)
-                            const $qtyInput = duplicateRow.find('input[name*="Quantity"]');
-                            let qty = parseFloat($qtyInput.val()) || 0;
-                            $qtyInput.val(qty + 1);
-                            calculateRowTotals(duplicateRow);
-                        } else {
-                            $row.find('input[name*="HsCode"]').val(item.hsCode);
-                            $row.find('input[name*="ProductDescription"]').val(item.productDescription);
-                            $row.find('input[name*="Rate"]').val(item.posRate ?? item.rate ?? '');
-                            $row.find('input[name*="ListPrice"]').val(item.price1 ?? item.listPrice ?? '');
-                            $row.find('input[name*="UoM"]').val(item.uoM);
-                            $row.find('input[name*="Quantity"]').val(1);
-                            $row.find('input[name*="ValueSalesExcludingST"]').val(item.valueSalesExcludingST);
-                            $row.find('input[name*="SalesTaxApplicable"]').val(item.salesTaxApplicable);
-                            $row.find('input[name*="FurtherTax"]').val(item.furtherTax);
-                            $row.find('input[name*="Discount"]').val(item.discount);
-                            $row.find('input[name*="itemId"]').val(item.id);
-                            calculateRowTotals($row);
-                        }
-
-                        $container.hide();
-                        $row.find('input[name*="Quantity"]').focus().select();
-                    }
-                } else if (e.key === 'Escape') {
-                    // Close popup only; row deletion handled in global handler
-                    $container.hide();
-                }
-            });
-
-
-            $(document).on('mouseenter', '.autocomplete-table tr', function () {
-                $(this).addClass('selected').siblings().removeClass('selected');
-            });
-
-            $(document).on('mousedown', '.autocomplete-table tr', function (e) {
-                e.preventDefault();
-                const $tr = $(this);
-                const idx = $tr.data('idx');
-                const $container = $tr.closest('.autocomplete-table-container');
-                const $td = $container.closest('td');
-                const $input = $td.find('.product-desc-autocomplete');
-                let filtered = $input.data('autocomplete-filtered') || [];
-                const item = filtered[idx];
-                const $row = $input.closest('tr');
-                $row.find('input[name*="HsCode"]').val(item.hsCode);
-                $row.find('input[name*="ProductDescription"]').val(item.productDescription);
-                $row.find('input[name*="Rate"]').val(item.posRate ?? item.rate ?? '');
-                $row.find('input[name*="ListPrice"]').val(item.price1 ?? item.listPrice ?? '');
-                $row.find('input[name*="UoM"]').val(item.uoM);
-                $row.find('input[name*="Quantity"]').val(1);
-                $row.find('input[name*="ValueSalesExcludingST"]').val(item.valueSalesExcludingST);
-                $row.find('input[name*="SalesTaxApplicable"]').val(item.salesTaxApplicable);
-                $row.find('input[name*="FurtherTax"]').val(item.furtherTax);
-                $row.find('input[name*="Discount"]').val(item.discount);
-                $row.find('input[name*="itemId"]').val(item.id);
-                calculateRowTotals($row);
+        function renderAutocompleteTable(filtered, $container, selectedIdx) {
+            if (filtered.length === 0) {
                 $container.hide();
-                $row.find('input[name*="Quantity"]').focus().select();
-            });
-
-            $(document).on('blur', '.product-desc-autocomplete', function () {
-                setTimeout(() => {
-                    $(this).closest('td').find('.autocomplete-table-container').hide();
-                }, 200);
-            });
-
-            function addRow() {
-                var rowCount = $('#itemsTable tbody tr').length;
-                var row = `<tr>
-                    <td style="position:relative;"><input name="Items[${rowCount}].ProductDescription" class="form-control wide-desc product-desc-autocomplete" value="" autocomplete="off" /><div class="autocomplete-table-container"></div></td>
-                    <td><input name="Items[${rowCount}].Quantity" class="form-control item-calc narrow-cell" type="number" step="1" value="1" /></td>
-                    <td><input name="Items[${rowCount}].UoM" class="form-control narrow-cell" value="" /></td>
-                    <td><input name="Items[${rowCount}].ListPrice" class="form-control narrow-cell" type="text" value="" /></td>
-                    <td><input name="Items[${rowCount}].Rate" class="form-control narrow-cell" value="" /></td>
-                    <td><input name="Items[${rowCount}].Discount" class="form-control item-calc narrow-cell" type="text" step="0.01" value="0" /></td>
-                    <td><input name="Items[${rowCount}].ValueSalesExcludingST" class="form-control item-calc narrow-cell" type="text" step="0.01" value="0" /></td>
-                    <td><input name="Items[${rowCount}].SalesTaxApplicable" class="form-control item-calc narrow-cell" type="text" step="0.01" value="0" /></td>
-                    <td><input name="Items[${rowCount}].TotalValues" class="form-control total-value narrow-cell" type="text" step="0.01" readonly tabindex="0" value="0.00" /></td>
-                    <td style="display:none"><input name="Items[${rowCount}].itemId" class="form-control id narrow-cell" type="text" readonly tabindex="0" /></td>
-                    <td class="text-nowrap"><button type="button" class="btn btn-success btn-sm me-1" onclick="addRow()">+</button><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">-</button></td>
-                </tr>`;
-                $('#itemsTable tbody').append(row);
-                CalcInvoiceGrandTotal();
-                $('#itemsTable tbody tr:last input[name*="ProductDescription"]').focus().select();
+                return;
             }
-
-            function updateInvoiceGrandTotal() { }
-
-            function CalcInvoiceGrandTotal() {
-                let totalIncl = 0, totalExcl = 0, totalST = 0;
-                $('#itemsTable tbody .total-value').each(function () {
-                    const v = parseFloat($(this).val()) || 0; totalIncl += v;
-                });
-                $('#itemsTable tbody input[name*="ValueSalesExcludingST"]').each(function(){
-                    const v = parseFloat($(this).val()) || 0; totalExcl += v;
-                });
-                $('#itemsTable tbody input[name*="SalesTaxApplicable"]').each(function(){
-                    const v = parseFloat($(this).val()) || 0; totalST += v;
-                });
-                $('#GrandTotal').val(totalIncl.toFixed(2));
-                $('#TotalInclTax').text(totalIncl.toFixed(2));
-                $('#TotalValueExclTax').text(totalExcl.toFixed(2));
-                $('#TotalSTAmount').text(totalST.toFixed(2));
-                updateSummaryTotals();
-            }
-
-            function calculateRowTotal($row){
-                // Delegate to totals calculator to ensure all dependent fields update
-                calculateRowTotals($row);
-                CalcInvoiceGrandTotal();
-            }
-
-            function calculateRowTotals($row) {
-                debugger;
-                var rate = parseFloat($row.find('input[name*="Rate"]').val()) || 0;
-                var qty = parseFloat($row.find('input[name*="Quantity"]').val()) || 0;
-                var valueExclSTField = $row.find('input[name*="ValueSalesExcludingST"]');
-                var valueExclST = parseFloat(valueExclSTField.val());
-
-                var discountTmp = parseFloat($row.find('input[name*="Discount"]').val()) || 0;
-                valueExclST = Math.max((rate * qty) - discountTmp, 0);
-                valueExclSTField.val(valueExclST.toFixed(2));
-
-                var salesTax = parseFloat($row.find('input[name*="SalesTaxApplicable"]').val()) || 0;
-                var furtherTax = parseFloat($row.find('input[name*="FurtherTax"]').val()) || 0;
-                var discount = parseFloat($row.find('input[name*="Discount"]').val()) || 0;
-                var total = ((rate * qty) + salesTax ) - discount;
-                $row.find('.total-value').val(total.toFixed(2));
-                updateInvoiceGrandTotal();
-            }
-
-            $(document).on('keydown', 'input.narrow-cell', function (e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const $row = $(this).closest('tr');
-                    calculateRowTotal($row);
-                    addRow();
-                }
+            let table = '<table class="autocomplete-table"><thead><tr>' +
+                '<th>HS Code</th><th>Description</th><th>List Price</th><th>POS Rate</th><th>UoM</th><th>Value Excl. ST</th><th>Sales Tax</th><th>Further Tax</th><th>Discount</th>' +
+                '</tr></thead><tbody>';
+            filtered.forEach((item, idx) => {
+                table += `<tr class="${selectedIdx === idx ? 'selected' : ''}" data-iid="${item.id}" data-idx="${idx}">` +
+                    `<td>${item.hsCode ?? ''}</td>` +
+                    `<td>${item.productDescription ?? ''}</td>` +
+                    `<td>${item.price1 ?? item.listPrice ?? ''}</td>` +
+                    `<td>${item.posRate ?? item.rate ?? ''}</td>` +
+                    `<td>${item.uoM ?? ''}</td>` +
+                    `<td>${item.valueSalesExcludingST ?? ''}</td>` +
+                    `<td>${item.salesTaxApplicable ?? ''}</td>` +
+                    `<td>${item.furtherTax ?? ''}</td>` +
+                    `<td>${item.discount ?? ''}</td>` +
+                    '</tr>';
             });
+            table += '</tbody></table>';
+            $container.html(table).show();
+        }
 
-            function removeRow(btn) {
-                $(btn).closest('tr').remove();
-                updateInvoiceGrandTotal();
+        $(document).on('input', '.product-desc-autocomplete', function(e) {
+            const $input = $(this);
+            const $td = $input.closest('td');
+            let $container = $td.find('.autocomplete-table-container');
+            let val = $input.val().toLowerCase();
+
+            if (!val) {
+                $container.hide();
+                return;
             }
+            let filtered = itemData.filter(x => x.productDescription && x.productDescription.toLowerCase().includes(val));
+            $input.data('autocomplete-filtered', filtered);
+            $input.data('autocomplete-selected', 0);
+            renderAutocompleteTable(filtered, $container, 0);
+        });
 
-            $(document).on('blur', '.item-calc', function () {
-                var $row = $(this).closest('tr');
-                //calculateRowTotal($row);
-            });
 
-            $(function () {
-                $('#itemsTable tbody tr').each(function () {
-                    calculateRowTotal($(this));
-                });
-                updateInvoiceGrandTotal();
-                bindSummaryAutoCalc();
-            });
+        $(document).on('keydown', '.product-desc-autocomplete', function(e) {
+            const $input = $(this);
+            const $td = $input.closest('td');
+            let $container = $td.find('.autocomplete-table-container');
+            let filtered = $input.data('autocomplete-filtered') || [];
+            let selected = $input.data('autocomplete-selected') || 0;
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selected = Math.min(selected + 1, filtered.length - 1);
+                $input.data('autocomplete-selected', selected);
+                renderAutocompleteTable(filtered, $container, selected);
+                scrollSelectedRowIntoView($container.find('tbody'));
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selected = Math.max(selected - 1, 0);
+                $input.data('autocomplete-selected', selected);
+                renderAutocompleteTable(filtered, $container, selected);
+                scrollSelectedRowIntoView($container.find('tbody'));
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (filtered.length > 0) {
+                    const item = filtered[selected];
+                    console.log(item);
+                    const $row = $input.closest('tr');
+                    const productDesc = item.productDescription ? item.productDescription.toLowerCase() : '';
+                    let duplicateRow = null;
+                    $('#itemsTable tbody tr').each(function() {
+                        const $descInput = $(this).find('input[name*="ProductDescription"]');
+                        var descVal = ($descInput.val() || '').toLowerCase();
+                        if ($descInput[0] !== $input[0] && descVal && descVal === productDesc) {
+                            duplicateRow = $(this);
+                            return false;
+                        }
+                    });
 
-            // Delete row on Escape (unless autocomplete just closed). Pressing Esc in description first closes popup; second Esc removes row.
-            $(document).on('keydown', '#itemsTable tbody input', function (e) {
-                if (e.key === 'Escape') {
-                    const $row = $(this).closest('tr');
-                    const $popup = $row.find('.autocomplete-table-container:visible');
-                    if ($popup.length) {
-                        $popup.hide(); // first Esc closes popup
-                        return;
+                    if (duplicateRow) {
+                        // Increment duplicate quantity but keep focus in current row quantity (per requirement)
+                        const $qtyInput = duplicateRow.find('input[name*="Quantity"]');
+                        let qty = parseFloat($qtyInput.val()) || 0;
+                        $qtyInput.val(qty + 1);
+                        calculateRowTotals(duplicateRow);
+                    } else {
+                        $row.find('input[name*="HsCode"]').val(item.hsCode);
+                        $row.find('input[name*="ProductDescription"]').val(item.productDescription);
+                        $row.find('input[name*="Rate"]').val(item.posRate ?? item.rate ?? '');
+                        $row.find('input[name*="ListPrice"]').val(item.price1 ?? item.listPrice ?? '');
+                        $row.find('input[name*="UoM"]').val(item.uoM);
+                        $row.find('input[name*="Quantity"]').val(1);
+                        $row.find('input[name*="ValueSalesExcludingST"]').val(item.valueSalesExcludingST);
+                        $row.find('input[name*="SalesTaxApplicable"]').val(item.salesTaxApplicable);
+                        $row.find('input[name*="FurtherTax"]').val(item.furtherTax);
+                        $row.find('input[name*="Discount"]').val(item.discount);
+                        $row.find('input[name*="itemId"]').val(item.id);
+                        calculateRowTotals($row);
                     }
-                    removeRow($row.find('button.btn-danger')[0] || $row); // remove the row
-                }
-                if (e.key === 'Tab') {
-                    const $row = $(this).closest('tr');
-                    calculateRowTotals($row);
-                }
-            });
 
-            function scrollSelectedRowIntoView($tbody) {
-                const $selectedRow = $tbody.find('tr.selected');
-                if ($selectedRow.length === 0) return;
-                const container = $tbody.closest('.autocomplete-table-container')[0];
-                const row = $selectedRow[0];
-                const rowTop = row.offsetTop;
-                const rowBottom = rowTop + row.offsetHeight;
-                const containerScrollTop = container.scrollTop;
-                const containerHeight = container.clientHeight;
-                if (rowTop < containerScrollTop) {
-                    container.scrollTop = rowTop;
-                } else if (rowBottom > containerScrollTop + containerHeight) {
-                    container.scrollTop = rowBottom - containerHeight;
+                    $container.hide();
+                    $row.find('input[name*="Quantity"]').focus().select();
                 }
+            } else if (e.key === 'Escape') {
+                // Close popup only; row deletion handled in global handler
+                $container.hide();
             }
+        });
 
-        $(document).on('input', '.product-desc-autocomplete', function (e) {
+
+        $(document).on('mouseenter', '.autocomplete-table tr', function() {
+            $(this).addClass('selected').siblings().removeClass('selected');
+        });
+
+        $(document).on('mousedown', '.autocomplete-table tr', function(e) {
+            e.preventDefault();
+            const $tr = $(this);
+            const idx = $tr.data('idx');
+            const $container = $tr.closest('.autocomplete-table-container');
+            const $td = $container.closest('td');
+            const $input = $td.find('.product-desc-autocomplete');
+            let filtered = $input.data('autocomplete-filtered') || [];
+            const item = filtered[idx];
+            const $row = $input.closest('tr');
+            $row.find('input[name*="HsCode"]').val(item.hsCode);
+            $row.find('input[name*="ProductDescription"]').val(item.productDescription);
+            $row.find('input[name*="Rate"]').val(item.posRate ?? item.rate ?? '');
+            $row.find('input[name*="ListPrice"]').val(item.price1 ?? item.listPrice ?? '');
+            $row.find('input[name*="UoM"]').val(item.uoM);
+            $row.find('input[name*="Quantity"]').val(1);
+            $row.find('input[name*="ValueSalesExcludingST"]').val(item.valueSalesExcludingST);
+            $row.find('input[name*="SalesTaxApplicable"]').val(item.salesTaxApplicable);
+            $row.find('input[name*="FurtherTax"]').val(item.furtherTax);
+            $row.find('input[name*="Discount"]').val(item.discount);
+            $row.find('input[name*="itemId"]').val(item.id);
+            calculateRowTotals($row);
+            $container.hide();
+            $row.find('input[name*="Quantity"]').focus().select();
+        });
+
+        $(document).on('blur', '.product-desc-autocomplete', function() {
+            setTimeout(() => {
+                $(this).closest('td').find('.autocomplete-table-container').hide();
+            }, 200);
+        });
+
+        function addRow() {
+            var rowCount = $('#itemsTable tbody tr').length;
+            var row = `<tr>
+                                                    <td style="position:relative;"><input name="Items[${rowCount}].ProductDescription" class="form-control form-control-sm wide-desc product-desc-autocomplete" value="" autocomplete="off" /><div class="autocomplete-table-container"></div></td>
+                                                    <td><input name="Items[${rowCount}].Quantity" class="form-control form-control-sm item-calc narrow-cell" type="number" step="1" value="1" /></td>
+                                                    <td><input name="Items[${rowCount}].UoM" class="form-control form-control-sm narrow-cell" value="" /></td>
+                                                    <td><input name="Items[${rowCount}].ListPrice" class="form-control form-control-sm narrow-cell" type="text" value="" /></td>
+                                                    <td><input name="Items[${rowCount}].Rate" class="form-control form-control-sm narrow-cell" value="" /></td>
+                                                    <td><input name="Items[${rowCount}].Discount" class="form-control form-control-sm item-calc narrow-cell" type="text" step="0.01" value="0" /></td>
+                                                    <td><input name="Items[${rowCount}].ValueSalesExcludingST" class="form-control form-control-sm item-calc narrow-cell" type="text" step="0.01" value="0" /></td>
+                                                    <td><input name="Items[${rowCount}].SalesTaxApplicable" class="form-control form-control-sm item-calc narrow-cell" type="text" step="0.01" value="0" /></td>
+                                                    <td><input name="Items[${rowCount}].TotalValues" class="form-control form-control-sm total-value narrow-cell" type="text" step="0.01" readonly tabindex="0" value="0.00" /></td>
+                                                    <td style="display:none"><input name="Items[${rowCount}].itemId" class="form-control form-control-sm id narrow-cell" type="text" readonly tabindex="0" /></td>
+                                                    <td class="text-nowrap"><button type="button" class="btn btn-success btn-sm me-1" onclick="addRow()">+</button><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">-</button></td>
+                                                </tr>`;
+            $('#itemsTable tbody').append(row);
+            CalcInvoiceGrandTotal();
+            $('#itemsTable tbody tr:last input[name*="ProductDescription"]').focus().select();
+        }
+
+        function updateInvoiceGrandTotal() { }
+
+        function CalcInvoiceGrandTotal() {
+            let totalIncl = 0, totalExcl = 0, totalST = 0;
+            $('#itemsTable tbody .total-value').each(function() {
+                const v = parseFloat($(this).val()) || 0; totalIncl += v;
+            });
+            $('#itemsTable tbody input[name*="ValueSalesExcludingST"]').each(function() {
+                const v = parseFloat($(this).val()) || 0; totalExcl += v;
+            });
+            $('#itemsTable tbody input[name*="SalesTaxApplicable"]').each(function() {
+                const v = parseFloat($(this).val()) || 0; totalST += v;
+            });
+            $('#GrandTotal').val(totalIncl.toFixed(2));
+            $('#TotalInclTax').text(totalIncl.toFixed(2));
+            $('#TotalValueExclTax').text(totalExcl.toFixed(2));
+            $('#TotalSTAmount').text(totalST.toFixed(2));
+            updateSummaryTotals();
+        }
+
+        function calculateRowTotal($row) {
+            // Delegate to totals calculator to ensure all dependent fields update
+            calculateRowTotals($row);
+            CalcInvoiceGrandTotal();
+        }
+
+        function calculateRowTotals($row) {
+            debugger;
+            var rate = parseFloat($row.find('input[name*="Rate"]').val()) || 0;
+            var qty = parseFloat($row.find('input[name*="Quantity"]').val()) || 0;
+            var valueExclSTField = $row.find('input[name*="ValueSalesExcludingST"]');
+            var valueExclST = parseFloat(valueExclSTField.val());
+
+            var discountTmp = parseFloat($row.find('input[name*="Discount"]').val()) || 0;
+            valueExclST = Math.max((rate * qty) - discountTmp, 0);
+            valueExclSTField.val(valueExclST.toFixed(2));
+
+            var salesTax = parseFloat($row.find('input[name*="SalesTaxApplicable"]').val()) || 0;
+            var furtherTax = parseFloat($row.find('input[name*="FurtherTax"]').val()) || 0;
+            var discount = parseFloat($row.find('input[name*="Discount"]').val()) || 0;
+            var total = ((rate * qty) + salesTax) - discount;
+            $row.find('.total-value').val(total.toFixed(2));
+            updateInvoiceGrandTotal();
+        }
+
+        $(document).on('keydown', 'input.narrow-cell', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const $row = $(this).closest('tr');
+                calculateRowTotal($row);
+                addRow();
+            }
+        });
+
+        function removeRow(btn) {
+            $(btn).closest('tr').remove();
+            updateInvoiceGrandTotal();
+        }
+
+        $(document).on('blur', '.item-calc', function() {
+            var $row = $(this).closest('tr');
+            //calculateRowTotal($row);
+        });
+
+        $(function() {
+            $('#itemsTable tbody tr').each(function() {
+                calculateRowTotal($(this));
+            });
+            updateInvoiceGrandTotal();
+            bindSummaryAutoCalc();
+        });
+
+        // Delete row on Escape (unless autocomplete just closed). Pressing Esc in description first closes popup; second Esc removes row.
+        $(document).on('keydown', '#itemsTable tbody input', function(e) {
+            if (e.key === 'Escape') {
+                const $row = $(this).closest('tr');
+                const $popup = $row.find('.autocomplete-table-container:visible');
+                if ($popup.length) {
+                    $popup.hide(); // first Esc closes popup
+                    return;
+                }
+                removeRow($row.find('button.btn-danger')[0] || $row); // remove the row
+            }
+            if (e.key === 'Tab') {
+                const $row = $(this).closest('tr');
+                calculateRowTotals($row);
+            }
+        });
+
+        function scrollSelectedRowIntoView($tbody) {
+            const $selectedRow = $tbody.find('tr.selected');
+            if ($selectedRow.length === 0) return;
+            const container = $tbody.closest('.autocomplete-table-container')[0];
+            const row = $selectedRow[0];
+            const rowTop = row.offsetTop;
+            const rowBottom = rowTop + row.offsetHeight;
+            const containerScrollTop = container.scrollTop;
+            const containerHeight = container.clientHeight;
+            if (rowTop < containerScrollTop) {
+                container.scrollTop = rowTop;
+            } else if (rowBottom > containerScrollTop + containerHeight) {
+                container.scrollTop = rowBottom - containerHeight;
+            }
+        }
+
+        $(document).on('input', '.product-desc-autocomplete', function(e) {
             const $input = $(this);
             const $td = $input.closest('td');
             let $container = $td.find('.autocomplete-table-container');
@@ -685,69 +692,69 @@
             }
         }
 
-        function isItemAutocompleteOpen($input){
-            if(!$input.hasClass('product-desc-autocomplete')) return false;
-            const $c=$input.closest('td').find('.autocomplete-table-container');
-            return $c.is(':visible') && $c.find('table tr').length>0;
+        function isItemAutocompleteOpen($input) {
+            if (!$input.hasClass('product-desc-autocomplete')) return false;
+            const $c = $input.closest('td').find('.autocomplete-table-container');
+            return $c.is(':visible') && $c.find('table tr').length > 0;
         }
 
-        function parseNum(id){ const v = parseFloat($(id).val()); return isNaN(v)?0:v; }
-        function updateSummaryTotals(){
+        function parseNum(id) { const v = parseFloat($(id).val()); return isNaN(v) ? 0 : v; }
+        function updateSummaryTotals() {
             const grand = parseNum('#GrandTotal');
             const carriage = parseNum('#CarriageFreight');
             const addTax = parseNum('#TotalAdditionalTax');
             const gross = parseNum('#GrossAmount');
             // If GrossAmount provided, prefer gross + carriage + addTax; else use GrandTotal
-            const base = gross>0?gross:grand;
+            const base = gross > 0 ? gross : grand;
             const net = base + carriage + addTax;
             $('#NetTotal').val(net.toFixed(2));
         }
-        function bindSummaryAutoCalc(){
-            $('#GrandTotal, #CarriageFreight, #TotalAdditionalTax, #GrossAmount').on('input change', function(){
+        function bindSummaryAutoCalc() {
+            $('#GrandTotal, #CarriageFreight, #TotalAdditionalTax, #GrossAmount').on('input change', function() {
                 updateSummaryTotals();
             });
             // Also recompute when tax rate/type changes if you later apply tax adjustments
-            $('#Summary_TaxRate, #Summary_TaxType').on('input change', function(){
+            $('#Summary_TaxRate, #Summary_TaxType').on('input change', function() {
                 updateSummaryTotals();
             });
         }
 
         // Lightweight Excel-style navigation for #itemsTable (dynamic rows supported)
-        $(document).on('keydown','#itemsTable tbody input',function(e){
-            if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) return;
-            const $current=$(this);
+        $(document).on('keydown', '#itemsTable tbody input', function(e) {
+            if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
+            const $current = $(this);
             // Allow autocomplete handler to own the arrows when list open
-            if(isItemAutocompleteOpen($current)) return;
+            if (isItemAutocompleteOpen($current)) return;
             e.preventDefault();
-            const $td=$current.closest('td');
-            const $tr=$current.closest('tr');
-            if(e.key==='ArrowLeft'){
-                let $prevTd=$td.prev();
-                while($prevTd.length){
-                    const $inp=$prevTd.find('input:enabled:not([readonly])');
-                    if($inp.length){$inp.first().focus().select();return;}
-                    $prevTd=$prevTd.prev();
+            const $td = $current.closest('td');
+            const $tr = $current.closest('tr');
+            if (e.key === 'ArrowLeft') {
+                let $prevTd = $td.prev();
+                while ($prevTd.length) {
+                    const $inp = $prevTd.find('input:enabled:not([readonly])');
+                    if ($inp.length) { $inp.first().focus().select(); return; }
+                    $prevTd = $prevTd.prev();
                 }
             }
-            else if(e.key==='ArrowRight'){
-                let $nextTd=$td.next();
-                while($nextTd.length){
-                    const $inp=$nextTd.find('input:enabled:not([readonly])');
-                    if($inp.length){$inp.first().focus().select();return;}
-                    $nextTd=$nextTd.next();
+            else if (e.key === 'ArrowRight') {
+                let $nextTd = $td.next();
+                while ($nextTd.length) {
+                    const $inp = $nextTd.find('input:enabled:not([readonly])');
+                    if ($inp.length) { $inp.first().focus().select(); return; }
+                    $nextTd = $nextTd.next();
                 }
             }
-            else if(e.key==='ArrowUp' || e.key==='ArrowDown'){
-                const colIndex=$td[0].cellIndex; // includes action column; we will check input existence
-                let $targetRow = e.key==='ArrowUp' ? $tr.prev('tr') : $tr.next('tr');
-                while($targetRow.length){
-                    const $cells=$targetRow.children('td');
-                    if(colIndex < $cells.length){
-                        const $cell=$cells.eq(colIndex);
-                        const $inp=$cell.find('input:enabled:not([readonly])');
-                        if($inp.length){$inp.first().focus().select();return;}
+            else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                const colIndex = $td[0].cellIndex; // includes action column; we will check input existence
+                let $targetRow = e.key === 'ArrowUp' ? $tr.prev('tr') : $tr.next('tr');
+                while ($targetRow.length) {
+                    const $cells = $targetRow.children('td');
+                    if (colIndex < $cells.length) {
+                        const $cell = $cells.eq(colIndex);
+                        const $inp = $cell.find('input:enabled:not([readonly])');
+                        if ($inp.length) { $inp.first().focus().select(); return; }
                     }
-                    $targetRow = e.key==='ArrowUp' ? $targetRow.prev('tr') : $targetRow.next('tr');
+                    $targetRow = e.key === 'ArrowUp' ? $targetRow.prev('tr') : $targetRow.next('tr');
                 }
             }
         });
@@ -759,7 +766,7 @@
             const $rows = $('#itemsTable tbody tr');
             let newIndex = 0;
 
-            $rows.each(function () {
+            $rows.each(function() {
                 const $row = $(this);
 
                 // Treat row as empty if ProductDescription has no value
@@ -770,7 +777,7 @@
                 }
 
                 // Update all named inputs in row to contiguous indices Items[newIndex].Field
-                $row.find('input, select, textarea').each(function () {
+                $row.find('input, select, textarea').each(function() {
                     const name = $(this).attr('name');
                     if (!name) return;
 
@@ -791,8 +798,8 @@
         }
 
         // Bind submit to ensure contiguous indices and no empty rows
-        $(document).ready(function () {
-            $('#sInvForm').on('submit', function () {
+        $(document).ready(function() {
+            $('#sInvForm').on('submit', function() {
                 renumberItemRows();
                 // Recompute totals just in case
                 CalcInvoiceGrandTotal();

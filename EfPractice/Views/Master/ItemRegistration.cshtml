@@ -88,7 +88,7 @@
                 <div class="row align-items-end">
                     <div class="col-md-4">
                         <label asp-for="Itcode">Select Item Catory:</label>
-                        <select asp-for="Itcode" asp-items="@(new SelectList(Model.CatergoryList, "Cid", "Name", Model.Itcode))" class="form-control" id="ItemCatergory">
+                        <select asp-for="Itcode" asp-items="@(new SelectList(Model.CatergoryList, "Cid", "Name", Model.Itcode))" class="form-control form-control-sm" id="ItemCatergory">
                
                             <option disabled>Choose the catergory</option>
                         </select>
@@ -96,23 +96,23 @@
 
                     <div class="col-md-4">
                         <label >Item Name:</label>
-                        <input type="text" id="ItemName" class="form-control" />
+                        <input type="text" id="ItemName" class="form-control form-control-sm" />
                     </div>
                     <div class="col-md-4">
                         <label >Item Description:</label>
-                        <input type="text" id="ItemDesc" class="form-control" />
+                        <input type="text" id="ItemDesc" class="form-control form-control-sm" />
                     </div>
                     <div class="col-md-4">
                         <label >Purchase Rate:</label>
-                        <input type="text" id="ItemPurchase" class="form-control" />
+                        <input type="text" id="ItemPurchase" class="form-control form-control-sm" />
                     </div>
                     <div class="col-md-4">
                         <label >Sale Rate:</label>
-                        <input type="text" id="ItemSale" class="form-control" />
+                        <input type="text" id="ItemSale" class="form-control form-control-sm" />
                     </div>
                     <div class="col-md-4">
                         <label for="ItemUnit">Measurment Unit:</label>
-                        <select id="ItemUnit" class="form-control">
+                        <select id="ItemUnit" class="form-control form-control-sm">
                             <option value="">Select Unit</option>
                             <option value="1">Pcs</option>
                             <option value="2">KG</option>
@@ -123,17 +123,17 @@
 
                     <div class="col-md-4">
                         <label >Opening Quantity:</label>
-                        <input type="text" id="ItemOpeningQuantity" class="form-control" />
+                        <input type="text" id="ItemOpeningQuantity" class="form-control form-control-sm" />
                     </div>
 
                     <div class="col-md-4">
                         <label >Opening Amt:</label>
-                        <input type="text" id="ItemOpeningAmt" class="form-control" />
+                        <input type="text" id="ItemOpeningAmt" class="form-control form-control-sm" />
                     </div>
 
                     <div class="col-md-4">
                         <label >Inventory Head:</label>
-                        <input type="text" id="ItemHead" class="form-control" />
+                        <input type="text" id="ItemHead" class="form-control form-control-sm" />
                     </div>
 
 
