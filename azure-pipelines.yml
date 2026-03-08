@@ -1,3 +1,5 @@
+# Azure DevOps Pipeline
+
 trigger:
   - change-UI
 
@@ -29,10 +31,4 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
 
-# Deploy steps can go here too
-- task: AzureWebApp@1
-  displayName: 'Deploy to Azure Web App'
-  inputs:
-    azureSubscription: $(azureServiceConnection)
-    appName: $(webAppName)
-    package: $(Pipeline.Workspace)/drop
+
