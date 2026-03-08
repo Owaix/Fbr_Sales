@@ -4,7 +4,7 @@ trigger:
   - change-UI
 
 pool:
-  vmImage: 'windows-latest'
+  name: 'selfHostedAgent'
 
 steps:
 
@@ -30,3 +30,26 @@ steps:
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
+
+
+
+# ---------------- DEPLOY STAGE ----------------
+- stage: Deploy
+  dependsOn: Build
+  jobs:
+  - deployment: DeployWeb
+    environment: production
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+            - download: current
+              artifact: drop
+
+            - task: AzureWebApp@1
+              displayName: 'Deploy to Azure Web App'
+              inputs:
+                azureSubscription: $(azureServiceConnection)
+                appName: $(webAppName)
+                package: $(Pipeline.Workspace)/drop
