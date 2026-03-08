@@ -1,0 +1,35 @@
+name: Build and Publish EfPractice (Azure DevOps)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore EfPractice/EfPractice.csproj
+
+      - name: Build
+        run: dotnet build EfPractice/EfPractice.csproj --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish EfPractice/EfPractice.csproj --configuration Release --output ./publish --no-build
+
+      - name: Trigger Azure DevOps Pipeline
+        uses: Azure/pipelines@v1
+        with:
+          azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
+          organization: <your-org>
+          project: <your-project>
+          pipeline: <your-pipeline-id-or-name>
