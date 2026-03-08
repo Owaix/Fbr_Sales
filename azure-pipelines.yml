@@ -1,7 +1,7 @@
 # Azure DevOps Pipeline
 
 trigger:
-  - main
+  - change-UI
 
 pool:
   vmImage: 'windows-latest'
