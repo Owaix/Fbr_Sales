@@ -1,35 +1,32 @@
-name: Build and Publish EfPractice (Azure DevOps)
+# Azure DevOps Pipeline
 
-on:
-  push:
-    branches:
-      - main
+trigger:
+  - main
 
-jobs:
-  build:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+pool:
+  vmImage: 'windows-latest'
 
-      - name: Setup .NET 6
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '6.0.x'
+steps:
 
-      - name: Restore dependencies
-        run: dotnet restore EfPractice/EfPractice.csproj
+- checkout: self
 
-      - name: Build
-        run: dotnet build EfPractice/EfPractice.csproj --configuration Release --no-restore
+- task: UseDotNet@2
+  displayName: 'Install .NET 6'
+  inputs:
+    packageType: 'sdk'
+    version: '6.0.x'
 
-      - name: Publish
-        run: dotnet publish EfPractice/EfPractice.csproj --configuration Release --output ./publish --no-build
+- script: dotnet restore EfPractice/EfPractice.csproj
+  displayName: 'Restore dependencies'
 
-      - name: Trigger Azure DevOps Pipeline
-        uses: Azure/pipelines@v1
-        with:
-          azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
-          organization: <your-org>
-          project: <your-project>
-          pipeline: <your-pipeline-id-or-name>
+- script: dotnet build EfPractice/EfPractice.csproj --configuration Release --no-restore
+  displayName: 'Build'
+
+- script: dotnet publish EfPractice/EfPractice.csproj --configuration Release --output $(Build.ArtifactStagingDirectory) --no-build
+  displayName: 'Publish'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
