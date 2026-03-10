@@ -1,5 +1,5 @@
 trigger:
-  - main
+  - change-UI
 
 pool:
   name: 'Default'
