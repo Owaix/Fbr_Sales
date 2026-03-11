@@ -1,5 +1,8 @@
 trigger:
-  - change-UI
+  batch: true
+  branches:
+    include:      
+      - change-UI
 
 pool:
   name: 'Default'
