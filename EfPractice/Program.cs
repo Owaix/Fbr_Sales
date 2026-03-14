@@ -16,7 +16,7 @@ builder.Services.AddHttpContextAccessor();
 
 // DbContext
 builder.Services.AddDbContext<StudentContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("dbcs")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionStrings__dbcs")));
 
 // Identity
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
