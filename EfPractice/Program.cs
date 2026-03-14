@@ -1,11 +1,45 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using EfPractice.Areas.Identity.Data;
 using EfPractice.Repository.Interface;
 using EfPractice.Repository.Class;
 using EfPractice.Context;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
+using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add Azure App Configuration (using environment variable or managed identity)
+var appConfigConnectionString = builder.Configuration.GetConnectionString("AppConfig");
+Console.WriteLine($"AppConfiguration Connection String Found: {!string.IsNullOrEmpty(appConfigConnectionString)}");
+
+if (!string.IsNullOrEmpty(appConfigConnectionString))
+{
+    try
+    {
+        builder.Configuration.AddAzureAppConfiguration(options =>
+        {
+            options.Connect(appConfigConnectionString)
+                   .Select("fbrSales.staging.*", LabelFilter.Null) // Only load staging keys
+                   .TrimKeyPrefix("fbrSales.staging.") // Remove prefix so keys work with existing code
+                   .ConfigureRefresh(refresh =>
+                   {
+                       refresh.Register("fbrSales.staging.App:Sentinel", refreshAll: true)
+                              .SetCacheExpiration(TimeSpan.FromSeconds(30));
+                   });
+        });
+        builder.Services.AddAzureAppConfiguration();
+        Console.WriteLine("✅ Azure App Configuration loaded successfully!");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Failed to load Azure App Configuration: {ex.Message}");
+    }
+}
+else
+{
+    Console.WriteLine("⚠️ No Azure App Configuration connection string found. Using local configuration only.");
+}
 
 // MVC / Razor
 builder.Services.AddControllersWithViews();
@@ -15,13 +49,25 @@ builder.Services.AddRazorPages();
 builder.Services.AddHttpContextAccessor();
 
 // DbContext
+
+// Now the DB connection string comes from App Configuration
+var dbConnectionString = builder.Configuration["ConnectionStrings:dbcs"]; // Key in AppConfig: "Dbcs"
+Console.WriteLine($"DB Connection String Loaded: {!string.IsNullOrEmpty(dbConnectionString)}");
+
 builder.Services.AddDbContext<StudentContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("dbcs")));
+{
+    if (string.IsNullOrEmpty(dbConnectionString))
+        throw new InvalidOperationException("Database connection string not found in Azure App Configuration.");
+
+    options.UseSqlServer(dbConnectionString);
+});
 
 // Identity
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
-    options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<StudentContext>();
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddEntityFrameworkStores<StudentContext>();
 
 // Repos / Http clients
 builder.Services.AddScoped<IMaster, Master>();
@@ -53,6 +99,10 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+// Use Azure App Configuration middleware for dynamic configuration refresh
+app.UseAzureAppConfiguration();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
